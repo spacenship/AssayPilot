@@ -1,0 +1,33 @@
+{
+  "schema_version": "0.1.0",
+  "campaign": {
+    "campaign_id": "synthetic-alpha",
+    "goal": "SYNTHETIC: reporter 감소와 비특이적 간섭을 구분하는 규격 예제",
+    "target": "Fictional Target Alpha",
+    "biological_context": "SYNTHETIC 세포 reporter; 실제 연구 결과 아님",
+    "success_conditions": [
+      {"assay_id": "confirmation", "meaning": "SYNTHETIC 재현 활성", "kind": "verdict", "verdict": "active"},
+      {"assay_id": "interference", "meaning": "SYNTHETIC 비특이적 간섭 부재", "kind": "verdict", "verdict": "inactive"}
+    ],
+    "budget": {"amount": "100.00", "unit": "synthetic_credit", "assumed": true}
+  },
+  "candidates": [
+    {"candidate_id": "c1", "source": "synthetic", "source_id": "example-1", "original_smiles": "CCO"},
+    {"candidate_id": "c2", "source": "synthetic", "source_id": "example-2", "original_smiles": "CCN"},
+    {"candidate_id": "c3", "source": "synthetic", "source_id": "example-3", "original_smiles": "CCC"}
+  ],
+  "assays": [
+    {"assay_id": "screen", "name": "SYNTHETIC primary reporter", "role": "primary", "endpoint": "reporter inhibition", "unit": "%", "verdict_meaning": {"active": "일차 hit이며 결합·효능 증거 아님", "inactive": "해당 시험의 활성 기준 미충족", "inconclusive": "판정 불확실", "unspecified": "수치만 제공"}, "cost": {"amount": "1.00", "unit": "synthetic_credit", "assumed": true}},
+    {"assay_id": "confirmation", "name": "SYNTHETIC repeat reporter", "role": "confirmatory", "endpoint": "reporter inhibition", "unit": "%", "verdict_meaning": {"active": "활성 재현", "inactive": "활성 미재현"}, "prerequisites": [{"assay_id": "screen", "kind": "verdict", "verdict": "active"}], "cost": {"amount": "3.50", "unit": "synthetic_credit", "assumed": true}},
+    {"assay_id": "interference", "name": "SYNTHETIC interference counter", "role": "counter", "endpoint": "counter inhibition", "unit": "%", "verdict_meaning": {"active": "비특이적 간섭으로 불리한 판정", "inactive": "간섭 검출 안 됨"}, "prerequisites": [{"assay_id": "screen", "kind": "observed"}], "cost": {"amount": "2.25", "unit": "synthetic_credit", "assumed": true}}
+  ],
+  "evidence": [{"evidence_id": "e1", "source_kind": "synthetic", "source_id": "invented-example", "location": "synthetic://alpha/public-observations"}],
+  "observations": [
+    {"observation_id": "o1", "candidate_id": "c1", "assay_id": "screen", "value": 78, "unit": "%", "comparison": "=", "raw_verdict": "synthetic hit", "verdict": "active", "evidence_ids": ["e1"], "released_at": "2026-01-01T09:00:00+09:00", "replicate_id": "r1", "condition_id": "standard"},
+    {"observation_id": "o2", "candidate_id": "c2", "assay_id": "screen", "value": 9, "unit": "%", "comparison": "<", "raw_verdict": "synthetic inactive", "verdict": "inactive", "evidence_ids": ["e1"], "released_at": "2026-01-01T09:00:00+09:00", "replicate_id": "r1", "condition_id": "standard"},
+    {"observation_id": "o3", "candidate_id": "c3", "assay_id": "screen", "value": 42, "unit": "%", "comparison": "=", "verdict": "unspecified", "evidence_ids": ["e1"], "released_at": "2026-01-01T09:00:00+09:00", "replicate_id": "r1", "condition_id": "standard"},
+    {"observation_id": "o4", "candidate_id": "c1", "assay_id": "confirmation", "raw_verdict": "synthetic ambiguous", "verdict": "inconclusive", "evidence_ids": ["e1"], "released_at": "2026-01-01T10:00:00+09:00", "replicate_id": "r1", "condition_id": "repeat"},
+    {"observation_id": "o5", "candidate_id": "c1", "assay_id": "screen", "value": 73, "unit": "%", "comparison": "=", "verdict": "unspecified", "evidence_ids": ["e1"], "released_at": "2026-01-01T10:00:00+09:00", "replicate_id": "r2", "condition_id": "diluted"}
+  ],
+  "as_of": "2026-01-02T00:00:00+09:00"
+}

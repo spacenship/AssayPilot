@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1.0",
+  "campaign": {
+    "campaign_id": "synthetic-beta",
+    "goal": "SYNTHETIC 다른 표적·시험 명칭의 스키마 재사용 검증",
+    "target": "Fictional Enzyme Beta",
+    "success_conditions": [{"assay_id": "enzyme-dose", "meaning": "SYNTHETIC 역가 기준", "kind": "numeric", "comparison": "<=", "value": 10, "unit": "uM"}],
+    "budget": {"amount": "20", "unit": "synthetic_credit", "assumed": true}
+  },
+  "candidates": [{"candidate_id": "b1", "source": "synthetic", "source_id": "beta-1", "original_smiles": "CO"}],
+  "assays": [{"assay_id": "enzyme-dose", "name": "SYNTHETIC enzyme concentration response", "role": "dose_response", "endpoint": "IC50", "unit": "uM", "verdict_meaning": {"unspecified": "범주 판정 없는 수치"}, "cost": {"amount": "4", "unit": "synthetic_credit", "assumed": true}}],
+  "evidence": [],
+  "observations": [],
+  "as_of": "2026-01-02T00:00:00Z"
+}
