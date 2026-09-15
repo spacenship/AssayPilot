@@ -46,7 +46,7 @@ def main() -> None:
     report = Report(campaign_id=state.campaign_id, statements=[ReportStatement(
         text="SYNTHETIC 일차 hit는 직접 결합이나 치료 효능의 증거가 아니다", evidence_ids=["e1"])])
     for audit in (validate_run_state(state, public), validate_predictions(batch, public),
-                  validate_execution(action, receipt, result, public),
+                  validate_execution(action, receipt, result, public, as_of=state.as_of),
                   validate_observation_batch(observations, public), validate_report(report, public)):
         assert audit.ok, audit.model_dump_json()
     for obj in (state, batch, receipt, result, observations, report):

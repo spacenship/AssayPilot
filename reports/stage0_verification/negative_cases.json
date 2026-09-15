@@ -1,0 +1,66 @@
+[
+  {
+    "case": "unknown_assay_id",
+    "ok": false,
+    "issues": [
+      {
+        "target_id": "o1",
+        "field": "assay_id",
+        "code": "unknown_reference",
+        "reason": "unknown ID: missing"
+      }
+    ]
+  },
+  {
+    "case": "self_cycle",
+    "ok": false,
+    "issues": [
+      {
+        "target_id": "screen",
+        "field": "prerequisites[0].assay_id",
+        "code": "cycle",
+        "reason": "dependency cycle through screen"
+      }
+    ]
+  },
+  {
+    "case": "two_assay_cycle",
+    "ok": false,
+    "issues": [
+      {
+        "target_id": "confirmation",
+        "field": "prerequisites[0].assay_id",
+        "code": "cycle",
+        "reason": "dependency cycle through screen"
+      }
+    ]
+  },
+  {
+    "case": "three_assay_cycle",
+    "ok": false,
+    "issues": [
+      {
+        "target_id": "interference",
+        "field": "prerequisites[0].assay_id",
+        "code": "cycle",
+        "reason": "dependency cycle through screen"
+      }
+    ]
+  },
+  {
+    "case": "empty_assay_id",
+    "exception": "ValidationError",
+    "errors": [
+      {
+        "type": "string_too_short",
+        "loc": [
+          "observations",
+          0,
+          "assay_id"
+        ],
+        "msg": "String should have at least 1 character",
+        "input": ""
+      }
+    ]
+  }
+]

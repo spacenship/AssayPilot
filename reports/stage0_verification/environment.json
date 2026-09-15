@@ -1,0 +1,10 @@
+{
+  "executed_at_utc": "2026-09-15T04:36:07.344491+00:00",
+  "python": "3.12.14 (main, Sep  2 2026, 23:27:36) [GCC 15.3.0]",
+  "executable": "/home/ubuntu/miniforge3/envs/drug/bin/python",
+  "pydantic": "2.13.5",
+  "pytest": "9.1.1",
+  "imported_package": "/data1/miplab/wjyang/AssayPilot/src/assaypilot/__init__.py",
+  "cwd": "/data1/miplab/wjyang/AssayPilot",
+  "PYTHONPATH": "/data1/miplab/wjyang/AssayPilot/src"
+}

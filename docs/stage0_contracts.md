@@ -64,7 +64,7 @@
 
 BudgetState의 `available`은 `total - spent - reserved` 계산 속성으로, 입력 필드나 JSON에 중복 저장하지 않습니다. 지출+예약은 총액 이하여야 합니다. 비용/캠페인 예산/현재 예산 단위는 정확히 같은 문자열이어야 하고, 현재 total은 캠페인의 설정 총액과 일치해야 합니다. 수치 관측과 성공 조건의 단위도 시험 단위와 일치해야 합니다. 자동 환산·예산 증액 정책은 없습니다.
 
-모든 시점은 타임존을 요구합니다. 원본 UTC offset을 보존하며 시각 비교는 동일한 순간 기준입니다. 공개 관측의 released_at은 스냅샷 as_of 이하여야 합니다. RunState는 초기 카탈로그 시점 이후여야 합니다. 공개 기준 시각은 실험 발생 시각이 아닌 **시스템에 공개된 시각**입니다.
+모든 시점은 타임존을 요구합니다. 원본 UTC offset을 보존하며 시각 비교는 동일한 순간 기준입니다. 초기 로딩의 `validate_public_campaign`과 `validate_observation_batch`는 `PublicCampaign.as_of`를 기준으로 검사합니다. 이후 결과 수신의 `validate_execution(..., as_of=current_time)`은 필수 키워드 인자로 받은 **현재 실행 시각**을 사용합니다. 초기 스냅샷 이후 공개된 관측도 현재 시각 이하면 허용하고, 현재보다 미래인 관측은 `not_public`로 거절합니다. `as_of` 생략 및 타임존 없는 시각은 거절합니다. 초기 스냅샷보다 이른 실행 시각이나 현재보다 미래인 접수 시각은 `time_mismatch`입니다. RunState는 초기 카탈로그 시점 이후여야 합니다. 관측의 released_at은 실험 발생 시각이 아닌 **시스템에 공개된 시각**입니다. 실행 시계의 갱신은 호출자의 책임이며 함수가 시스템 시계를 자동 조회하지 않습니다.
 
 ## 확률과 불확실성
 
@@ -84,10 +84,28 @@ ID는 비어 있거나 공백만인 문자열을 거절하며 자동 변경하�
 | validate_run_state | 카탈로그 기준 관측·가설·계획·행동·승인 참조와 중복, 예산 일치, 상태/승인 시점 |
 | validate_observation_batch | 캠페인·관측 참조 및 공개 기준 시점 |
 | validate_predictions | 캠페인·후보·시험 참조와 예측 키 중복 |
-| validate_execution | 행동→접수→결과 ID, 관측의 후보·시험 일치, 관측 ID 중복·근거·단위·시점 |
+| validate_execution | 필수 `as_of` 현재 실행 시각 기준 미래 관측 차단, 행동→접수→결과 ID, 관측의 후보·시험 일치, 관측 ID 중복·근거·단위·시점 |
 | validate_report | 캠페인과 문장별 근거 참조 |
 
-모델 validator는 단일 객체의 상태별 필수 필드 등만 검사합니다. 참조 검사 실패는 예외 대신 AuditIssue 목록으로 모두 반환합니다. 모델 자체의 실패는 Pydantic ValidationError의 `loc`와 메시지로 확인합니다. 객체는 `extra="forbid"` 및 할당 검증을 사용하지만 list/dict 내부 수정은 자동 재검증되지 않습니다. 외부 입력은 모델로 다시 파싱하고 경계마다 순수 검사를 호출해야 합니다. `model_construct`나 검증 없는 `model_copy(update=...)`를 입력 검증 우회에 사용하면 안 됩니다.
+모델 validator는 단일 객체의 상태별 필수 필드 등만 검사합니다. 참조 검사 실패는 예외 대신 AuditIssue 목록으로 모두 반환합니다. 모델 자체의 실패는 Pydantic ValidationError의 `loc`와 메시지로 확인합니다. 외부 입력은 모델로 다시 파싱하고 경계마다 순수 검사를 호출해야 합니다. `model_construct`나 검증 없는 `model_copy(update=...)`를 입력 검증 우회에 사용하면 안 됩니다.
+
+### 검증 후 교체 규약
+
+모든 도메인 객체는 `Contract.validated_replace(**changes) -> Self`를 상속합니다. 변경 필드를 반영한 데이터를 깊은 복사하고 새 모델 전체를 검증한 뒤 반환합니다. 변경 키는 최상위 필드를 의미하며 중첩 필드는 부분 병합하지 않고 통째로 대체합니다. 전달된 중첩 모델도 `revalidate_instances="always"`로 다시 검증합니다. 성공한 새 객체의 중첩 list/dict/모델은 원본 및 변경 입력과 공유하지 않습니다.
+
+```python
+# 예산 산술 제약의 검증 예시이며 실제 예약·차감 실행은 아니다.
+proposed_budget = budget.validated_replace(spent="7", reserved="3")
+budget = proposed_budget  # 새 객체 검증이 성공한 경우에만 도달
+
+# 상태는 별도의 참조 검사까지 성공한 뒤 교체한다.
+proposed_state = state.validated_replace(status="paused")
+audit = validate_run_state(proposed_state, public)
+if audit.ok:
+    state = proposed_state
+```
+
+검증 실패 시 원본은 변경되지 않습니다. 여러 필드의 전환은 한 호출에 모아 중간 상태 검증을 피합니다. `validated_replace` 자체가 객체 간 참조를 자동 검사하지는 않습니다. `extra="forbid"`와 기존 할당 검증은 유지하지만 **직접 필드 대입은 실패 시 원상 복구를 보장하지 않고**, list/dict 내부 변경은 자동 검증되지 않습니다. 따라서 애플리케이션의 변경은 위 교체 규약을 따라야 합니다. 모델을 완전히 불변으로 강제하거나 DB 트랜잭션·예산 영구 반영을 구현한 것은 아닙니다. 테스트의 의도적인 잘못된 객체 구성은 이 규약을 우회하는 오류 주입입니다.
 
 완료 결과에는 비어 있지 않은 관측 목록만, 실패에는 오류 정보만, 대기에는 둘 다 없어야 합니다. 접수 상태를 Receipt에 중복 저장하지 않고 ExecutionResult의 스냅샷으로 유지합니다. 검사는 승인 권한의 진위, 저장 이력, 실제 실험 수행 여부를 인증하지 않습니다.
 

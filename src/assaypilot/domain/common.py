@@ -1,7 +1,8 @@
 """모든 도메인 계약의 기본 규칙과 값 타입."""
 from decimal import Decimal
+from copy import deepcopy
 from enum import StrEnum
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal, Self
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
 
@@ -28,8 +29,19 @@ Nonnegative = Annotated[float, Field(ge=0, allow_inf_nan=False)]
 
 
 class Contract(BaseModel):
-    """미선언 필드를 거절하고 할당 시에도 객체 제약을 검사하는 기본 모델."""
-    model_config = ConfigDict(extra="forbid", validate_assignment=True)
+    """미선언 필드를 거절하며 변경은 validated_replace로 검증 후 교체한다."""
+    model_config = ConfigDict(extra="forbid", validate_assignment=True, revalidate_instances="always")
+
+    def validated_replace(self, **changes: Any) -> Self:
+        """최상위 필드를 대체한 독립 새 객체를 검증해 반환한다.
+
+        실패하면 ValidationError를 발생시키며 원본과 전달받은 변경 객체는
+        변경하지 않는다. 중첩 필드는 병합하지 않고 통째로 대체한다.
+        참조 정합성은 반환된 객체에 별도 validate_* 검사를 적용해야 한다.
+        """
+        payload = self.model_dump(round_trip=True)
+        payload.update(changes)
+        return type(self).model_validate(deepcopy(payload))
 
 
 class Envelope(Contract):

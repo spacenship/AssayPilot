@@ -1,0 +1,8 @@
+command: /home/ubuntu/miniforge3/envs/drug/bin/python examples/stage0_contract_demo.py
+PYTHONPATH=/data1/miplab/wjyang/AssayPilot/src
+SYNTHETIC synthetic-alpha: 3 candidates, 3 assays, 5 observations; references + JSON OK
+SYNTHETIC synthetic-beta: 1 candidates, 1 assays, 0 observations; references + JSON OK
+SYNTHETIC exchange contracts: references + JSON OK; available budget = 100.00
+Stage 0 only: no training, budget mutation, Oracle execution, or biological validation performed.
+
+exit_code: 0

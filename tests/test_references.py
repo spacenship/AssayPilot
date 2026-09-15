@@ -120,13 +120,13 @@ def test_execution_links_and_observation_identity(public):
     action = ActionRequest(action_id="a", campaign_id=public.campaign.campaign_id, candidate_id="c1", assay_id="screen")
     receipt = ExecutionReceipt(receipt_id="r", action_id="a", accepted_at=public.observations[0].released_at)
     result = ExecutionResult(receipt_id="r", action_id="a", status="completed", observations=[public.observations[0]])
-    assert validate_execution(action, receipt, result, public).ok
+    assert validate_execution(action, receipt, result, public, as_of=public.as_of).ok
     result.receipt_id = "wrong-receipt"
     result.action_id = "wrong-action"
     receipt.action_id = "wrong-action"
     result.observations[0].candidate_id = "c2"
     result.observations[0].assay_id = "confirmation"
-    issues = validate_execution(action, receipt, result, public).issues
+    issues = validate_execution(action, receipt, result, public, as_of=public.as_of).issues
     assert {i.field for i in issues if i.code == "link_mismatch"} == {"receipt_id", "action_id", "candidate_id", "assay_id"}
     result.observations[0].released_at = receipt.accepted_at - timedelta(seconds=1)
-    assert any(i.code == "time_mismatch" for i in validate_execution(action, receipt, result, public).issues)
+    assert any(i.code == "time_mismatch" for i in validate_execution(action, receipt, result, public, as_of=public.as_of).issues)

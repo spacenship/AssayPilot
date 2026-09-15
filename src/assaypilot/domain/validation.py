@@ -1,6 +1,9 @@
 """여러 객체 사이의 정합성 검사. 입력을 변경하거나 규칙을 실행하지 않는다."""
 from collections.abc import Iterable
 from typing import Any
+from datetime import datetime
+
+from pydantic import AwareDatetime, TypeAdapter
 
 from .common import Contract
 from .containers import ObservationBatch, PublicCampaign, RunState
@@ -162,9 +165,21 @@ def validate_predictions(batch: PredictionBatch, public: PublicCampaign) -> Audi
     return check.result()
 
 
-def validate_execution(action: ActionRequest, receipt: ExecutionReceipt, result: ExecutionResult, public: PublicCampaign) -> AuditResult:
-    """단일 행동→접수→결과→후보·시험·관측의 연결을 검사한다."""
+def validate_execution(
+    action: ActionRequest, receipt: ExecutionReceipt, result: ExecutionResult,
+    public: PublicCampaign, *, as_of: datetime,
+) -> AuditResult:
+    """현재 실행 시각 as_of 기준으로 결과 연결과 공개 가능성을 검사한다.
+
+    as_of는 타임존을 포함한 시각이어야 한다. 초기 공개 카탈로그의
+    public.as_of와 구분하여 결과를 수신하는 현재 실행 시각을 전달한다.
+    """
+    as_of = TypeAdapter(AwareDatetime).validate_python(as_of, strict=True)
     check = _Checks()
+    if as_of < public.as_of:
+        check.issue(result.receipt_id, "as_of", "time_mismatch", "execution time predates public snapshot")
+    if receipt.accepted_at > as_of:
+        check.issue(receipt.receipt_id, "accepted_at", "time_mismatch", "receipt is later than execution time")
     check.action(action, public)
     if receipt.action_id != action.action_id:
         check.issue(receipt.receipt_id, "action_id", "link_mismatch", "receipt does not refer to action")
@@ -172,7 +187,7 @@ def validate_execution(action: ActionRequest, receipt: ExecutionReceipt, result:
         check.issue(result.receipt_id, "receipt_id", "link_mismatch", "result does not refer to receipt")
     if result.action_id != action.action_id:
         check.issue(result.receipt_id, "action_id", "link_mismatch", "result does not refer to action")
-    check.observations(result.observations, public, public.as_of)
+    check.observations(result.observations, public, as_of)
     for obs in result.observations:
         if obs.candidate_id != action.candidate_id:
             check.issue(obs.observation_id, "candidate_id", "link_mismatch", "observation differs from action candidate")
@@ -191,6 +206,8 @@ def validate_report(report: Report, public: PublicCampaign) -> AuditResult:
     for i, statement in enumerate(report.statements):
         before = len(check.issues)
         check.refs(statement, "evidence_ids", evidence, report.campaign_id)
-        for issue in check.issues[before:]:
-            issue.field = f"statements[{i}].{issue.field}"
+        check.issues[before:] = [
+            issue.validated_replace(field=f"statements[{i}].{issue.field}")
+            for issue in check.issues[before:]
+        ]
     return check.result()

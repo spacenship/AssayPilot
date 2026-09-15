@@ -43,6 +43,35 @@ assert result.ok
 
 모델 생성은 단일 객체 제약을 검사합니다. **다른 객체의 존재 여부·순환·단위 일치 등은 해당 `validate_*` 함수를 별도로 호출해야 합니다.** 검사 결과가 `ok=False`이면 후속 모듈에 넘기지 않는 것이 호출자의 책임입니다.
 
+## 결과 수신 시점과 객체 교체
+
+초기 로딩 검사 `validate_public_campaign`과 `validate_observation_batch`는
+`PublicCampaign.as_of`를 사용합니다. 이후 결과 수신 검사는 현재 실행 시점을
+필수 키워드 인자로 전달합니다. 초기 스냅샷 이후 관측도 현재 시점 이하면
+허용하고, 현재보다 미래인 관측은 계속 거절합니다.
+
+```python
+audit = validate_execution(action, receipt, result, campaign, as_of=state.as_of)
+```
+
+`state.as_of`에는 호출자가 현재 실행 시점을 담아야 합니다. 타임존 없는 시각은
+거절하며, `as_of`를 생략하면 오류입니다.
+
+변경은 직접 필드 대입 대신 `validated_replace`로 새 객체를 검증한 뒤 교체합니다.
+이 메서드는 원본과 입력값을 변경하지 않으며 중첩 객체도 독립적으로 복사합니다.
+
+```python
+proposed = state.validated_replace(status="paused")  # 실패하면 ValidationError
+audit = validate_run_state(proposed, campaign)
+if audit.ok:
+    state = proposed  # 모델 검사와 참조 검사가 모두 성공했을 때만 교체
+```
+
+여러 필드는 한 호출에서 함께 대체하며, 중첩 필드는 부분 병합하지 않고 통째로
+대체합니다. `validate_assignment`는 실패 시 원상 복구를 보장하지 않으므로 직접
+대입이나 list/dict 내부 변경에 의존하지 않습니다. 이 규약은 메모리 객체의 교체이며
+실제 예산 차감이나 DB 트랜잭션을 구현하지 않습니다.
+
 ## 범위와 공개 데이터 경계
 
 - 모든 예제 근거·측정값·예측값·승인 메타데이터는 **SYNTHETIC**입니다. 다른 표적 예제는 스키마 재사용만 확인하며 모델 일반화 성능을 검증하지 않습니다.
