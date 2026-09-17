@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "campaign_id": "pubchem-tor-mep2-20260915",
+  "goal": "Rank only future assay actions; primary-screen activity is not a binding or efficacy claim.",
+  "target": "MEP2 (Saccharomyces cerevisiae)",
+  "biological_context": "TOR-pathway GFP-fusion yeast screen. This is a PubChem snapshot subset, not a therapeutic claim.",
+  "assays": [
+    {
+      "assay_id": "mep2-primary", "aid": 2016,
+      "name": "Multiplex HTS Screen of TOR pathway GFP-fusion proteins in Saccharomyces cerevisiae, specifically MEP2",
+      "role": "primary", "endpoint": "PubChem Activity Outcome", "unit": "categorical",
+      "verdict_meaning": {"active": "PubChem active for this primary screen", "inactive": "PubChem inactive for this primary screen", "inconclusive": "PubChem inconclusive for this primary screen", "unspecified": "recorded without a configured outcome"},
+      "raw_endpoint_column": null, "raw_unit": null,
+      "verdict_mapping": {"Active": "active", "Inactive": "inactive", "Inconclusive": "inconclusive"},
+      "protocol_location": "https://pubchem.ncbi.nlm.nih.gov/bioassay/2016",
+      "concise_cache_key": "aid2016_concise.csv", "description_cache_key": "aid2016_description.json",
+      "cost": {"amount": "1", "unit": "synthetic_credit", "assumed": true}
+    },
+    {
+      "assay_id": "mep2-confirmatory", "aid": 2272,
+      "name": "Multiplex HTS Screen of TOR pathway GFP-fusion proteins in Saccharomyces cerevisiae, specifically MEP2 Cherry Pick Compounds",
+      "role": "confirmatory", "endpoint": "PubChem Activity Outcome", "unit": "categorical",
+      "verdict_meaning": {"active": "PubChem active for this confirmatory assay", "inactive": "PubChem inactive for this confirmatory assay", "inconclusive": "not emitted by this checked snapshot", "unspecified": "recorded without a configured outcome"},
+      "raw_endpoint_column": null, "raw_unit": null,
+      "verdict_mapping": {"Active": "active", "Inactive": "inactive"},
+      "protocol_location": "https://pubchem.ncbi.nlm.nih.gov/bioassay/2272",
+      "concise_cache_key": "aid2272_concise.csv", "description_cache_key": "aid2272_description.json",
+      "cost": {"amount": "1", "unit": "synthetic_credit", "assumed": true},
+      "prerequisites": [{"assay_id": "mep2-primary", "kind": "verdict", "verdict": "active"}]
+    }
+  ],
+  "success_conditions": [{"assay_id": "mep2-confirmatory", "meaning": "confirmed activity in the configured assay only", "kind": "verdict", "verdict": "active"}],
+  "budget": {"amount": "100", "unit": "synthetic_credit", "assumed": true},
+  "candidate_rule": {"primary_assay_id": "mep2-primary", "include": "primary_active", "limit": 5, "seed": 20260915},
+  "initial_as_of": "2026-09-15T00:00:00Z",
+  "normalization_policy_version": "pubchem-concise-v1",
+  "data_kind": "pubchem",
+  "subset_note": "AID 2016 and AID 2272 are the primary and cherry-pick confirmatory MEP2 assays named in PubChem's AID 504468 description. The five-candidate subset is a fixed-seed sample of all AID 2016 active SID rows in the 2026-09-15 cache snapshot; seed 20260915 is the snapshot date, selected before checking follow-up labels. It has one linked AID 2272 measurement; missing follow-up is retained as missing.",
+  "raw_files": [
+    {"key": "aid2016_concise.csv", "request_path": "assay/aid/2016/concise/CSV", "format": "csv"},
+    {"key": "aid2016_description.json", "request_path": "assay/aid/2016/description/JSON", "format": "json"},
+    {"key": "aid2272_concise.csv", "request_path": "assay/aid/2272/concise/CSV", "format": "csv"},
+    {"key": "aid2272_description.json", "request_path": "assay/aid/2272/description/JSON", "format": "json"},
+    {"key": "compounds.csv", "request_path": "compound/cid/1150217,1043268,1129613,1093365,1037240/property/ConnectivitySMILES/CSV", "format": "csv"}
+  ],
+  "smiles_cache_key": "compounds.csv"
+}

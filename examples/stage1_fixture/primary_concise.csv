@@ -1,0 +1,5 @@
+AID,SID,CID,Activity Outcome,Activity Value [uM]
+101,1001,2244,Active,0
+101,1002,1983,Inactive,>50
+101,1003,3672,Inconclusive,<=12.5
+101,1004,5957,Active,1.2

@@ -1,0 +1,27 @@
+{
+  "schema_version": "1.0.0",
+  "campaign_id": "stage1-synthetic-primary-only",
+  "goal": "Exercise a primary-only configuration without claiming follow-up data.",
+  "target": "SYNTHETIC_TARGET", "biological_context": "Synthetic fixture only.",
+  "assays": [
+    {
+      "assay_id": "primary-activity", "aid": 101, "name": "Synthetic primary assay", "role": "primary",
+      "endpoint": "Activity concentration", "unit": "uM",
+      "verdict_meaning": {"active": "configured active", "inactive": "configured inactive", "inconclusive": "configured inconclusive", "unspecified": "not reported"},
+      "verdict_mapping": {"Active": "active", "Inactive": "inactive", "Inconclusive": "inconclusive"},
+      "protocol_location": "https://example.invalid/pubchem/AID101", "concise_cache_key": "primary_concise.csv", "description_cache_key": "primary_description.json",
+      "cost": {"amount": "0", "unit": "USD", "assumed": true}
+    }
+  ],
+  "success_conditions": [{"assay_id": "primary-activity", "meaning": "fixture success", "kind": "verdict", "verdict": "active"}],
+  "budget": {"amount": "0", "unit": "USD", "assumed": true},
+  "candidate_rule": {"primary_assay_id": "primary-activity", "include": "primary_active", "limit": 2, "seed": 7},
+  "initial_as_of": "2025-01-01T00:00:00Z", "normalization_policy_version": "fixture-v1", "data_kind": "synthetic",
+  "subset_note": "Offline synthetic primary-only fixture.",
+  "raw_files": [
+    {"key": "primary_concise.csv", "request_path": "fixture/primary/concise.csv", "format": "csv"},
+    {"key": "primary_description.json", "request_path": "fixture/primary/description.json", "format": "json"},
+    {"key": "compounds.csv", "request_path": "fixture/compound/properties/CSV", "format": "csv"}
+  ],
+  "smiles_cache_key": "compounds.csv"
+}
