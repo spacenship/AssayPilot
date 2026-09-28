@@ -63,6 +63,21 @@ def normalize_concise_row(
     if cid_text and (not cid_text.isdecimal() or int(cid_text) <= 0):
         raise NormalizationError(f"invalid CID: {cid_text!r}")
     cid = int(cid_text) if cid_text else None
+    if mapping.activity_name_policy == "blank_in_concise":
+        if "Activity Name" not in row:
+            raise NormalizationError("configured Activity Name column is missing")
+        if row["Activity Name"].strip():
+            raise NormalizationError("Activity Name is populated for a blank_in_concise policy")
+    if mapping.endpoint_scope == "categorical_activity_outcome_only":
+        populated_numeric = [
+            key for key, value in row.items()
+            if key.startswith("Activity Value") and value.strip()
+        ]
+        if populated_numeric:
+            raise NormalizationError(
+                "categorical activity outcome row contains numeric endpoint values: "
+                + ", ".join(populated_numeric)
+            )
     raw_verdict = row.get(mapping.raw_outcome_column, "").strip() or None
     if raw_verdict is None:
         verdict = Verdict.UNSPECIFIED
@@ -89,6 +104,7 @@ def normalize_concise_row(
         raw_verdict=raw_verdict, verdict=verdict, value=value, unit=unit,
         comparison=comparison, replicate_id=f"not_reported:{source_row_id}",
         condition_id=f"not_reported:{mapping.aid}", source_row_id=source_row_id,
+        source_row_number=row_number,
         source_file_sha256=source_file_sha256, protocol_location=mapping.protocol_location,
         raw_row=dict(row),
     )

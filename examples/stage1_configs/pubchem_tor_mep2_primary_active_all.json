@@ -1,0 +1,144 @@
+{
+  "schema_version": "1.0.0",
+  "campaign_id": "pubchem-tor-mep2-20260915-primary-active-all",
+  "goal": "Prepare a replay candidate universe from primary Activity Outcome only; no model or efficacy claim.",
+  "target": "MEP2 (Saccharomyces cerevisiae)",
+  "biological_context": "TOR-pathway GFP-fusion yeast screen. This is a PubChem snapshot subset, not a therapeutic claim.",
+  "assays": [
+    {
+      "assay_id": "mep2-primary",
+      "aid": 2016,
+      "name": "Multiplex HTS Screen of TOR pathway GFP-fusion proteins in Saccharomyces cerevisiae, specifically MEP2",
+      "role": "primary",
+      "endpoint": "PubChem Activity Outcome",
+      "unit": "categorical",
+      "endpoint_scope": "categorical_activity_outcome_only",
+      "endpoint_meaning": "The concise export exposes only PubChem Activity Outcome. The official assay defines RESPONSE as GFP percent response and Z_PRIME, but those numeric result values are absent from these rows.",
+      "official_result_names": [
+        "RESPONSE",
+        "Z_PRIME"
+      ],
+      "activity_name_policy": "blank_in_concise",
+      "verdict_meaning": {
+        "active": "Activity Outcome=Active recorded by PubChem for this primary screen; mapped internally without recomputation",
+        "inactive": "Activity Outcome=Inactive recorded by PubChem for this primary screen; mapped internally without recomputation",
+        "inconclusive": "Activity Outcome=Inconclusive recorded by PubChem for this primary screen; mapped internally without recomputation",
+        "unspecified": "recorded without a configured outcome"
+      },
+      "raw_endpoint_column": null,
+      "raw_unit": null,
+      "verdict_mapping": {
+        "Active": "active",
+        "Inactive": "inactive",
+        "Inconclusive": "inconclusive"
+      },
+      "protocol_location": "https://pubchem.ncbi.nlm.nih.gov/bioassay/2016",
+      "concise_cache_key": "aid2016_concise.csv",
+      "description_cache_key": "aid2016_description.json",
+      "cost": {
+        "amount": "1",
+        "unit": "synthetic_credit",
+        "assumed": true
+      }
+    },
+    {
+      "assay_id": "mep2-confirmatory",
+      "aid": 2272,
+      "name": "Multiplex HTS Screen of TOR pathway GFP-fusion proteins in Saccharomyces cerevisiae, specifically MEP2 Cherry Pick Compounds",
+      "role": "confirmatory",
+      "endpoint": "PubChem Activity Outcome",
+      "unit": "categorical",
+      "endpoint_scope": "categorical_activity_outcome_only",
+      "endpoint_meaning": "The concise export exposes only PubChem Activity Outcome. The official single-plex cherry-pick assay defines RESPONSE for All, Mothers, and Daughters plus Z_PRIME, but those numeric result values are absent from these rows.",
+      "official_result_names": [
+        "RESPONSE",
+        "Z_PRIME",
+        "RESPONSE_MOTHERS",
+        "RESPONSE_DAUGHTERS"
+      ],
+      "activity_name_policy": "blank_in_concise",
+      "verdict_meaning": {
+        "active": "Activity Outcome=Active recorded by PubChem for this confirmatory assay; mapped internally without recomputation",
+        "inactive": "Activity Outcome=Inactive recorded by PubChem for this confirmatory assay; mapped internally without recomputation",
+        "inconclusive": "Activity Outcome=Inconclusive recorded by PubChem for this confirmatory assay; mapped internally without recomputation",
+        "unspecified": "recorded without a configured outcome"
+      },
+      "raw_endpoint_column": null,
+      "raw_unit": null,
+      "verdict_mapping": {
+        "Active": "active",
+        "Inactive": "inactive"
+      },
+      "protocol_location": "https://pubchem.ncbi.nlm.nih.gov/bioassay/2272",
+      "concise_cache_key": "aid2272_concise.csv",
+      "description_cache_key": "aid2272_description.json",
+      "cost": {
+        "amount": "1",
+        "unit": "synthetic_credit",
+        "assumed": true
+      },
+      "prerequisites": [
+        {
+          "assay_id": "mep2-primary",
+          "kind": "verdict",
+          "verdict": "active"
+        }
+      ]
+    }
+  ],
+  "success_conditions": [
+    {
+      "assay_id": "mep2-confirmatory",
+      "meaning": "confirmed activity in the configured assay only",
+      "kind": "verdict",
+      "verdict": "active"
+    }
+  ],
+  "budget": {
+    "amount": "100",
+    "unit": "synthetic_credit",
+    "assumed": true
+  },
+  "candidate_rule": {
+    "primary_assay_id": "mep2-primary",
+    "include": "primary_active",
+    "limit": 1682,
+    "seed": 20260915
+  },
+  "initial_as_of": "2026-09-15T00:00:00Z",
+  "normalization_policy_version": "pubchem-concise-smiles-v2",
+  "data_kind": "pubchem",
+  "subset_note": "Expanded replay preparation from the fixed 2026-09-15 cache. The candidate rule is all unique SIDs whose AID 2016 primary Activity Outcome is Active: the source has 1,682 active rows and 1,682 unique active SIDs. Candidate selection is fixed before inspecting AID 2272 follow-up rows; 295 of those SIDs happen to have follow-up rows and are not used as a selection filter. Structure responses are fetched in batches from the selected primary CIDs and merged into cache-only inputs.",
+  "raw_files": [
+    {
+      "key": "aid2016_concise.csv",
+      "request_path": "assay/aid/2016/concise/CSV",
+      "format": "csv"
+    },
+    {
+      "key": "aid2016_description.json",
+      "request_path": "assay/aid/2016/description/JSON",
+      "format": "json"
+    },
+    {
+      "key": "aid2272_concise.csv",
+      "request_path": "assay/aid/2272/concise/CSV",
+      "format": "csv"
+    },
+    {
+      "key": "aid2272_description.json",
+      "request_path": "assay/aid/2272/description/JSON",
+      "format": "json"
+    },
+    {
+      "key": "aid504468_description.json",
+      "request_path": "assay/aid/504468/description/JSON",
+      "format": "json"
+    }
+  ],
+  "smiles_cache_key": "compounds_smiles.csv",
+  "connectivity_smiles_cache_key": "compounds_connectivity.csv",
+  "relationship_cache_key": "aid504468_description.json",
+  "structure_fetch_from_primary": true,
+  "structure_batch_size": 100
+}

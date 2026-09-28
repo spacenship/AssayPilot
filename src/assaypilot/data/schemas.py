@@ -25,6 +25,14 @@ class AssayMapping(Contract):
     role: AssayRole
     endpoint: Text
     unit: Text
+    # The concise PubChem export can expose only a categorical outcome even
+    # when the official assay definition contains numeric result TIDs.  Keep
+    # that scope explicit so public evidence does not overstate what rows
+    # support.
+    endpoint_scope: Literal["configured", "categorical_activity_outcome_only"] = "configured"
+    endpoint_meaning: Text = "configured endpoint"
+    official_result_names: list[Text] = Field(default_factory=list)
+    activity_name_policy: Literal["not_reviewed", "blank_in_concise"] = "not_reviewed"
     verdict_meaning: dict[Verdict, Text]
     raw_outcome_column: Text = "Activity Outcome"
     raw_endpoint_column: Text | None = "Activity Value [uM]"
@@ -39,9 +47,14 @@ class AssayMapping(Contract):
 
     @model_validator(mode="after")
     def check_endpoint_rule(self) -> "AssayMapping":
-        """수치 endpoint를 읽으면 원본 단위와 동일 변환 정책을 명시한다."""
+        """범주형 export와 수치 endpoint의 경계를 설정에서 고정한다."""
         if self.raw_endpoint_column is not None and self.raw_unit is None:
             raise ValueError("raw_unit is required with raw_endpoint_column")
+        if self.endpoint_scope == "categorical_activity_outcome_only":
+            if self.unit != "categorical":
+                raise ValueError("categorical activity outcome scope requires categorical assay unit")
+            if self.raw_endpoint_column is not None or self.raw_unit is not None:
+                raise ValueError("categorical activity outcome scope cannot configure a numeric endpoint")
         return self
 
 
@@ -69,7 +82,22 @@ class CampaignConfig(Contract):
     data_kind: Literal["pubchem", "synthetic"]
     subset_note: Text
     raw_files: list[RawFileSpec]
+    # Optional developer-only relation description (for example PubChem
+    # AID 504468). It is preserved and hashed but is never an executed assay.
+    relationship_cache_key: ID | None = None
+    # PubChem ``SMILES`` keeps the stereochemical and isotope information that
+    # ConnectivitySMILES deliberately omits.  This field is the source for a
+    # Candidate's original_smiles; it is not a normalized replacement.
     smiles_cache_key: ID
+    connectivity_smiles_cache_key: ID | None = None
+    structure_property: Literal["SMILES"] = "SMILES"
+    structure_selection_policy: Literal["smiles_required", "smiles_then_connectivity_with_warning"] = "smiles_required"
+    # Large replay configurations can derive the structure request from the
+    # primary-only candidate rule after assay rows have been fetched.  The
+    # resulting merged files still use ``smiles_cache_key`` (and, when set,
+    # ``connectivity_smiles_cache_key``) so build remains cache-only.
+    structure_fetch_from_primary: bool = False
+    structure_batch_size: int = Field(default=100, gt=0)
 
     @model_validator(mode="after")
     def check_ids(self) -> "CampaignConfig":
@@ -84,8 +112,15 @@ class CampaignConfig(Contract):
         if len({raw.key for raw in self.raw_files}) != len(self.raw_files):
             raise ValueError("raw file keys must be unique")
         keys = {raw.key for raw in self.raw_files}
-        if self.smiles_cache_key not in keys:
+        if self.smiles_cache_key not in keys and not self.structure_fetch_from_primary:
             raise ValueError("smiles_cache_key is unknown")
+        if self.connectivity_smiles_cache_key is not None:
+            if self.connectivity_smiles_cache_key not in keys and not self.structure_fetch_from_primary:
+                raise ValueError("connectivity_smiles_cache_key is unknown")
+            if self.connectivity_smiles_cache_key == self.smiles_cache_key:
+                raise ValueError("SMILES and ConnectivitySMILES caches must be distinct")
+        if self.relationship_cache_key is not None and self.relationship_cache_key not in keys:
+            raise ValueError("relationship_cache_key is unknown")
         for assay in self.assays:
             if assay.concise_cache_key not in keys or assay.description_cache_key not in keys:
                 raise ValueError("assay cache key is unknown")
@@ -108,6 +143,7 @@ class NormalizedMeasurement(Contract):
     replicate_id: ID
     condition_id: ID
     source_row_id: ID
+    source_row_number: int = Field(gt=0)
     source_file_sha256: Text
     protocol_location: Text
     raw_row: dict[str, str]
@@ -146,6 +182,24 @@ class DataAuditReport(Contract):
     hidden_followup_measurements: int
     issues: list[DataIssue]
     selection_bias_note: Text
+    # Developer-only audit detail.  These fields describe source rows and
+    # coverage; they are never copied into PublicCampaign or public evidence.
+    raw_rows_by_assay: dict[Text, int] = Field(default_factory=dict)
+    included_rows_by_assay: dict[Text, int] = Field(default_factory=dict)
+    excluded_rows_by_assay: dict[Text, int] = Field(default_factory=dict)
+    error_rows_by_assay: dict[Text, int] = Field(default_factory=dict)
+    verdict_counts_by_assay: dict[Text, dict[Text, int]] = Field(default_factory=dict)
+    unique_sid_count: int = 0
+    unique_cid_count: int = 0
+    sid_with_multiple_cids: int = 0
+    cid_with_multiple_sids: int = 0
+    repeated_assay_sid_groups: int = 0
+    conflicting_assay_sid_groups: int = 0
+    candidate_counts: dict[Text, int] = Field(default_factory=dict)
+    followup_candidate_sids: int = 0
+    followup_candidate_assay_pairs: int = 0
+    followup_verdict_counts: dict[Text, int] = Field(default_factory=dict)
+    unmeasured_selected_candidates: int = 0
 
     @property
     def has_errors(self) -> bool:

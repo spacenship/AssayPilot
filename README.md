@@ -7,7 +7,7 @@
 Python 3.11 이상과 Pydantic 2.x를 사용합니다. 테스트 추가 의존성은 pytest입니다. 이 작업에서는 기존 conda `drug` 환경(Python 3.12)을 사용했습니다.
 
 ```bash
-cd /data1/miplab/wjyang/AssayPilot
+cd AssayPilot
 conda run -n drug python -m pip install --no-user --no-cache-dir -e '.[test]'
 conda run -n drug python examples/stage0_contract_demo.py
 conda run -n drug python examples/stage1_data_demo.py

@@ -34,7 +34,9 @@
     {"key": "primary_description.json", "request_path": "fixture/primary/description.json", "format": "json"},
     {"key": "followup_concise.csv", "request_path": "fixture/followup/concise.csv", "format": "csv"},
     {"key": "followup_description.json", "request_path": "fixture/followup/description.json", "format": "json"},
-    {"key": "compounds.csv", "request_path": "fixture/compound/properties/CSV", "format": "csv"}
+    {"key": "compounds_smiles.csv", "request_path": "fixture/compound/property/SMILES/CSV", "format": "csv"},
+    {"key": "compounds_connectivity.csv", "request_path": "fixture/compound/property/ConnectivitySMILES/CSV", "format": "csv"}
   ],
-  "smiles_cache_key": "compounds.csv"
+  "smiles_cache_key": "compounds_smiles.csv",
+  "connectivity_smiles_cache_key": "compounds_connectivity.csv"
 }

@@ -38,10 +38,16 @@ def main(argv: list[str] | None = None) -> int:
         print(report.model_dump_json(indent=2))
         return 0
     campaign = PublicBundleAdapter().load(DataSource(kind="public_bundle", location=str(args.manifest)))
-    audit = PublicCampaignAuditor().audit(campaign)
+    auditor = PublicCampaignAuditor()
+    audit = auditor.audit(campaign)
     print(f"campaign={campaign.campaign.campaign_id} candidates={len(campaign.candidates)} "
           f"assays={','.join(assay.assay_id for assay in campaign.assays)} observations={len(campaign.observations)} "
           f"audit_ok={audit.ok}")
+    summary = auditor.chemical_summary
+    if summary is not None:
+        print(f"chemical_audit_backend={summary.backend} candidates={summary.candidates} "
+              f"structures_present={summary.structures_present} checked={summary.checked} "
+              f"passed={summary.passed} failed={summary.failed}")
     for issue in audit.issues:
         print(f"{issue.code} {issue.target_id} {issue.field}: {issue.reason}")
     return 0 if audit.ok else 2

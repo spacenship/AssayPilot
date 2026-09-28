@@ -26,7 +26,7 @@
 실제 실행한 재현 명령:
 
 ```bash
-cd /data1/miplab/wjyang/AssayPilot
+cd AssayPilot
 conda run -n drug python reports/stage0_verification/reproduce.py
 ```
 
@@ -60,7 +60,7 @@ PYTHONPATH="$PWD/src" conda run -n drug python -m pytest -v --color=no --junitxm
 
 ## 4. 첨부 구성
 
-`reports/stage0_review_bundle.zip`에는 다음 파일이 원래 상대경로로 포함된다.
+로컬에서 생성한 `reports/stage0_review_bundle.zip`에는 다음 파일이 원래 상대경로로 포함된다. ZIP, 실행 환경 JSON, 테스트 로그/XML은 작업 환경의 절대경로를 포함할 수 있으므로 Git 추적에서 제외한다. 실행 환경 JSON과 로그/XML은 위 재현 명령으로 다시 생성할 수 있다.
 
 - src/assaypilot/domain/: 공통 타입, 교환 모델, 컨테이너, Protocol, 순수 검사 함수
 - src/assaypilot/__init__.py: 패키지 진입점
