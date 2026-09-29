@@ -1,6 +1,6 @@
 # 2단계 데이터 인계
 
-이 문서는 1단계에서 실제로 생성한 공개 campaign과 개발자용 측정 자료를 2단계 실행기가 읽을 수 있도록 연결점을 고정한다. 2단계 실행기, 학습, 예산 차감, 승인 저장소는 이 문서에서 구현하지 않는다.
+이 문서는 1단계에서 생성한 공개 campaign과 개발자용 측정 자료의 인계 관계를 고정한다. Stage 2A 내부 조회 API는 [stage2_replay_lookup.md](stage2_replay_lookup.md)에, Stage 2B의 명시적 승인·예산 예약·실행 이력·중복 요청 처리는 [stage2_execution_control.md](stage2_execution_control.md)에 구현·기록했다. 학습·자동 선택과 결과 공개·최종 과금은 여기서 다루지 않으며, 결과 공개 경계는 2-C에 남아 있다.
 
 ## 입력과 공개 경계
 
@@ -27,7 +27,7 @@ data_snapshots/pubchem-tor-mep2-20260915/revision-20260918-primary-active-all/bu
 data_snapshots/pubchem-tor-mep2-20260915/revision-20260918-primary-active-all/bundle/curator/hidden_followup_measurements.json
 ```
 
-두 파일은 공개 Adapter가 읽지 않으며, 2단계의 승인 경계 안에서만 `NormalizedMeasurement`로 검증해 읽는다. 앞의 public loader 블록과 다음 블록을 저장소 루트에서 순서대로 실행하면 실제 확장 bundle을 검증 로딩한다.
+두 파일은 공개 Adapter가 읽지 않는다. 런타임 조회는 승인 경계 내부에서 `load_replay_store(snapshot_root, public)`와 `ReplayOracle.lookup(candidate_id, assay_id)`를 사용한다. 아래 직접 파일 로딩은 전체 정규화 배열과 hidden 부분집합의 관계를 확인하는 개발자 감사 예시이며 실행기 조회 경로가 아니다. 실제 snapshot hash 검증과 replay lookup 검증은 `conda run -n drug python scripts/verify_replay_snapshots.py`로 실행한다.
 
 ```python
 from pathlib import Path
@@ -50,7 +50,7 @@ print(len(all_measurements), len(hidden_followup))
 
 `normalized_measurements.json`은 primary와 confirmatory/follow-up을 포함한 **전체 정규화 행**이다. `hidden_followup_measurements.json`은 그중 선택 후보 SID에 연결된 primary 이외의 행만 담은 인계용 부분집합이다. 따라서 “후속 측정은 hidden 파일에만 있다”라고 해석하지 않으며, public 패키지에는 두 파일 모두 노출하지 않는다.
 
-초기 `PublicCampaign.as_of`는 `2026-09-15T00:00:00Z`이며 초기 Observation의 `released_at`도 이 시점이다. 이후 결과는 초기 bundle에 직접 대입하지 않고 2단계에서 새 객체를 만든 뒤 `validate_execution(..., as_of=<현재 실행 시점>)` 또는 관련 배치 검사를 통과했을 때 교체해야 한다.
+초기 `PublicCampaign.as_of`는 `2026-09-15T00:00:00Z`이며 초기 Observation의 `released_at`도 이 시점이다. Stage 2A lookup은 Observation을 생성하거나 campaign을 변경하지 않는다. 이후 단계에서 공개 결과를 반영할 때는 초기 bundle에 직접 대입하지 않고 새 객체를 만든 뒤 `validate_execution(..., as_of=<현재 실행 시점>)` 또는 관련 배치 검사를 통과했을 때 교체해야 한다.
 
 ## 후속 측정 형식
 
@@ -124,12 +124,13 @@ print(len(mapped_candidate_ids))
 
 구조는 PubChem CID `SMILES`를 100개 batch로 수집하고 RDKit sanitize를 수행했다. 확장 감사는 1,682/1,682 구조 통과다. 원본 assay·SMILES cache, batch response와 metadata는 `revision-20260918-primary-active-all/raw/`에 보존한다.
 
-## 2단계가 맡을 책임
+## 2단계 책임과 현재 구현 경계
 
-1. 승인·예산 처리 후 선택된 후속 자료를 `NormalizedMeasurement`에서 Observation으로 변환하고 공개한다.
-2. 초기 `as_of`를 실행 시각으로 덮어쓰지 않고, 현재 실행 시점을 `validate_execution(..., as_of=...)`에 전달해 `released_at`을 검사한다.
-3. 공개 근거 payload와 `EvidenceRef`를 등록하고 해시·참조 검사를 통과시킨다.
-4. 한 행동에 여러 측정이 연결될 때의 실행 의미, 미측정 행동의 처리와 과금 정책을 결정한다.
-5. 파일·도구 접근 격리, 접수·실행 이력, 중복 실행 방지, `RunState`의 검증 후 교체를 구현한다.
+1. Stage 2A는 `ReplayOracle.lookup(candidate_id, assay_id)`로 한 후보·시험에 연결된 원본 측정 전체를 조회한다. snapshot/store/oracle은 신뢰된 실행기 초기화 때 검증·적재해 재사용한다.
+2. Stage 2B는 명시적 승인 뒤 고정 snapshot replay 행동 하나를 실행하고, 설정 비용을 `Decimal`로 예약하며, receipt·실행 이력·비공개 결과를 private SQLite DB에 함께 저장한다. 같은 request/action의 중복 제출과 재시작 후 상태 복원을 처리한다.
+3. `ready_for_release` 결과는 `ExecutionCoordinator.read_private_result(run_id, execution_id)`로 신뢰된 내부 경계에서만 읽는다. 이는 공개 완료나 실험 성공 판정이 아니다. `no_record`는 이 snapshot에 연결 행이 없다는 뜻이고, `failed`는 조회 오류다. 둘 다 공개 판정이나 새 Observation으로 바꾸지 않는다.
+4. Stage 2C는 비공개 결과를 새 `Observation`과 원본 근거 `EvidenceRef`로 변환하고, 공개 참조·시점 검증을 통과한 전체 새 상태만 교체해야 한다. 초기 `as_of`를 덮어쓰지 않고 현재 공개 시점을 `validate_execution(..., as_of=...)`에 전달한다.
+5. 공개 반영이 검증된 뒤 해당 execution의 `reserved`를 `spent`로 한 번만 확정한다. 공개 실패 중에는 일부 Observation이나 일부 과금만 남기지 않으며, 일시 실패에서는 같은 execution과 예약을 유지한다. 영구 취소 때 예약을 해제하는 규칙도 2C가 명시해야 한다.
+6. OS/container 수준 접근 격리, 인증, agent/tool API 노출과 현재 공개 상태를 반영하는 선행조건 검증은 아직 구현하지 않았다. 실제 실험, 학습·평가 루프와 자동 선택도 범위에 없다.
 
-실제 실행기나 학습·평가 루프는 이 단계에서 만들지 않았다. 특히 후속 coverage가 충분하지 않으므로 여러 assay 유형의 성능 비교를 자동으로 승인할 수 없다.
+따라서 2A와 2B는 구현·검증됐고, 결과 공개 및 settlement는 2C의 미구현 경계다. 후속 coverage가 충분하지 않으므로 여러 assay 유형의 성능 비교나 실험 성공을 여기서 주장하지 않는다.
