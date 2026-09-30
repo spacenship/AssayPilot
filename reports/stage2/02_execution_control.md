@@ -1,5 +1,7 @@
 # Stage 2B 구현·검증 보고서: 승인·예산 예약·실행 이력
 
+> 이 보고서는 Stage 2B 검증 시점의 기록이며, 당시에는 2-C가 구현되지 않았다. 현재 2-C 구현과 검증 결과는 [03_result_release.md](03_result_release.md)를 참고한다.
+
 실행일: 2026-09-28  
 실행 환경: conda `drug`  
 범위: Stage 2A의 고정 snapshot `ReplayOracle`을 신뢰된 Python 실행기 안에서 명시적으로 승인하고, Decimal 비용을 예약한 뒤 조회·비공개 결과·실행 이력을 원자적으로 보존한다. Observation/EvidenceRef 공개, 최종 과금 확정, OS/container 격리와 2-C는 구현하지 않았다.

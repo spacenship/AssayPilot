@@ -200,6 +200,15 @@ def _run_case(
         restored_receipt = reopened.execute(run_id, request_id, action)
         if restored_receipt != receipt or oracle.call_count != first_call_count:
             raise AssertionError("reopened retry did not reuse the persisted execution")
+        final_budget = reopened.get_budget(run_id).budget
+        expected_reserved = cost.amount if expected_status == "ready_for_release" else 0
+        expected_available = 0 if expected_status == "ready_for_release" else cost.amount
+        if (
+            final_budget.spent != 0
+            or final_budget.reserved != expected_reserved
+            or final_budget.available != expected_available
+        ):
+            raise AssertionError("final budget does not match the isolated execution case")
         if expected_private_json is not None:
             restored_result = reopened.read_private_result(run_id, receipt.execution_id)
             if _lookup_json(restored_result) != expected_private_json:
@@ -212,6 +221,11 @@ def _run_case(
             "initial_budget": str(initial.budget.total),
             "assay_cost": str(cost.amount),
             "cost_assumed": cost.assumed,
+            "final_budget": {
+                "spent": str(final_budget.spent),
+                "reserved": str(final_budget.reserved),
+                "available": str(final_budget.available),
+            },
         }
 
 

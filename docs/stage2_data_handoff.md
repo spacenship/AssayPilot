@@ -1,6 +1,6 @@
 # 2단계 데이터 인계
 
-이 문서는 1단계에서 생성한 공개 campaign과 개발자용 측정 자료의 인계 관계를 고정한다. Stage 2A 내부 조회 API는 [stage2_replay_lookup.md](stage2_replay_lookup.md)에, Stage 2B의 명시적 승인·예산 예약·실행 이력·중복 요청 처리는 [stage2_execution_control.md](stage2_execution_control.md)에 구현·기록했다. 학습·자동 선택과 결과 공개·최종 과금은 여기서 다루지 않으며, 결과 공개 경계는 2-C에 남아 있다.
+이 문서는 1단계에서 생성한 공개 campaign과 개발자용 측정 자료의 인계 관계를 고정한다. Stage 2A 내부 조회 API는 [stage2_replay_lookup.md](stage2_replay_lookup.md)에, Stage 2B의 명시적 승인·예산 예약·실행 이력·중복 요청 처리는 [stage2_execution_control.md](stage2_execution_control.md)에, Stage 2C의 검증된 결과 공개·근거 등록·settlement·현재 공개 조회는 [stage2_result_release.md](stage2_result_release.md)에 기록했다. 학습·자동 선택은 이 단계 범위에 없다.
 
 ## 입력과 공개 경계
 
@@ -63,7 +63,7 @@ print(len(all_measurements), len(hidden_followup))
 - `source_row_id`, `source_row_number`, `source_file_sha256`, `raw_row`: 원본 행을 다시 확인하는 추적 정보
 - `protocol_location`, `original_smiles`: 공식 assay와 PubChem `SMILES` 보존값
 
-초기 공개 Observation은 `PublicCampaign.observations`에만 있으며 public evidence의 primary trace가 SID/AID/raw outcome/source row를 연결한다. 후속 측정은 curator의 전체 정규화 파일과 선택 후보 부분집합 파일에 보존되며, 공개 evidence에는 포함하지 않는다.
+초기 공개 Observation은 Stage 1 `PublicCampaign.observations`에 있으며 public evidence의 primary trace가 SID/AID/raw outcome/source row를 연결한다. 2-C 공개 전 후속 측정은 curator 자료와 비공개 runtime result에만 있다. 2-C 공개 후에는 선택 실행의 각 원본 행이 해당 run의 SQLite runtime 공개 상태 및 `published_evidence`에 별도로 등록된다. 이는 초기 Stage 1 bundle이나 curator 파일을 수정하지 않는다. 제한된 reader에 반환되는 run state는 현재 공개 overlay를 합성한다.
 
 ## 후보 ID와 SID 연결
 
@@ -129,8 +129,9 @@ print(len(mapped_candidate_ids))
 1. Stage 2A는 `ReplayOracle.lookup(candidate_id, assay_id)`로 한 후보·시험에 연결된 원본 측정 전체를 조회한다. snapshot/store/oracle은 신뢰된 실행기 초기화 때 검증·적재해 재사용한다.
 2. Stage 2B는 명시적 승인 뒤 고정 snapshot replay 행동 하나를 실행하고, 설정 비용을 `Decimal`로 예약하며, receipt·실행 이력·비공개 결과를 private SQLite DB에 함께 저장한다. 같은 request/action의 중복 제출과 재시작 후 상태 복원을 처리한다.
 3. `ready_for_release` 결과는 `ExecutionCoordinator.read_private_result(run_id, execution_id)`로 신뢰된 내부 경계에서만 읽는다. 이는 공개 완료나 실험 성공 판정이 아니다. `no_record`는 이 snapshot에 연결 행이 없다는 뜻이고, `failed`는 조회 오류다. 둘 다 공개 판정이나 새 Observation으로 바꾸지 않는다.
-4. Stage 2C는 비공개 결과를 새 `Observation`과 원본 근거 `EvidenceRef`로 변환하고, 공개 참조·시점 검증을 통과한 전체 새 상태만 교체해야 한다. 초기 `as_of`를 덮어쓰지 않고 현재 공개 시점을 `validate_execution(..., as_of=...)`에 전달한다.
-5. 공개 반영이 검증된 뒤 해당 execution의 `reserved`를 `spent`로 한 번만 확정한다. 공개 실패 중에는 일부 Observation이나 일부 과금만 남기지 않으며, 일시 실패에서는 같은 execution과 예약을 유지한다. 영구 취소 때 예약을 해제하는 규칙도 2C가 명시해야 한다.
-6. OS/container 수준 접근 격리, 인증, agent/tool API 노출과 현재 공개 상태를 반영하는 선행조건 검증은 아직 구현하지 않았다. 실제 실험, 학습·평가 루프와 자동 선택도 범위에 없다.
+4. Stage 2C의 `ExecutionCoordinator.release_result(run_id, execution_id)`는 `ready_for_release` 결과를 새 `Observation`/`EvidenceRef`로 변환한다. `validate_execution(..., as_of=published_at)`와 current `RunState` 검증을 통과한 뒤 동일 DB transaction에서 공개 상태와 settlement를 기록한다. initial `PublicCampaign.as_of`와 Stage 1 파일은 보존한다.
+5. `get_public_state`, `get_current_budget`, `get_public_execution`, `get_public_evidence`는 commit된 run-scoped 상태를 읽는다. `public_reader(run_id)`는 제한된 JSON stdio API에 run ID를 고정한다. pending private result와 다른 run 상태는 조회 대상이 아니다.
+6. `cancel_pending_release`는 대기 중 공개를 취소하고 해당 예약만 해제한다. 공개 관측과 spent를 만들지 않는다. `no_record`는 이 snapshot에서 연결된 기록 부재이고 실험 미수행을 단정하지 않는다.
+7. 로컬 test는 제한된 user/mount/network namespace와 read-only chroot reader에서 public state 조회를 성공시키고 private canary/DB/curator/path escape/허용하지 않은 verb 접근을 거부한다. 로그인·웹 서버, 실제 실험, 학습·평가 루프와 자동 선택은 구현 범위가 아니다.
 
-따라서 2A와 2B는 구현·검증됐고, 결과 공개 및 settlement는 2C의 미구현 경계다. 후속 coverage가 충분하지 않으므로 여러 assay 유형의 성능 비교나 실험 성공을 여기서 주장하지 않는다.
+2A·2B·2C의 실행 및 경계 테스트 결과는 [Stage 2C 완료 보고서](../reports/stage2/03_result_release.md)에 단계별로 구분해 기록했다. 이 replay 검증은 과학적 성능 평가나 assay 성공 판정이 아니다.

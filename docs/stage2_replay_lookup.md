@@ -68,8 +68,8 @@ conda run -n drug python scripts/verify_replay_snapshots.py
 
 검증기는 r2 5개 후보/1개 후속 행과 확장 1,682개 후보/295개 후속 행을 실제 loader와 oracle로 조회한다. 확장 snapshot에서는 `normalized_measurements.json`의 전체 328,519개 레코드를 일회성 개발자 검증에서 `NormalizedMeasurement`로 읽어, 선택 SID에 연결된 nonprimary 행이 hidden 배열과 ID·전체 필드 기준으로 동일한지 비교한다. 이 대조용 전체 파일은 replay loader의 조회 자료가 아니다. 결과와 원본 verdict 분포는 개발자 보고서에만 기록한다.
 
-## 다음 단계 연결점과 미구현 경계
+## 실행기 연결과 다음 범위
 
 2-B의 명시적 승인·예산 예약·실행 이력·중복 요청 방지·private result 보존은 [stage2_execution_control.md](stage2_execution_control.md)에 구현했다. 실행기는 snapshot/store/oracle을 한 번 적재한 다음, 승인·초기 공개 선행조건·비용·잔액 검증을 통과한 경우에만 `ReplayOracle.lookup(candidate_id, assay_id)`를 내부 호출한다.
 
-2-B는 `Observation`/`EvidenceRef` 생성·공개, `released_at` 할당, `RunState` 교체, settlement, OS/container 접근 격리, agent tool/API 노출을 구현하지 않는다. 공개 결과 단계는 새 객체를 만든 뒤 기존 참조·시점 validator를 적용하고 검증 성공 시에만 교체해야 한다. 그 공개·settlement 경계는 2-C 책임이다.
+2-B는 private lookup과 reservation까지만 수행한다. 2-C의 검증된 Observation/EvidenceRef 공개, `released_at`, current RunState, settlement/cancel, run-bound public reader 및 로컬 sandbox 접근 검증은 [stage2_result_release.md](stage2_result_release.md)와 [03_result_release.md](../reports/stage2/03_result_release.md)에 구현·검증했다. 자동 선택, 실제 wet-lab 실험, 학습·평가는 별도 범위다.

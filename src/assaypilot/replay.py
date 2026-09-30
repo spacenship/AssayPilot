@@ -83,11 +83,13 @@ class ReplayStore:
     _candidate_sids: Mapping[str, int]
     _supported_assays: frozenset[str]
     _measurements: Mapping[tuple[str, str], tuple[bytes, ...]]
+    _public_evidence_payloads: Mapping[str, bytes]
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "_candidate_sids", MappingProxyType(dict(self._candidate_sids)))
         object.__setattr__(self, "_supported_assays", frozenset(self._supported_assays))
         object.__setattr__(self, "_measurements", MappingProxyType(dict(self._measurements)))
+        object.__setattr__(self, "_public_evidence_payloads", MappingProxyType(dict(self._public_evidence_payloads)))
 
 
 @dataclass(frozen=True, slots=True)
@@ -478,6 +480,14 @@ def load_replay_store(snapshot_root: str | Path, public_campaign: PublicCampaign
     public_assays = _assay_contracts_match(config, snapshot_campaign)
     supported, index = _build_index(config, snapshot_campaign, hidden_bytes, public_assays, inventory)
     candidate_sids = _candidate_sid_index(snapshot_campaign)
+    public_evidence_payloads: dict[str, bytes] = {}
+    for reference in snapshot_campaign.evidence:
+        relative = f"bundle/public/{reference.location}"
+        payload = _registered_bytes(root, inventory, relative)
+        evidence_doc = _json_object(payload, relative)
+        if evidence_doc.get("evidence_id") != reference.evidence_id:
+            raise ReplayLoadError("evidence_identity_mismatch", "public evidence payload identity differs from its reference")
+        public_evidence_payloads[reference.evidence_id] = payload
     return ReplayStore(
         snapshot_id=snapshot_id,
         campaign_id=campaign_id,
@@ -485,4 +495,5 @@ def load_replay_store(snapshot_root: str | Path, public_campaign: PublicCampaign
         _candidate_sids=candidate_sids,
         _supported_assays=supported,
         _measurements=index,
+        _public_evidence_payloads=public_evidence_payloads,
     )

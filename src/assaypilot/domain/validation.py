@@ -2,6 +2,7 @@
 from collections.abc import Iterable
 from typing import Any
 from datetime import datetime
+from decimal import Decimal
 
 from pydantic import AwareDatetime, TypeAdapter
 
@@ -110,7 +111,12 @@ def validate_public_campaign(public: PublicCampaign) -> AuditResult:
     return check.result()
 
 
-def validate_run_state(state: RunState, public: PublicCampaign) -> AuditResult:
+def validate_run_state(
+    state: RunState,
+    public: PublicCampaign,
+    *,
+    expected_budget_total: Decimal | None = None,
+) -> AuditResult:
     """외부 공개 카탈로그를 기준으로 현재 상태의 참조·시점·예산을 검사한다."""
     check = _Checks()
     cid = state.campaign_id
@@ -137,8 +143,9 @@ def validate_run_state(state: RunState, public: PublicCampaign) -> AuditResult:
             check.issue(approved.approval_id, "reviewed_at", "time_mismatch", "approval is later than state")
     if state.budget.unit != public.campaign.budget.unit:
         check.issue(cid, "budget.unit", "unit_mismatch", "state and campaign budget units differ")
-    if state.budget.total != public.campaign.budget.amount:
-        check.issue(cid, "budget.total", "budget_mismatch", "state total differs from configured campaign budget")
+    expected_total = public.campaign.budget.amount if expected_budget_total is None else expected_budget_total
+    if state.budget.total != expected_total:
+        check.issue(cid, "budget.total", "budget_mismatch", "state total differs from its configured run budget")
     return check.result()
 
 

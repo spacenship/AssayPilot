@@ -1,6 +1,6 @@
 # Stage 2B: 승인·예산 예약·실행 이력
 
-Stage 2B는 검증된 Stage 1 snapshot에서 공개 후보와 후속 시험 한 쌍을 조회하는 실행 제어 계층이다. 신뢰된 Python 호출자가 명시적으로 승인한 요청만 이미 적재된 `ReplayOracle`에 전달한다. 결과는 비공개 SQLite runtime DB에 저장한다. `ready_for_release`는 2-C 인계 대기 상태이며 에이전트에게 공개되거나 실험 성공으로 판정된 상태가 아니다.
+Stage 2B는 검증된 Stage 1 snapshot에서 공개 후보와 후속 시험 한 쌍을 조회하는 실행 제어 계층이다. 신뢰된 Python 호출자가 명시적으로 승인한 요청만 이미 적재된 `ReplayOracle`에 전달한다. 결과는 비공개 SQLite runtime DB에 저장한다. `ready_for_release`는 2-C 공개 대기 상태이고, 성공 공개 후 실행 상태는 `released`, 명시적 공개 취소 후에는 `cancelled`가 된다. 어느 상태도 assay active를 실험 성공이나 임상 효과로 해석하지 않는다. 공개·settlement 계약은 [stage2_result_release.md](stage2_result_release.md)에 기록했다.
 
 ## 기존 계약과 적용 시점
 
@@ -44,7 +44,7 @@ validate_execution(
 ) -> AuditResult
 ```
 
-이 검사는 공개용 `Observation`과 실행 receipt/result의 연결, 현재 공개 기준 시점, 후보·시험·근거 참조를 검사한다. Stage 2B에는 아직 `ExecutionReceipt`/`ExecutionResult` 또는 공개 `Observation`이 없으므로 이 함수를 호출하지 않는다. 비공개 `ReplayLookupResult`에 가짜 공개 결과를 만들어 validator를 통과시키지 않는다. Stage 2C에서 새 공개 객체를 만든 다음 현재 공개 시각을 `as_of`로 전달해 호출한다.
+이 검사는 공개용 `Observation`과 실행 receipt/result의 연결, 현재 공개 기준 시점, 후보·시험·근거 참조를 검사한다. Stage 2B 실행 중에는 비공개 `ReplayLookupResult`를 공개 receipt/result로 가장하지 않는다. 2-C `release_result`가 새 공개 객체와 근거를 만든 뒤 현재 공개 시각을 `as_of`로 전달해 호출한다.
 
 ## 실제 함수 계약과 호출 예
 
@@ -63,6 +63,10 @@ initialize_run(run_id: str, initial_budget: Cost) -> RunBudget
 approve_action(run_id: str, action: ActionRequest, *, approver_id: str, reason: str) -> GovernanceDecision
 execute(run_id: str, request_id: str, action: ActionRequest) -> ExecutionReceiptView
 read_private_result(run_id: str, execution_id: str) -> ReplayLookupResult
+release_result(run_id: str, execution_id: str) -> PublishedExecution
+cancel_pending_release(run_id: str, execution_id: str, reason: str) -> ExecutionReceiptView
+get_current_budget(run_id: str) -> BudgetState
+get_public_state(run_id: str) -> PublicRunView
 ```
 
 아래 예시는 보존된 확장 snapshot에서 초기 공개 선행조건을 만족하는 후보 하나를 고르고, 해당 assay에 명시적으로 승인한 뒤 한 행동을 실행하는 흐름이다. SQLite 파일은 bundle 밖의 전용 private runtime 디렉터리에 둔다. 예산은 이 예시에서 한 건의 snapshot 설정 assay 비용과 같게 설정했다. 이 값의 `assumed` 여부를 유지하며 실제 실험 견적이라고 해석하지 않는다.
@@ -124,7 +128,7 @@ elif receipt.status == "no_record":
 - 승인 발급은 `approve_action(..., approver_id=..., reason=...)` 호출로만 이뤄진다. `ActionRequest`에 `approved=True`를 넣을 수 없으며, 요청자가 보낸 승인 유사 필드는 권한이 아니다. 테스트용 approver 이름은 인증 시스템을 의미하지 않는다.
 - 승인 digest는 run/snapshot/campaign/candidate/assay, 고정 action kind, 빈 parameters, Decimal 금액 문자열, 단위와 정책 버전을 묶는다. 비용이나 대상이 바뀌면 기존 승인을 쓸 수 없다. 승인 자체는 예산을 예약하지 않는다.
 - 도메인 `ApprovedAction`에는 만료 필드가 없으므로 Stage 2B는 임의 만료 규칙을 추가하지 않는다. `cancel_approval`은 실행 전 승인을 취소하며, 이미 terminal인 실행은 바꾸지 않는다. 승인·실행 시각은 timezone-aware여야 하고 실행 시각이 승인 시각보다 앞서면 거절한다.
-- 승인 시와 실행 직전에 초기 공개 선행조건을 확인한다. 비공개 replay 결과로 선행조건을 만족시키지 않는다.
+- 승인 시와 실행 직전에 초기 공개 관측 및 해당 run에서 공개 commit된 runtime 관측으로 선행조건을 확인한다. 비공개 replay 결과나 다른 run의 관측은 조건을 만족시키지 않는다. 실행 시 검사한 public `state_version`을 execution에 저장한다.
 
 ## 예산, 결과 상태, 오류
 
@@ -146,7 +150,7 @@ initial_budget >= 0, spent >= 0, reserved >= 0, available >= 0
 
 실행 receipt는 `execution_id`, `request_id`, `action_id`, 상태, 그 실행 직후의 run 예약·가용액, 단위 및 timezone-aware 시각만 포함한다. 원본 측정, verdict, 전체 coverage와 curator 경로는 포함하지 않는다. `read_private_result`는 해당 run/snapshot/candidate/assay가 맞고 상태가 `ready_for_release`인 결과만 `ReplayLookupResult`로 다시 검증해 방어적 복사본을 돌려준다. `no_record`와 `failed` 결과는 이 handoff reader로 읽을 수 없다.
 
-알려진 lookup 오류는 `failed`로 기록하지만, DB 쓰기 오류와 예상 밖 예외는 성공적인 부재로 바꾸지 않고 전체 transaction을 취소한다. 일반 receipt에는 내부 원문 오류 문자열을 넣지 않는다. DB schema는 SQLite `user_version=1`로 고정하고, 파일은 생성 뒤 mode `0600`으로 제한한다. 전용 runtime 디렉터리는 신뢰 경계에 맞게 비공개로 관리해야 한다. 공개 Adapter는 이 DB를 입력으로 사용하지 않는다.
+알려진 lookup 오류는 `failed`로 기록하지만, DB 쓰기 오류와 예상 밖 예외는 성공적인 부재로 바꾸지 않고 전체 transaction을 취소한다. 일반 receipt에는 내부 원문 오류 문자열을 넣지 않는다. SQLite schema는 `user_version=2`이며 v1의 approval/reservation/execution/private result를 보존하면서 공개 상태·근거·settlement 테이블을 transaction migration으로 추가한다. 미지원 미래 버전은 거절한다. DB 및 sidecar 파일은 private runtime 디렉터리에 보관하고 mode `0600`으로 제한한다. 이 mode만으로 동일 권한 프로세스를 격리한다고 보지 않는다. 공개 Adapter는 runtime DB를 입력으로 사용하지 않는다.
 
 ## 중복·재시작 정책
 
@@ -156,10 +160,6 @@ initial_budget >= 0, spent >= 0, reserved >= 0, available >= 0
 - SQLite unique key와 `BEGIN IMMEDIATE`가 동일 action 및 예산 변경을 직렬화한다. 잠금 대기는 유한 timeout을 쓴다. 승인·run·terminal result·private result는 DB를 재열어 복구한다.
 - 보장하는 것은 저장된 결과와 예산 효과의 중복 방지다. 프로세스가 Oracle 호출 뒤 transaction commit 전에 중단되면 read-only lookup을 재호출할 수 있다. Oracle 함수 호출 자체의 장애 시 정확히 한 번 실행을 보장하지 않는다. 실제 외부 실험을 넣는다면 durable outbox와 작업 복구 정책이 별도로 필요하다.
 
-## 2-C 인계 계약 및 남은 경계
+## 2-C 공개 이후 상태
 
-1. 2-C는 `read_private_result(run_id, execution_id)`를 사용한다. `ready_for_release`만 반환되고, 결과는 검증된 `ReplayLookupResult`다.
-2. 새 Observation·EvidenceRef 생성, 원본 근거 등록 및 공개 검증이 모두 성공한 뒤에만 이 실행의 `reserved`를 한 번 `spent`로 옮겨야 한다. Stage 2B에는 settlement API가 없다.
-3. 공개 실패 때 Observation 일부와 예산 settlement 일부만 남기지 않는다. 일시 오류는 기존 execution/예약을 유지하고 같은 execution으로 복구한다. 영구 취소로 예약을 해제하는 정책은 2-C에서 명시적으로 정한다.
-4. 2-B의 `no_record`는 이 snapshot에서 연결 행이 없다는 의미이고, `failed`는 조회 오류다. 둘 다 공개 실험 판정 또는 새 Observation으로 변환하지 않는다.
-5. 현재 실행기는 신뢰된 Python 모듈 경계다. 파일/OS/container 접근 격리, 인증, 현재 공개 상태를 반영하는 선행조건, 검증 뒤 PublicCampaign/RunState 교체는 구현하지 않았다.
+`ready_for_release` 결과는 `release_result(run_id, execution_id)`에서 원래 실행과 승인·비용을 다시 확인한 뒤 공개한다. 새 객체 검증, Observation별 evidence 보존, DB 원자 공개와 settlement, `cancel_pending_release`, current-state getter 및 제한된 `PublicReader`는 [stage2_result_release.md](stage2_result_release.md)에 기술했다. 실행기는 trusted Python boundary이고 로그인·웹 서비스는 제공하지 않는다. 실제 local namespace/chroot 접근 테스트와 전체 Stage 2C 검증 결과는 [03_result_release.md](../reports/stage2/03_result_release.md)를 참고한다.
