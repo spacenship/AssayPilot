@@ -210,6 +210,10 @@ def _validate_selector_binding(
     if selector_kind == "seeded_random_priority":
         _validate_random_selector(seed, algorithm_version)
         return
+    if selector_kind == "scientific_reasoner":
+        if seed is not None or algorithm_version is not None:
+            raise RunLoopError("invalid_selector_config", "scientific_reasoner does not accept a selector seed")
+        return
     raise RunLoopError("unsupported_selector", "selector kind is unsupported")
 
 
@@ -475,6 +479,21 @@ class RunLoopConfig:
     selector_timeout_seconds: float = 5.0
     selector_seed: int | None = None
     selector_algorithm_version: str | None = None
+    science_settings_sha256: str | None = None
+    science_provider: str | None = None
+    science_endpoint: str | None = None
+    science_model: str | None = None
+    science_api_mode: str | None = None
+    science_response_format: str | None = None
+    science_output_tokens: int | None = None
+    science_timeout_seconds: float | None = None
+    science_prompt_version: str | None = None
+    science_context_schema_version: str | None = None
+    science_shortlist_size: int | None = None
+    science_shortlist_seed: int | None = None
+    science_max_llm_calls: int | None = None
+    science_interpretation_reserve_calls: int | None = None
+    science_max_stale_redecisions: int | None = None
 
     def __post_init__(self) -> None:
         for name, value in (("run_id", self.run_id), ("snapshot_id", self.snapshot_id),
@@ -487,6 +506,44 @@ class RunLoopConfig:
         _validate_selector_binding(
             self.selector_kind, self.selector_seed, self.selector_algorithm_version,
         )
+        science_values = (
+            self.science_settings_sha256, self.science_provider, self.science_endpoint,
+            self.science_model, self.science_api_mode, self.science_response_format,
+            self.science_output_tokens, self.science_timeout_seconds,
+            self.science_prompt_version, self.science_context_schema_version,
+            self.science_shortlist_size, self.science_shortlist_seed,
+            self.science_max_llm_calls, self.science_interpretation_reserve_calls,
+            self.science_max_stale_redecisions,
+        )
+        if self.selector_kind == "scientific_reasoner":
+            if self.initial_budget.assumed:
+                raise RunLoopError("assumed_budget_forbidden", "scientific_reasoner requires an explicit replay budget")
+            if any(value is None for value in science_values):
+                raise RunLoopError("invalid_scientific_config", "scientific_reasoner requires a complete persisted configuration")
+            if not isinstance(self.science_settings_sha256, str) or len(self.science_settings_sha256) != 64:
+                raise RunLoopError("invalid_scientific_config", "scientific settings fingerprint is invalid")
+            if self.science_api_mode not in {"responses", "chat_completions"}:
+                raise RunLoopError("invalid_scientific_config", "scientific API mode must be resolved")
+            for name, value, lower, upper in (
+                ("science_output_tokens", self.science_output_tokens, 128, 8192),
+                ("science_shortlist_size", self.science_shortlist_size, 1, 24),
+                ("science_shortlist_seed", self.science_shortlist_seed, 0, 2**31 - 1),
+                ("science_max_llm_calls", self.science_max_llm_calls, 1, 100),
+                ("science_interpretation_reserve_calls", self.science_interpretation_reserve_calls, 2, 2),
+                ("science_max_stale_redecisions", self.science_max_stale_redecisions, 0, 10),
+            ):
+                if isinstance(value, bool) or not isinstance(value, int) or not lower <= value <= upper:
+                    raise RunLoopError("invalid_scientific_config", f"{name} is outside its allowed bound")
+            if (not isinstance(self.science_timeout_seconds, (int, float))
+                    or not 1 <= self.science_timeout_seconds <= 180):
+                raise RunLoopError("invalid_scientific_config", "science timeout must be between 1 and 180 seconds")
+            for name in ("science_provider", "science_endpoint", "science_model",
+                         "science_response_format", "science_prompt_version", "science_context_schema_version"):
+                value = getattr(self, name)
+                if not isinstance(value, str) or not value.strip() or len(value) > 1000:
+                    raise RunLoopError("invalid_scientific_config", f"{name} must be non-empty and bounded")
+        elif any(value is not None for value in science_values):
+            raise RunLoopError("invalid_scientific_config", "scientific configuration applies only to scientific_reasoner")
         if isinstance(self.max_steps, bool) or not isinstance(self.max_steps, int) or self.max_steps < 1:
             raise RunLoopError("invalid_config", "max_steps must be a positive integer")
         if (isinstance(self.max_duration_seconds, bool) or not isinstance(self.max_duration_seconds, int)
@@ -525,6 +582,19 @@ class RunLoopConfig:
         if self.selector_kind == "seeded_random_priority":
             result["selector_seed"] = self.selector_seed
             result["selector_algorithm_version"] = self.selector_algorithm_version
+        elif self.selector_kind == "scientific_reasoner":
+            result["scientific"] = {
+                name.removeprefix("science_"): getattr(self, name)
+                for name in (
+                    "science_settings_sha256", "science_provider", "science_endpoint",
+                    "science_model", "science_api_mode", "science_response_format",
+                    "science_output_tokens", "science_timeout_seconds", "science_prompt_version",
+                    "science_context_schema_version", "science_shortlist_size",
+                    "science_shortlist_seed", "science_max_llm_calls",
+                    "science_interpretation_reserve_calls",
+                    "science_max_stale_redecisions",
+                )
+            }
         return result
 
     @property
@@ -540,9 +610,14 @@ class RunLoopConfig:
             obj = json.loads(value)
             has_seed = "selector_seed" in obj
             has_version = "selector_algorithm_version" in obj
+            science = obj.pop("scientific", None)
+            if science is not None:
+                if not isinstance(science, dict):
+                    raise ValueError("scientific configuration must be an object")
+                obj.update({f"science_{key}": value for key, value in science.items()})
             if has_seed != has_version:
                 raise ValueError("incomplete selector binding")
-            if not has_seed and obj.get("selector_kind") != "fixed_order":
+            if not has_seed and obj.get("selector_kind") not in {"fixed_order", "scientific_reasoner"}:
                 raise ValueError("seeded selector binding is missing")
             budget = obj.pop("initial_budget")
             config = cls(
@@ -667,12 +742,13 @@ class _LoopRepository:
                 """INSERT INTO loop_steps (
                     run_id, step_no, action_id, request_id, candidate_id, assay_id,
                     action_json, view_state_version, view_digest, selected_reason,
-                    status, execution_id, budget_spent, budget_reserved, budget_available,
+                    scientific_decision_id, status, execution_id, budget_spent, budget_reserved, budget_available,
                     created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'proposed', NULL, ?, ?, ?, ?, ?)""",
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'proposed', NULL, ?, ?, ?, ?, ?)""",
                 (fields["run_id"], fields["step_no"], fields["action_id"], fields["request_id"],
                  fields["candidate_id"], fields["assay_id"], fields["action_json"],
                  fields["view_state_version"], fields["view_digest"], fields["selected_reason"],
+                 fields.get("scientific_decision_id"),
                  budget["spent"], budget["reserved"], str(available), _dt_text(now), _dt_text(now)),
             )
 
@@ -789,11 +865,21 @@ class RunLoopController:
                 or getattr(self.selector, "seed", None) != config.selector_seed
                 or getattr(self.selector, "algorithm_version", None) != config.selector_algorithm_version):
             raise RunLoopError("selector_binding_mismatch", "selector differs from the persisted loop configuration")
+        if config.selector_kind == "scientific_reasoner":
+            if (getattr(self.selector, "settings_sha256", None) != config.science_settings_sha256
+                    or getattr(self.selector, "shortlist_size", None) != config.science_shortlist_size
+                    or getattr(self.selector, "shortlist_seed", None) != config.science_shortlist_seed
+                    or getattr(self.selector, "max_llm_calls", None) != config.science_max_llm_calls
+                    or getattr(self.selector, "interpretation_reserve_calls", None) != config.science_interpretation_reserve_calls
+                    or getattr(self.selector, "max_stale_redecisions", None) != config.science_max_stale_redecisions):
+                raise RunLoopError("selector_binding_mismatch", "scientific selector differs from persisted settings")
 
     def _now(self) -> datetime:
         return self.coordinator._now()
 
     def _drive(self, config: RunLoopConfig, *, stop_after_new_steps: int | None) -> LoopSummary:
+        if config.selector_kind == "scientific_reasoner":
+            return self._drive_scientific(config, stop_after_new_steps=stop_after_new_steps)
         run_record = self.repository.get_run(config.run_id)
         assert run_record is not None
         now = self._now()
@@ -896,6 +982,113 @@ class RunLoopController:
                 outcome = self._finish_step(
                     config, self.repository.steps(config.run_id)[-1], deadline_at, deadline_mono,
                 )
+                if outcome == "deadline":
+                    continue
+                if outcome == "retry_exhausted":
+                    return self._stop(config, "retry_exhausted", resumable=True)
+                if outcome == "policy_error":
+                    return self._stop(config, "policy_error", resumable=False)
+                new_steps_this_call += 1
+                if stop_after_new_steps is not None and new_steps_this_call >= stop_after_new_steps:
+                    return self._stop(config, "user_interrupt", resumable=True)
+        except KeyboardInterrupt:
+            return self._stop(config, "user_interrupt", resumable=True)
+
+    def _drive_scientific(
+        self, config: RunLoopConfig, *, stop_after_new_steps: int | None,
+    ) -> LoopSummary:
+        """Stage 5-B branch; baseline selector paths above remain unchanged."""
+        from assaypilot.scientific_run_loop import ScientificReasoningSelector
+
+        if not isinstance(self.selector, ScientificReasoningSelector):
+            return self._stop(config, "scientific_selector_required", resumable=False)
+        run_record = self.repository.get_run(config.run_id)
+        assert run_record is not None
+        deadline_at = _parse_dt(run_record["deadline_at"])
+        remaining = min(
+            float(config.max_duration_seconds),
+            max(0.0, (deadline_at - self._now()).total_seconds()),
+        )
+        deadline_mono = self.monotonic() + remaining
+        new_steps_this_call = 0
+        try:
+            while True:
+                steps = self.repository.steps(config.run_id)
+                incomplete = next((row for row in steps if row["status"] in _INCOMPLETE_STEP_STATES), None)
+                if incomplete is not None:
+                    if (incomplete["status"] != "pending_release"
+                            and self._deadline_reached(deadline_at, deadline_mono)):
+                        _, statuses = self.coordinator.get_loop_snapshot(config.run_id)
+                        already_executed = any(
+                            item.candidate_id == incomplete["candidate_id"]
+                            and item.assay_id == incomplete["assay_id"] for item in statuses
+                        )
+                        if not already_executed:
+                            if not self._expire_unstarted_step(config, incomplete):
+                                return self._stop(config, "retry_exhausted", resumable=True)
+                            return self._stop(config, "deadline", resumable=False)
+                    outcome = self._finish_step(config, incomplete, deadline_at, deadline_mono)
+                    if outcome == "retry_exhausted":
+                        return self._stop(config, "retry_exhausted", resumable=True)
+                    if outcome == "policy_error":
+                        return self._stop(config, "policy_error", resumable=False)
+                    continue
+
+                if self._deadline_reached(deadline_at, deadline_mono):
+                    return self._stop(config, "deadline", resumable=False)
+                public_view, execution_statuses, evidence_documents = (
+                    self.coordinator.get_scientific_loop_snapshot(config.run_id)
+                )
+                eligible, prereq_open = self._enumerate_actions(public_view, execution_statuses)
+                if len(steps) >= config.max_steps:
+                    terminal_reason = "max_steps"
+                    decision_eligible = ()
+                elif not eligible:
+                    if prereq_open:
+                        terminal_reason = "budget_exhausted"
+                    elif self._has_unprocessed_supported_action(public_view, execution_statuses):
+                        terminal_reason = "prerequisites_unmet"
+                    else:
+                        terminal_reason = "no_executable_actions"
+                    decision_eligible = ()
+                else:
+                    terminal_reason = None
+                    decision_eligible = eligible
+
+                selected = self.selector.select_for_loop(
+                    config, public_view, execution_statuses, evidence_documents,
+                    decision_eligible, steps, deadline_at=deadline_at,
+                    deadline_mono=deadline_mono,
+                    enumerate_actions=self._enumerate_actions,
+                )
+                if selected.status != "idle":
+                    self.repository.bump_selector_calls(config.run_id, self._now())
+                if selected.status == "stale":
+                    continue
+                if selected.status in {"failed", "limit"}:
+                    return self._stop(
+                        config, selected.stop_reason or "scientific_decision_failed",
+                        resumable=selected.status == "failed",
+                    )
+                if selected.status == "finalized":
+                    return self._stop(
+                        config, terminal_reason or selected.stop_reason or "scientific_finalization_complete",
+                        resumable=False,
+                    )
+                if selected.status == "idle":
+                    return self._stop(config, terminal_reason or selected.stop_reason or "no_executable_actions",
+                                      resumable=False)
+                assert selected.proposal is not None
+                if selected.proposal.kind == "stop":
+                    return self._stop(config, terminal_reason or "selector_stop", resumable=False)
+                if selected.step_no is None:
+                    return self._stop(config, "scientific_step_missing", resumable=False)
+                step_rows = self.repository.steps(config.run_id)
+                row = next((item for item in step_rows if int(item["step_no"]) == selected.step_no), None)
+                if row is None or row["scientific_decision_id"] != selected.decision_id:
+                    return self._stop(config, "scientific_step_binding_mismatch", resumable=False)
+                self._fault("after_proposal", selected.step_no)
+                outcome = self._finish_step(config, row, deadline_at, deadline_mono)
                 if outcome == "deadline":
                     continue
                 if outcome == "retry_exhausted":
@@ -1185,6 +1378,9 @@ class RunLoopController:
             self.fault_hook(stage, step_no)
 
     def _stop(self, config: RunLoopConfig, reason: str, *, resumable: bool) -> LoopSummary:
+        finish = getattr(self.selector, "finish_run", None)
+        if config.selector_kind == "scientific_reasoner" and callable(finish):
+            finish(config.run_id, reason)
         self.repository.set_run_state(
             config.run_id, self._now(), status="stopped", stop_reason=reason,
             resumable=resumable,

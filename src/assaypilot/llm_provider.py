@@ -1,4 +1,4 @@
-"""Small, configurable OpenAI Chat Completions-compatible provider adapter.
+"""Small, configurable OpenAI-compatible Chat Completions/Responses adapter.
 
 The adapter accepts only explicit public prompt messages. It has no access to
 campaign files, execution stores, or application services.
@@ -6,11 +6,14 @@ campaign files, execution stores, or application services.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import errno
 import ipaddress
 import json
 import os
 from pathlib import Path
 import re
+import socket
+import ssl
 import time
 from typing import Any, Mapping, Sequence
 from urllib.parse import urlsplit
@@ -20,7 +23,7 @@ from urllib.request import Request, urlopen
 
 _ENV_KEYS = frozenset({
     "ASSAYPILOT_LLM_PROVIDER", "ASSAYPILOT_LLM_ENDPOINT", "ASSAYPILOT_LLM_MODEL",
-    "ASSAYPILOT_LLM_API_KEY", "ASSAYPILOT_LLM_AUTH_HEADER",
+    "ASSAYPILOT_LLM_API_KEY", "ASSAYPILOT_LLM_API_MODE", "ASSAYPILOT_LLM_AUTH_HEADER",
     "ASSAYPILOT_LLM_AUTH_SCHEME", "ASSAYPILOT_LLM_RESPONSE_FORMAT",
     "ASSAYPILOT_LLM_TIMEOUT_SECONDS", "ASSAYPILOT_LLM_MAX_OUTPUT_TOKENS",
     "ASSAYPILOT_LLM_RETRY_ATTEMPTS", "ASSAYPILOT_LLM_TOKEN_PARAMETER",
@@ -34,11 +37,37 @@ class LLMProviderError(RuntimeError):
     """A provider error with safe metadata; response bodies and credentials omitted."""
 
     def __init__(self, code: str, message: str, *, status_code: int | None = None,
-                 request_id: str | None = None):
+                 request_id: str | None = None, failure_stage: str | None = None,
+                 exception_class: str | None = None, cause_code: str | None = None,
+                 cause_class: str | None = None,
+                 http_response_received: bool | None = None,
+                 latency_ms: int | None = None):
         self.code = code
         self.status_code = status_code
         self.request_id = request_id
+        self.failure_stage = failure_stage
+        self.exception_class = _safe_class_name(exception_class or type(self).__name__)
+        self.cause_code = _safe_diagnostic_code(cause_code)
+        self.cause_class = _safe_class_name(cause_class)
+        self.http_response_received = http_response_received
+        self.latency_ms = latency_ms
         super().__init__(message)
+
+    def diagnostic_metadata(self, *, fallback_stage: str | None = None,
+                             fallback_latency_ms: int | None = None) -> dict[str, object]:
+        """Return an allowlisted failure record without exception text or response data."""
+        received = self.http_response_received
+        if received is None:
+            received = self.status_code is not None
+        return {
+            "failure_stage": self.failure_stage or fallback_stage or "provider_call",
+            "exception_class": self.exception_class,
+            "cause_code": self.cause_code or _safe_diagnostic_code(self.code) or "provider_failed",
+            "cause_class": self.cause_class,
+            "http_response_received": received,
+            "http_status": self.status_code,
+            "latency_ms": self.latency_ms if self.latency_ms is not None else fallback_latency_ms,
+        }
 
 
 @dataclass(frozen=True)
@@ -54,6 +83,15 @@ class LLMSettings:
     timeout_seconds: float = 60.0
     max_output_tokens: int = 1200
     retry_attempts: int = 1
+    api_mode: str = "auto"
+
+    @property
+    def resolved_api_mode(self) -> str:
+        return _resolve_api_mode(self.api_mode, self.endpoint)
+
+    @property
+    def effective_token_parameter(self) -> str:
+        return "max_output_tokens" if self.resolved_api_mode == "responses" else self.token_parameter
 
     @classmethod
     def from_environment(
@@ -96,6 +134,7 @@ class LLMSettings:
         endpoint = values.get("ASSAYPILOT_LLM_ENDPOINT", "").strip()
         model = values.get("ASSAYPILOT_LLM_MODEL", "").strip()
         api_key = values.get("ASSAYPILOT_LLM_API_KEY", "").strip()
+        api_mode = values.get("ASSAYPILOT_LLM_API_MODE", "auto").strip()
         response_format = values.get("ASSAYPILOT_LLM_RESPONSE_FORMAT", "json_schema").strip()
         token_parameter = values.get("ASSAYPILOT_LLM_TOKEN_PARAMETER", "max_completion_tokens").strip()
         auth_header = values.get("ASSAYPILOT_LLM_AUTH_HEADER", "Authorization").strip()
@@ -131,13 +170,18 @@ class LLMSettings:
             raise LLMProviderError("invalid_auth_scheme", "authentication scheme contains unsupported characters")
         if response_format not in {"json_schema", "json_object", "prompt_only"}:
             raise LLMProviderError("invalid_response_format", "response format must be json_schema, json_object, or prompt_only")
-        if token_parameter not in {"max_tokens", "max_completion_tokens"}:
-            raise LLMProviderError("invalid_token_parameter", "token parameter must be max_tokens or max_completion_tokens")
+        if api_mode not in {"auto", "chat_completions", "responses"}:
+            raise LLMProviderError("invalid_api_mode", "API mode must be auto, chat_completions, or responses")
+        if token_parameter not in {"max_tokens", "max_completion_tokens", "max_output_tokens"}:
+            raise LLMProviderError("invalid_token_parameter", "token parameter is unsupported")
         timeout = _bounded_float(values.get("ASSAYPILOT_LLM_TIMEOUT_SECONDS", "60"), 1.0, 180.0, "timeout")
         tokens = _bounded_int(values.get("ASSAYPILOT_LLM_MAX_OUTPUT_TOKENS", "1200"), 128, 8192, "output token limit")
         retries = _bounded_int(values.get("ASSAYPILOT_LLM_RETRY_ATTEMPTS", "1"), 0, 1, "retry attempts")
+        resolved_mode = _resolve_api_mode(api_mode, endpoint)
+        if resolved_mode == "chat_completions" and token_parameter == "max_output_tokens":
+            raise LLMProviderError("invalid_token_parameter", "Chat Completions requires max_tokens or max_completion_tokens")
         return cls(provider, endpoint, model, api_key, auth_header, auth_scheme,
-                   response_format, token_parameter, timeout, tokens, retries)
+                   response_format, token_parameter, timeout, tokens, retries, resolved_mode)
 
 
 @dataclass(frozen=True)
@@ -152,7 +196,7 @@ class ProviderResponse:
 
 
 class OpenAICompatibleChatProvider:
-    """Call a configured chat-completions endpoint with bounded retries."""
+    """Call a configured Chat Completions or Responses endpoint with bounded retries."""
 
     def __init__(self, settings: LLMSettings):
         self.settings = settings
@@ -167,21 +211,37 @@ class OpenAICompatibleChatProvider:
         tokens = max_output_tokens or self.settings.max_output_tokens
         if isinstance(tokens, bool) or not isinstance(tokens, int) or not 128 <= tokens <= self.settings.max_output_tokens:
             raise ValueError("max_output_tokens exceeds the configured bound")
-        body: dict[str, Any] = {
-            "model": self.settings.model,
-            "messages": [dict(message) for message in messages],
-            "temperature": 0,
-        }
-        body[self.settings.token_parameter] = tokens
-        if self.settings.response_format == "json_schema":
-            if not isinstance(json_schema, dict):
-                raise ValueError("json_schema response format requires a schema")
-            body["response_format"] = {
-                "type": "json_schema",
-                "json_schema": {"name": "assaypilot_decision", "strict": True, "schema": json_schema},
-            }
-        if self.settings.response_format == "json_object":
-            body["response_format"] = {"type": "json_object"}
+        body: dict[str, Any] = {"model": self.settings.model}
+        if self.settings.resolved_api_mode == "responses":
+            body.update({
+                "input": [dict(message) for message in messages],
+                "max_output_tokens": tokens,
+                "store": False,
+            })
+            if self.settings.response_format == "json_schema":
+                if not isinstance(json_schema, dict):
+                    raise ValueError("json_schema response format requires a schema")
+                body["text"] = {"format": {
+                    "type": "json_schema", "name": "assaypilot_decision",
+                    "strict": True, "schema": json_schema,
+                }}
+            elif self.settings.response_format == "json_object":
+                body["text"] = {"format": {"type": "json_object"}}
+        else:
+            body.update({
+                "messages": [dict(message) for message in messages],
+                "temperature": 0,
+                self.settings.token_parameter: tokens,
+            })
+            if self.settings.response_format == "json_schema":
+                if not isinstance(json_schema, dict):
+                    raise ValueError("json_schema response format requires a schema")
+                body["response_format"] = {
+                    "type": "json_schema",
+                    "json_schema": {"name": "assaypilot_decision", "strict": True, "schema": json_schema},
+                }
+            if self.settings.response_format == "json_object":
+                body["response_format"] = {"type": "json_object"}
         payload = json.dumps(body, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
         auth_value = f"{self.settings.auth_scheme} {self.settings.api_key}".strip()
         request = Request(
@@ -205,27 +265,49 @@ class OpenAICompatibleChatProvider:
                     continue
                 code = "rate_limited" if status == 429 else "provider_http_error"
                 raise LLMProviderError(code, f"provider returned HTTP {status}",
-                                       status_code=status, request_id=request_id) from None
+                                       status_code=status, request_id=request_id,
+                                       failure_stage="http_response", exception_class="HTTPError",
+                                       cause_code="http_status", http_response_received=True,
+                                       latency_ms=_elapsed_ms(start)) from None
             except (URLError, TimeoutError, OSError) as exc:
                 if attempts <= self.settings.retry_attempts:
                     time.sleep(0.25)
                     continue
-                raise LLMProviderError("provider_connection_error", "provider connection failed or timed out") from None
+                cause = exc.reason if isinstance(exc, URLError) else _nested_os_error(exc)
+                cause_code = _transport_cause_code(cause if isinstance(cause, BaseException) else exc)
+                raise LLMProviderError(
+                    "provider_connection_error", "provider connection failed or timed out",
+                    failure_stage="connection", exception_class=type(exc).__name__,
+                    cause_code=cause_code, cause_class=type(cause).__name__ if isinstance(cause, BaseException) else None,
+                    http_response_received=False, latency_ms=_elapsed_ms(start),
+                ) from None
             if status < 200 or status >= 300:
                 raise LLMProviderError("provider_http_error", f"provider returned HTTP {status}",
-                                       status_code=status, request_id=request_id)
+                                       status_code=status, request_id=request_id,
+                                       failure_stage="http_response", exception_class="HTTPResponse",
+                                       cause_code="http_status", http_response_received=True,
+                                       latency_ms=_elapsed_ms(start))
             if len(raw) > 2_000_000:
                 raise LLMProviderError("provider_response_too_large", "provider response exceeded 2 MB",
-                                       status_code=status, request_id=request_id)
+                                       status_code=status, request_id=request_id,
+                                       failure_stage="response_processing", cause_code="response_too_large",
+                                       http_response_received=True, latency_ms=_elapsed_ms(start))
             try:
                 response_data = json.loads(raw)
-                content = response_data["choices"][0]["message"]["content"]
-            except (json.JSONDecodeError, KeyError, IndexError, TypeError):
-                raise LLMProviderError("invalid_provider_response", "provider response did not match chat-completions format",
-                                       status_code=status, request_id=request_id) from None
+                content = (_response_text(response_data) if self.settings.resolved_api_mode == "responses"
+                           else response_data["choices"][0]["message"]["content"])
+            except (json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:
+                expected = "Responses" if self.settings.resolved_api_mode == "responses" else "Chat Completions"
+                raise LLMProviderError("invalid_provider_response", f"provider response did not match {expected} format",
+                                       status_code=status, request_id=request_id,
+                                       failure_stage="response_processing", exception_class=type(exc).__name__,
+                                       cause_code="invalid_provider_response", cause_class=type(exc).__name__,
+                                       http_response_received=True, latency_ms=_elapsed_ms(start)) from None
             if not isinstance(content, str) or not content.strip():
                 raise LLMProviderError("empty_provider_response", "provider returned empty message content",
-                                       status_code=status, request_id=request_id)
+                                       status_code=status, request_id=request_id,
+                                       failure_stage="response_processing", cause_code="empty_provider_response",
+                                       http_response_received=True, latency_ms=_elapsed_ms(start))
             usage = _normalized_usage(response_data.get("usage"))
             reported_model = response_data.get("model")
             return ProviderResponse(
@@ -242,6 +324,83 @@ def _request_id(headers: Any) -> str | None:
         if isinstance(value, str) and len(value) <= 200 and "\n" not in value:
             return value
     return None
+
+
+def _elapsed_ms(start: float) -> int:
+    return max(0, round((time.monotonic() - start) * 1000))
+
+
+def _safe_class_name(value: object) -> str | None:
+    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,79}", value):
+        return None
+    return value
+
+
+def _safe_diagnostic_code(value: object) -> str | None:
+    if not isinstance(value, str) or not re.fullmatch(r"[a-z][a-z0-9_]{0,79}", value):
+        return None
+    return value
+
+
+def _nested_os_error(exc: BaseException) -> BaseException:
+    nested = exc.__cause__ or exc.__context__
+    return nested if isinstance(nested, BaseException) else exc
+
+
+def _transport_cause_code(exc: BaseException) -> str:
+    if isinstance(exc, socket.gaierror):
+        if exc.errno == getattr(socket, "EAI_AGAIN", object()):
+            return "dns_temporary_failure"
+        if exc.errno == getattr(socket, "EAI_NONAME", object()):
+            return "dns_name_not_resolved"
+        return "dns_resolution_error"
+    if isinstance(exc, ssl.SSLCertVerificationError):
+        return "tls_certificate_verification_failed"
+    if isinstance(exc, ssl.SSLError):
+        return "tls_handshake_failed"
+    if isinstance(exc, (TimeoutError, socket.timeout)):
+        return "connection_timeout"
+    if isinstance(exc, ConnectionRefusedError):
+        return "connection_refused"
+    if isinstance(exc, ConnectionResetError):
+        return "connection_reset"
+    if isinstance(exc, BrokenPipeError):
+        return "connection_broken"
+    if isinstance(exc, OSError):
+        code = errno.errorcode.get(exc.errno)
+        return f"os_error_{code.lower()}" if code else "os_error_unknown"
+    if isinstance(exc, URLError):
+        return "url_error"
+    return "transport_error"
+
+
+def _resolve_api_mode(configured: str, endpoint: str) -> str:
+    if configured != "auto":
+        return configured
+    path = urlsplit(endpoint).path.rstrip("/").lower()
+    if path.endswith("/responses"):
+        return "responses"
+    return "chat_completions"
+
+
+def _response_text(response_data: Mapping[str, Any]) -> str:
+    output_text = response_data.get("output_text")
+    if isinstance(output_text, str) and output_text.strip():
+        return output_text
+    output = response_data.get("output")
+    chunks: list[str] = []
+    if isinstance(output, list):
+        for item in output:
+            if not isinstance(item, dict) or item.get("type") != "message":
+                continue
+            content = item.get("content")
+            if not isinstance(content, list):
+                continue
+            for part in content:
+                if (isinstance(part, dict) and part.get("type") == "output_text"
+                        and isinstance(part.get("text"), str)):
+                    chunks.append(part["text"])
+    return "".join(chunks)
 
 
 def _is_loopback_http(parsed_endpoint: Any) -> bool:
@@ -264,7 +423,8 @@ def _normalized_usage(value: Any) -> dict[str, int | str]:
     if not isinstance(value, dict):
         return {}
     result: dict[str, int | str] = {}
-    for source, target in (("prompt_tokens", "input_tokens"), ("completion_tokens", "output_tokens"),
+    for source, target in (("input_tokens", "input_tokens"), ("prompt_tokens", "input_tokens"),
+                           ("output_tokens", "output_tokens"), ("completion_tokens", "output_tokens"),
                            ("total_tokens", "total_tokens")):
         number = value.get(source)
         if isinstance(number, int) and not isinstance(number, bool) and number >= 0:

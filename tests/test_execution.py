@@ -873,7 +873,7 @@ def test_schema_v1_database_migrates_without_losing_pending_execution(execution_
 
     reopened = _service(tmp_path, public, oracle)
     with sqlite3.connect(service.database_path) as db:
-        assert db.execute("PRAGMA user_version").fetchone()[0] == 3
+        assert db.execute("PRAGMA user_version").fetchone()[0] == 5
         assert db.execute("SELECT COUNT(*) FROM approvals").fetchone()[0] == 1
         assert db.execute("SELECT COUNT(*) FROM private_results").fetchone()[0] == 1
         assert db.execute("SELECT COUNT(*) FROM budget_ledger WHERE event = 'reserve'").fetchone()[0] == 1
@@ -900,7 +900,7 @@ def test_schema_v2_database_adds_loop_tables_without_losing_publication(executio
 
     reopened = _service(tmp_path, public, oracle)
     with sqlite3.connect(service.database_path) as db:
-        assert db.execute("PRAGMA user_version").fetchone()[0] == 3
+        assert db.execute("PRAGMA user_version").fetchone()[0] == 5
         tables = {row[0] for row in db.execute(
             "SELECT name FROM sqlite_master WHERE type = 'table'",
         )}
@@ -908,6 +908,23 @@ def test_schema_v2_database_adds_loop_tables_without_losing_publication(executio
         assert db.execute("SELECT COUNT(*) FROM release_settlements WHERE run_id = 'run-1'").fetchone()[0] == 1
     assert reopened.get_public_execution("run-1", ready.execution_id) == published
     assert reopened.get_current_budget("run-1").spent == Decimal("0.1")
+
+
+def test_schema_v4_database_adds_scientific_failure_diagnostics(execution_snapshot, tmp_path):
+    _, public, oracle = execution_snapshot
+    service = _service(tmp_path, public, oracle)
+    _start(service)
+    with sqlite3.connect(service.database_path) as db:
+        db.execute("ALTER TABLE loop_scientific_api_calls DROP COLUMN diagnostic_json")
+        db.execute("PRAGMA user_version = 4")
+
+    reopened = _service(tmp_path, public, oracle)
+    with sqlite3.connect(service.database_path) as db:
+        columns = {row[1] for row in db.execute("PRAGMA table_info(loop_scientific_api_calls)")}
+        assert db.execute("PRAGMA user_version").fetchone()[0] == 5
+        assert "diagnostic_json" in columns
+        assert db.execute("SELECT COUNT(*) FROM runs WHERE run_id='run-1'").fetchone()[0] == 1
+    assert reopened.get_current_budget("run-1").spent == Decimal("0")
 
 
 def test_future_runtime_database_version_is_rejected(execution_snapshot, tmp_path):

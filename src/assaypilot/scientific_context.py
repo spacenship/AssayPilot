@@ -16,7 +16,7 @@ from assaypilot.domain.records import Observation as PublicObservation
 from assaypilot.domain.common import Contract, ID, Verdict
 
 
-CONTEXT_SCHEMA_VERSION = "assaypilot.decision-context.v1"
+CONTEXT_SCHEMA_VERSION = "assaypilot.decision-context.v2"
 SHORTLIST_RULE = "sha256_seed_candidate_assay_v1"
 MAX_CANDIDATES = 32
 MAX_OBSERVATIONS = 128
@@ -127,7 +127,10 @@ class EvidenceCatalogItem(Contract):
 
 class PriorHypothesis(Contract):
     hypothesis_id: ID
+    hypothesis_kind: Literal["assay_activity", "data_availability"]
     statement: str = Field(min_length=1, max_length=600)
+    expected_outcome: Literal["active", "inactive"] | None = None
+    interpretation: str | None = Field(default=None, max_length=500)
     candidate_id: str | None = None
     assay_id: ID
     status: Literal["proposed", "supported", "weakened", "unresolved"]
@@ -137,8 +140,15 @@ class PriorHypothesis(Contract):
 class ShortlistMetadata(Contract):
     rule: Literal["sha256_seed_candidate_assay_v1"]
     seed: int = Field(ge=0, le=2**31 - 1)
+    # These first two counts describe the full action set used when the
+    # deterministic shortlist was generated. They are not counts of the
+    # smaller context sent to the reasoner.
     eligible_action_count: int = Field(ge=0)
     eligible_candidate_count: int = Field(ge=0)
+    generation_public_state_version: int = Field(default=0, ge=0)
+    context_candidate_count: int = Field(default=0, ge=0, le=MAX_CANDIDATES)
+    current_eligible_action_count: int = Field(default=0, ge=0, le=MAX_CANDIDATES * 4)
+    current_eligible_candidate_count: int = Field(default=0, ge=0, le=MAX_CANDIDATES)
     eligible_actions_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     included_candidate_ids: list[ID] = Field(max_length=MAX_CANDIDATES)
     shortlist_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -153,6 +163,8 @@ class BudgetAndLimits(Contract):
     assumed: bool
     max_steps_remaining: int | None = Field(default=None, ge=0, le=10_000)
     max_duration_seconds: int | None = Field(default=None, ge=1, le=86_400)
+    remaining_duration_seconds: int | None = Field(default=None, ge=0, le=86_400)
+    remaining_llm_calls: int | None = Field(default=None, ge=0, le=10_000)
 
     @model_validator(mode="after")
     def balances_are_consistent(self) -> "BudgetAndLimits":
@@ -169,7 +181,8 @@ class BudgetAndLimits(Contract):
 
 
 class DecisionContext(Contract):
-    schema_version: Literal["assaypilot.decision-context.v1"]
+    schema_version: Literal["assaypilot.decision-context.v2"]
+    decision_mode: Literal["action", "interpretation_only"] = "action"
     campaign_id: ID
     source_run_id: str | None
     public_state_version: int = Field(ge=0)
@@ -231,6 +244,8 @@ class DecisionContext(Contract):
         if any(item.candidate_id not in candidate_ids or item.assay_id not in assay_ids
                for item in self.eligible_actions):
             raise ValueError("eligible action outside context")
+        if self.decision_mode == "interpretation_only" and self.eligible_actions:
+            raise ValueError("interpretation-only context cannot contain executable actions")
         if any(item.candidate_id not in set(self.shortlist.included_candidate_ids)
                for item in self.eligible_actions):
             raise ValueError("eligible action candidate outside recorded shortlist")
@@ -239,6 +254,10 @@ class DecisionContext(Contract):
                           if o.candidate_id == candidate.candidate_id}
             if set(candidate.observation_ids) != actual_ids:
                 raise ValueError("candidate observation index mismatch")
+        if any(item.assay_id not in assay_ids or
+               (item.candidate_id is not None and item.candidate_id not in candidate_ids)
+               for item in self.prior_hypotheses):
+            raise ValueError("prior hypothesis outside context")
         if len({(a.candidate_id, a.assay_id) for a in self.eligible_actions}) != len(self.eligible_actions):
             raise ValueError("duplicate eligible action")
         state_ref_ids = [item.state_ref for item in self.state_refs]
@@ -298,11 +317,16 @@ def plan_shortlist(
     candidate_limit: int = 24,
     seed: int = 3,
     anchor_candidate_ids: Sequence[str] = (),
+    generation_public_state_version: int = 0,
 ) -> ShortlistPlan:
     if isinstance(candidate_limit, bool) or not isinstance(candidate_limit, int) or not 1 <= candidate_limit <= MAX_CANDIDATES:
         raise ValueError(f"candidate_limit must be between 1 and {MAX_CANDIDATES}")
     if isinstance(seed, bool) or not isinstance(seed, int) or not 0 <= seed <= 2**31 - 1:
         raise ValueError("shortlist seed must be a nonnegative 32-bit integer")
+    if (isinstance(generation_public_state_version, bool)
+            or not isinstance(generation_public_state_version, int)
+            or generation_public_state_version < 0):
+        raise ValueError("generation_public_state_version must be a nonnegative integer")
     actions = [a if isinstance(a, EligibleAction) else EligibleAction.model_validate(a) for a in eligible_actions]
     pairs = [(a.candidate_id, a.assay_id) for a in actions]
     if len(pairs) != len(set(pairs)):
@@ -331,6 +355,10 @@ def plan_shortlist(
         "seed": seed,
         "eligible_action_count": len(ordered_actions),
         "eligible_candidate_count": len(candidate_ids),
+        "generation_public_state_version": generation_public_state_version,
+        "context_candidate_count": len(selected),
+        "current_eligible_action_count": len(selected_actions),
+        "current_eligible_candidate_count": len(selected),
         "eligible_actions_sha256": sha256_json([a.model_dump(mode="json") for a in ordered_actions]),
         "included_candidate_ids": selected,
     }
@@ -358,6 +386,7 @@ def build_context(
     candidate_limit: int = 24,
     shortlist_seed: int = 3,
     anchor_candidate_ids: Sequence[str] = (),
+    decision_mode: Literal["action", "interpretation_only"] = "action",
 ) -> DecisionContext:
     """Build a digest-bound context from public DTOs only; paths and private handles are rejected."""
     campaign = public_campaign if isinstance(public_campaign, PublicCampaign) else PublicCampaign.model_validate(public_campaign)
@@ -365,6 +394,7 @@ def build_context(
     plan = shortlist_plan or plan_shortlist(
         actions, candidate_limit=candidate_limit, seed=shortlist_seed,
         anchor_candidate_ids=anchor_candidate_ids,
+        generation_public_state_version=public_state_version,
     )
     all_observations = [
         observation_context_from_public(o)
@@ -379,9 +409,13 @@ def build_context(
     if any(obs_id not in observation_map for obs_id in new_ids):
         raise ValueError("newly released observation is not in public state")
 
+    attempts = [a if isinstance(a, PublicAttempt) else PublicAttempt.model_validate(a) for a in public_attempts]
+
     current_pairs = {(a.candidate_id, a.assay_id) for a in actions}
     selected_ids = set(plan.metadata.included_candidate_ids)
-    allowed_candidates = selected_ids | {observation_map[o].candidate_id for o in new_ids}
+    required_history_candidates = {observation_map[o].candidate_id for o in new_ids}
+    required_history_candidates.update(item.candidate_id for item in attempts)
+    allowed_candidates = selected_ids | required_history_candidates
     if any(candidate_id not in selected_ids for candidate_id, _ in current_pairs):
         raise ValueError("eligible action is outside the fixed shortlist")
     if any(candidate_id not in {c.candidate_id for c in campaign.candidates} for candidate_id in allowed_candidates):
@@ -421,6 +455,18 @@ def build_context(
             source_id=source.source_id, source_cid=cid_by_candidate.get(candidate_id),
             original_smiles=source.original_smiles, observation_ids=obs_ids,
         ))
+    # Recompute the metadata digest for the actual context. Selection-time
+    # totals remain intact while the context and current-action counts reflect
+    # only DTOs that are sent to this decision.
+    metadata_core = plan.metadata.model_dump(exclude={"shortlist_sha256"})
+    metadata_core.update({
+        "context_candidate_count": len(candidates),
+        "current_eligible_action_count": len(actions),
+        "current_eligible_candidate_count": len({a.candidate_id for a in actions}),
+    })
+    plan = ShortlistPlan(metadata=ShortlistMetadata(
+        **metadata_core, shortlist_sha256=sha256_json(metadata_core),
+    ))
     state_refs = [
         StateReference(state_ref="state:public", kind="public_state", value=f"version={public_state_version}; as_of={_as_of_string(public_as_of, campaign.as_of)}"),
         StateReference(state_ref="state:budget", kind="budget", value=json.dumps(
@@ -429,7 +475,6 @@ def build_context(
         )),
         StateReference(state_ref="state:eligible_actions", kind="eligibility", value=f"shortlist={plan.metadata.shortlist_sha256}; current_actions={len(actions)}"),
     ]
-    attempts = [a if isinstance(a, PublicAttempt) else PublicAttempt.model_validate(a) for a in public_attempts]
     for attempt in attempts:
         if attempt.candidate_id not in allowed_candidates or attempt.assay_id not in assay_ids:
             raise ValueError("public attempt outside context")
@@ -444,6 +489,7 @@ def build_context(
     budget = budget_and_limits if isinstance(budget_and_limits, BudgetAndLimits) else BudgetAndLimits.model_validate(budget_and_limits)
     payload: dict[str, Any] = {
         "schema_version": CONTEXT_SCHEMA_VERSION,
+        "decision_mode": decision_mode,
         "campaign_id": campaign.campaign.campaign_id,
         "source_run_id": source_run_id,
         "public_state_version": public_state_version,
@@ -492,6 +538,7 @@ def _build_evidence_catalog(
     obs_by_id = {item.observation_id: item for item in observations}
     candidate_by_id = {item.candidate_id: item for item in campaign.candidates}
     assay_by_id = {item.assay_id: item for item in campaign.assays}
+    runtime_evidence_ids: set[str] = set()
     for evidence_id in needed:
         document = documents.get(evidence_id)
         if not isinstance(document, dict):
@@ -536,6 +583,67 @@ def _build_evidence_catalog(
                     "source_file_sha256": trace.get("source_file_sha256"),
                     "raw_row": row,
                 })
+        elif document.get("source_kind") == "pubchem_runtime_measurement":
+            # Runtime publications store the allowlisted source row directly in
+            # the evidence document. The coordinator has checked its persisted
+            # payload hash in the atomic public snapshot; repeat its identity
+            # and Observation-link checks before exposing only public columns.
+            evidence_ref = referenced.get(evidence_id)
+            if (document.get("evidence_id") != evidence_id or evidence_ref is None
+                    or evidence_ref.source_kind != "pubchem_runtime_measurement"
+                    or document.get("source_row_id") != evidence_ref.source_id):
+                raise ValueError("runtime evidence identity mismatch")
+            linked = [item for item in observations if evidence_id in item.evidence_refs]
+            if len(linked) != 1:
+                raise ValueError("runtime evidence must identify exactly one Observation")
+            observation = linked[0]
+            raw = document.get("raw_row")
+            if not isinstance(raw, dict):
+                raise ValueError("runtime public evidence raw row missing")
+            row = {key: raw.get(key) for key in _PUBLIC_ROW_KEYS}
+            candidate = candidate_by_id.get(observation.candidate_id)
+            assay = assay_by_id.get(observation.assay_id)
+            aid = document.get("aid")
+            if (candidate is None or assay is None
+                    or document.get("candidate_id") != observation.candidate_id
+                    or f"SID:{row.get('SID')}" != candidate.source_id
+                    or str(row.get("AID")) != str(aid)):
+                raise ValueError("runtime evidence does not match its candidate, SID, or AID")
+            matching_assay_evidence = [
+                item for item in campaign.evidence
+                if item.source_id == f"PubChem AID:{aid}"
+                and (source_document := documents.get(item.evidence_id)) is not None
+                and source_document.get("evidence_id") == item.evidence_id
+                and str(source_document.get("aid")) == str(aid)
+                and source_document.get("name") == assay.name
+            ]
+            if len(matching_assay_evidence) != 1:
+                raise ValueError("runtime evidence AID does not match the Observation assay")
+            raw_outcome_values = [raw[key] for key in ("Activity Outcome", "Outcome") if key in raw]
+            if (document.get("raw_outcome") != observation.raw_verdict
+                    or not raw_outcome_values
+                    or all(value != document.get("raw_outcome") for value in raw_outcome_values)):
+                raise ValueError("runtime evidence outcome does not match Observation")
+            if getattr(observation.verdict, "value", observation.verdict) not in {
+                "active", "inactive", "inconclusive", "unspecified",
+            }:
+                raise ValueError("invalid runtime Observation verdict")
+            if document.get("cid") is not None:
+                previous = cid_by_candidate.setdefault(observation.candidate_id, str(document["cid"]))
+                if previous != str(document["cid"]):
+                    raise ValueError("conflicting public CID values for candidate")
+            selected_rows[evidence_id].append({
+                "observation_id": observation.observation_id,
+                "candidate_id": observation.candidate_id,
+                "assay_id": observation.assay_id,
+                "source_row_id": document.get("source_row_id"),
+                "source_row_number": document.get("source_row_number"),
+                "source_file_sha256": document.get("source_file_sha256"),
+                "raw_row": row,
+                "raw_verdict": document.get("raw_outcome"),
+                "protocol_location": document.get("protocol_location"),
+            })
+            runtime_evidence_ids.add(evidence_id)
         else:
             archive_payload = document.get("payload")
             if not isinstance(archive_payload, dict):
@@ -588,7 +696,12 @@ def _build_evidence_catalog(
         assay_ids = sorted({row["assay_id"] for row in rows})
         candidate_ids = sorted({row["candidate_id"] for row in rows})
         observation_ids = sorted({row["observation_id"] for row in rows})
-        if "payload" in document and isinstance(document["payload"], dict):
+        if evidence_id in runtime_evidence_ids:
+            assert ref is not None
+            source_kind = ref.source_kind
+            source_id = ref.source_id
+            content = {"kind": "published_measurement_rows", "rows": rows}
+        elif "payload" in document and isinstance(document["payload"], dict):
             payload = document["payload"]
             source_kind = str((document.get("reference") or {}).get("source_kind") or payload.get("source_kind") or "public_measurement")
             source_id = str((document.get("reference") or {}).get("source_id") or payload.get("source_id") or evidence_id)

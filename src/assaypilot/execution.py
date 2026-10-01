@@ -42,7 +42,7 @@ from assaypilot.domain import (
 from assaypilot.replay import ReplayError, ReplayLookupResult, ReplayOracle
 
 
-_SCHEMA_VERSION = 3
+_SCHEMA_VERSION = 5
 _ACTION_KIND = "followup_replay_lookup"
 _MONEY_ZERO = Decimal("0")
 _MAX_PUBLIC_EVIDENCE_BYTES = 32 * 1024
@@ -838,6 +838,55 @@ class ExecutionCoordinator:
             )
             return view, statuses
 
+    def get_scientific_loop_snapshot(
+        self, run_id: str,
+    ) -> tuple[PublicRunView, tuple[ActionExecutionStatus, ...], dict[str, dict[str, object]]]:
+        """Read state, execution status, and every public evidence payload at one SQLite snapshot."""
+        with self._connection() as db:
+            db.execute("BEGIN")
+            view = self._public_state_from_connection(db, run_id)
+            rows = db.execute(
+                """SELECT candidate_id, assay_id, execution_id, status, release_status
+                   FROM executions WHERE run_id = ? ORDER BY execution_id""",
+                (run_id,),
+            ).fetchall()
+            statuses = tuple(
+                ActionExecutionStatus(
+                    candidate_id=row["candidate_id"], assay_id=row["assay_id"],
+                    execution_id=row["execution_id"],
+                    status=("released" if row["release_status"] == "released" else
+                            "cancelled" if row["release_status"] == "cancelled" else row["status"]),
+                )
+                for row in rows
+            )
+            documents: dict[str, dict[str, object]] = {}
+            for reference in self.public.evidence:
+                payload = self._initial_evidence_payloads.get(reference.evidence_id)
+                if payload is None:
+                    raise ExecutionControlError("public_evidence_corrupt", "initial public evidence failed integrity validation")
+                document = _json_object(payload)
+                if document.get("evidence_id") != reference.evidence_id:
+                    raise ExecutionControlError("public_evidence_corrupt", "initial public evidence identity is inconsistent")
+                documents[reference.evidence_id] = document
+            published_rows = db.execute(
+                """SELECT evidence_id, reference_json, payload_json, payload_sha256
+                   FROM published_evidence WHERE run_id = ? ORDER BY evidence_id""",
+                (run_id,),
+            ).fetchall()
+            for row in published_rows:
+                payload = row["payload_json"].encode("utf-8")
+                if _sha256_bytes(payload) != row["payload_sha256"]:
+                    raise ExecutionControlError("public_evidence_corrupt", "published public evidence failed integrity validation")
+                try:
+                    reference = EvidenceRef.model_validate_json(row["reference_json"])
+                    document = _json_object(payload)
+                except (ValidationError, ValueError, UnicodeDecodeError) as exc:
+                    raise ExecutionControlError("public_evidence_corrupt", "published public evidence is malformed") from exc
+                if reference.evidence_id != row["evidence_id"] or document.get("evidence_id") != reference.evidence_id:
+                    raise ExecutionControlError("public_evidence_corrupt", "published public evidence identity is inconsistent")
+                documents[reference.evidence_id] = document
+            return view, statuses, documents
+
     def _public_state_from_connection(self, db: sqlite3.Connection, run_id: str) -> PublicRunView:
         run = self._load_run(db, run_id)
         self._assert_run_binding(run)
@@ -1411,7 +1460,7 @@ class ExecutionCoordinator:
         db = self._connection()
         try:
             version = db.execute("PRAGMA user_version").fetchone()[0]
-            if version not in (0, 1, 2, _SCHEMA_VERSION):
+            if version not in (0, 1, 2, 3, 4, _SCHEMA_VERSION):
                 raise ExecutionControlError("unsupported_database_version", "runtime database schema version is unsupported")
             db.execute("PRAGMA journal_mode = WAL")
             db.execute("BEGIN IMMEDIATE")
@@ -1590,6 +1639,7 @@ class ExecutionCoordinator:
                     view_state_version INTEGER NOT NULL,
                     view_digest TEXT NOT NULL,
                     selected_reason TEXT NOT NULL,
+                    scientific_decision_id TEXT,
                     status TEXT NOT NULL CHECK(status IN (
                         'proposed','approved','pending_release','released','no_record',
                         'failed','rejected','cancelled'
@@ -1627,9 +1677,105 @@ class ExecutionCoordinator:
                 ("budget_spent", "TEXT NOT NULL DEFAULT '0'"),
                 ("budget_reserved", "TEXT NOT NULL DEFAULT '0'"),
                 ("budget_available", "TEXT NOT NULL DEFAULT '0'"),
+                ("scientific_decision_id", "TEXT"),
             ):
                 if column not in loop_step_columns:
                     db.execute(f"ALTER TABLE loop_steps ADD COLUMN {column} {definition}")
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS loop_scientific_decisions (
+                    run_id TEXT NOT NULL,
+                    decision_no INTEGER NOT NULL CHECK(decision_no > 0),
+                    decision_id TEXT NOT NULL,
+                    state_version INTEGER NOT NULL CHECK(state_version >= 0),
+                    context_digest TEXT NOT NULL,
+                    context_json TEXT NOT NULL,
+                    status TEXT NOT NULL CHECK(status IN ('pending','applied','stale','failed')),
+                    result_json TEXT,
+                    validation_json TEXT NOT NULL DEFAULT '[]',
+                    selected_candidate_id TEXT,
+                    selected_assay_id TEXT,
+                    action_step_no INTEGER,
+                    error_code TEXT,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY(run_id, decision_no),
+                    UNIQUE(run_id, decision_id),
+                    FOREIGN KEY(run_id) REFERENCES loop_runs(run_id)
+                )"""
+            )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS loop_scientific_api_calls (
+                    run_id TEXT NOT NULL,
+                    call_no INTEGER NOT NULL CHECK(call_no > 0),
+                    decision_id TEXT NOT NULL,
+                    status TEXT NOT NULL CHECK(status IN ('started','completed','failed')),
+                    provider TEXT NOT NULL,
+                    model TEXT NOT NULL,
+                    request_id TEXT,
+                    latency_ms INTEGER,
+                    transport_attempts INTEGER NOT NULL DEFAULT 1 CHECK(transport_attempts >= 1),
+                    usage_json TEXT NOT NULL DEFAULT '{}',
+                    error_code TEXT,
+                    diagnostic_json TEXT,
+                    started_at TEXT NOT NULL,
+                    completed_at TEXT,
+                    PRIMARY KEY(run_id, call_no),
+                    FOREIGN KEY(run_id, decision_id) REFERENCES loop_scientific_decisions(run_id, decision_id)
+                )"""
+            )
+            api_call_columns = {
+                row["name"] for row in db.execute("PRAGMA table_info(loop_scientific_api_calls)").fetchall()
+            }
+            if "diagnostic_json" not in api_call_columns:
+                db.execute("ALTER TABLE loop_scientific_api_calls ADD COLUMN diagnostic_json TEXT")
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS loop_scientific_hypotheses (
+                    run_id TEXT NOT NULL,
+                    hypothesis_id TEXT NOT NULL,
+                    hypothesis_json TEXT NOT NULL,
+                    updated_decision_id TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY(run_id, hypothesis_id),
+                    FOREIGN KEY(run_id) REFERENCES loop_runs(run_id)
+                )"""
+            )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS loop_scientific_hypothesis_events (
+                    run_id TEXT NOT NULL,
+                    event_no INTEGER NOT NULL CHECK(event_no > 0),
+                    decision_id TEXT NOT NULL,
+                    hypothesis_id TEXT NOT NULL,
+                    event_type TEXT NOT NULL CHECK(event_type IN ('proposed','updated')),
+                    previous_status TEXT,
+                    new_status TEXT NOT NULL,
+                    event_json TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    PRIMARY KEY(run_id, event_no),
+                    UNIQUE(run_id, decision_id, hypothesis_id, event_type),
+                    FOREIGN KEY(run_id) REFERENCES loop_runs(run_id)
+                )"""
+            )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS loop_scientific_interpretations (
+                    run_id TEXT NOT NULL,
+                    observation_id TEXT NOT NULL,
+                    decision_id TEXT NOT NULL,
+                    interpretation_json TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    PRIMARY KEY(run_id, observation_id),
+                    FOREIGN KEY(run_id) REFERENCES loop_runs(run_id)
+                )"""
+            )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS loop_scientific_run_state (
+                    run_id TEXT PRIMARY KEY,
+                    interpretation_complete INTEGER NOT NULL CHECK(interpretation_complete IN (0,1)),
+                    pending_observation_ids_json TEXT NOT NULL DEFAULT '[]',
+                    incomplete_reason TEXT,
+                    updated_at TEXT NOT NULL,
+                    FOREIGN KEY(run_id) REFERENCES loop_runs(run_id)
+                )"""
+            )
             db.execute(
                 """INSERT OR IGNORE INTO run_public_state (run_id, state_version, as_of, observations_json)
                    SELECT run_id, 0, created_at, '[]' FROM runs"""

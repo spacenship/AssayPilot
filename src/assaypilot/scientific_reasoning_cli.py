@@ -77,6 +77,12 @@ def build_actual_public_pair(
                        and item.get("published_observations")), None)
     if not isinstance(first_step, dict):
         raise ValueError("run does not contain a released public observation at step 1")
+    pre_public_view = first_step.get("public_view")
+    if not isinstance(pre_public_view, dict):
+        raise ValueError("step 1 does not contain its pre-action public view")
+    pre_version = _require_state_version(
+        pre_public_view.get("state_version"), "step 1 pre-action public view",
+    )
     candidate_id, assay_id = first_step.get("candidate_id"), first_step.get("assay_id")
     if not isinstance(candidate_id, str) or not isinstance(assay_id, str):
         raise ValueError("step 1 public identity is incomplete")
@@ -87,8 +93,11 @@ def build_actual_public_pair(
     )
     if (candidate_id, assay_id) not in {(item.candidate_id, item.assay_id) for item in full_eligible}:
         raise ValueError("historical step 1 action is not eligible from initial public observations")
-    plan = plan_shortlist(full_eligible, candidate_limit=24, seed=3,
-                          anchor_candidate_ids=[candidate_id])
+    plan = plan_shortlist(
+        full_eligible, candidate_limit=24, seed=3,
+        anchor_candidate_ids=[candidate_id],
+        generation_public_state_version=pre_version,
+    )
     included = set(plan.metadata.included_candidate_ids)
 
     published: list[ObservationContext] = []
@@ -133,7 +142,7 @@ def build_actual_public_pair(
     )
     pre = build_context(
         campaign, evidence_documents, pre_actions, research_goal=SCIENCE_GOAL,
-        public_state_version=first_step.get("public_view", {}).get("state_version", 0),
+        public_state_version=pre_version,
         public_as_of=campaign.as_of,
         budget_and_limits=pre_budget, source_run_id=run_id,
         public_observations=initial_observations, shortlist_plan=plan,
@@ -151,9 +160,11 @@ def build_actual_public_pair(
     reserved = str(after_budget.get("reserved", ""))
     available = str(after_budget.get("available", ""))
     total = _normalize_decimal(pre_budget.total)
-    post_version = matched_exec.get("state_version")
-    if not isinstance(post_version, int):
-        raise ValueError("released public state version is unavailable")
+    post_version = _require_state_version(
+        matched_exec.get("state_version"), "published execution",
+    )
+    if post_version <= pre_version:
+        raise ValueError("published execution state version did not advance beyond the pre-action state")
     published_at = matched_exec.get("published_at")
     if not isinstance(published_at, str):
         raise ValueError("released public timestamp is unavailable")
@@ -183,6 +194,13 @@ def build_actual_public_pair(
                               "step_no": 1, "selector": public_export["summary"].get("selector", {})},
         "public_export_revision": exports[-1].parent.name,
     }
+
+
+def _require_state_version(value: Any, source: str) -> int:
+    """Read a persisted state version; never infer it from a run step number."""
+    if type(value) is not int or value < 0:
+        raise ValueError(f"{source} has no valid persisted state version")
+    return value
 
 
 def _normalize_decimal(value: str) -> str:
@@ -268,17 +286,19 @@ def _smoke_call(provider: OpenAICompatibleChatProvider) -> dict[str, Any]:
 def _prior_from_decision(result) -> list[PriorHypothesis]:
     return [PriorHypothesis(
         hypothesis_id=item.hypothesis_id, statement=item.statement,
+        hypothesis_kind=item.hypothesis_kind,
         candidate_id=item.candidate_id, assay_id=item.assay_id,
-        status=item.status,
+        expected_outcome=item.expected_outcome, status=item.status,
     ) for item in result.decision.hypotheses]
 
 
 def _metadata_safe(settings: LLMSettings) -> dict[str, Any]:
     return {
         "provider": settings.provider, "configured_model": settings.model,
+        "api_mode": settings.resolved_api_mode,
         "response_format": settings.response_format, "timeout_seconds": settings.timeout_seconds,
         "max_output_tokens": settings.max_output_tokens,
-        "token_parameter": settings.token_parameter,
+        "token_parameter": settings.effective_token_parameter,
         "transport_retry_attempts": settings.retry_attempts,
         "credentials_present": bool(settings.api_key),
     }
@@ -334,7 +354,7 @@ def _execute(args: argparse.Namespace) -> int:
         post_prior = _prior_from_decision(pre_result)
         _, refreshed = build_actual_public_pair(args.run_id, prior_hypotheses=post_prior)
         post = refreshed["post"]
-        _write_json(output_dir / "post_observation_context.json", post.model_dump(mode="json"))
+        _replace_json(output_dir / "post_observation_context.json", post.model_dump(mode="json"))
         post_result = reasoner.decide(post)
         _write_json(output_dir / "post_observation_decision.json", post_result.model_dump(mode="json"))
         manifest.update({
@@ -359,6 +379,9 @@ def _execute(args: argparse.Namespace) -> int:
     except Exception as exc:
         manifest.update({"status": "failed", "failure_type": type(exc).__name__,
                          "failure_code": getattr(exc, "code", "stage5a_error")})
+        validation_issues = getattr(exc, "issues", None)
+        if isinstance(validation_issues, list) and all(isinstance(item, str) for item in validation_issues):
+            manifest["validation_issues"] = validation_issues[:24]
         _replace_json(output_dir / "input_manifest.json", manifest)
         raise
 
