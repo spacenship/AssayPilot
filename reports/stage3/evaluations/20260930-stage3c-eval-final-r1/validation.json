@@ -1,0 +1,80 @@
+{
+  "evaluation_id": "20260930-stage3c-eval-final-r1",
+  "overall_status": "complete",
+  "runs": [
+    {
+      "errors": [],
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-fixed-order",
+      "status": "passed"
+    },
+    {
+      "errors": [],
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-random-priority-seed-0",
+      "status": "passed"
+    },
+    {
+      "errors": [],
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-random-priority-seed-1",
+      "status": "passed"
+    },
+    {
+      "errors": [],
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-random-priority-seed-2",
+      "status": "passed"
+    },
+    {
+      "errors": [],
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-random-priority-seed-3",
+      "status": "passed"
+    },
+    {
+      "errors": [],
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-random-priority-seed-4",
+      "status": "passed"
+    },
+    {
+      "errors": [],
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-fixed-order",
+      "status": "passed"
+    },
+    {
+      "errors": [],
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-random-priority-seed-0",
+      "status": "passed"
+    },
+    {
+      "errors": [],
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-random-priority-seed-1",
+      "status": "passed"
+    },
+    {
+      "errors": [],
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-random-priority-seed-2",
+      "status": "passed"
+    },
+    {
+      "errors": [],
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-random-priority-seed-3",
+      "status": "passed"
+    },
+    {
+      "errors": [],
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-random-priority-seed-4",
+      "status": "passed"
+    }
+  ],
+  "schema_version": "assaypilot.stage3c.validation.v1",
+  "truth_adapter_enabled": true
+}

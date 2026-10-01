@@ -1,0 +1,476 @@
+{
+  "baseline_id": "20260930-stage3c-publication-archive-r2",
+  "executions": [
+    {
+      "action_id": "loop-action-670e514906484b7d959234e2cb0a5e43",
+      "assay_id": "mep2-confirmatory",
+      "candidate_id": "candidate-a1e11fccb60854953cbd",
+      "cost": "1",
+      "evidence": [
+        {
+          "payload": {
+            "aid": 2272,
+            "candidate_id": "candidate-a1e11fccb60854953cbd",
+            "cid": 738231,
+            "evidence_id": "evidence-800b278f85cb981f4b445f7330248fab",
+            "measurement_id": "measurement-b020c8044336988703ff",
+            "protocol_location": "https://pubchem.ncbi.nlm.nih.gov/bioassay/2272",
+            "raw_outcome": "Inactive",
+            "raw_row": {
+              "AID": "2272",
+              "Activity Name": "",
+              "Activity Outcome": "Inactive",
+              "CID": "738231",
+              "SID": "49668289"
+            },
+            "schema_version": "1.0.0",
+            "sid": 49668289,
+            "source_file_sha256": "216687f278a1af586f8aafbb33306b6475c14375e6ccaf755f57ed96f44a48c1",
+            "source_kind": "pubchem_runtime_measurement",
+            "source_row_id": "raw-13f1f9e84e4f5e9e7845",
+            "source_row_number": 755
+          },
+          "reference": {
+            "evidence_id": "evidence-800b278f85cb981f4b445f7330248fab",
+            "location": "runtime/0cf69add0ef5d70a2f9b20cc/evidence-800b278f85cb981f4b445f7330248fab.json",
+            "source_id": "raw-13f1f9e84e4f5e9e7845",
+            "source_kind": "pubchem_runtime_measurement"
+          },
+          "sha256": "ee59c5fe2d2243ab41a8b31e45c97aeba7848bdad51e000bd0678f3d8ecebf92"
+        }
+      ],
+      "execution_id": "execution-fc7a637db97549198c053ae94e4a2ace",
+      "observations": [
+        {
+          "assay_id": "mep2-confirmatory",
+          "candidate_id": "candidate-a1e11fccb60854953cbd",
+          "comparison": null,
+          "condition_id": "not_reported:2272",
+          "evidence_ids": [
+            "evidence-800b278f85cb981f4b445f7330248fab"
+          ],
+          "observation_id": "observation-800b278f85cb981f4b445f7330248fab",
+          "raw_verdict": "Inactive",
+          "released_at": "2026-09-30T08:07:40.121507Z",
+          "replicate_id": "not_reported:raw-13f1f9e84e4f5e9e7845",
+          "unit": null,
+          "value": null,
+          "verdict": "inactive"
+        }
+      ],
+      "published_at": "2026-09-30T08:07:40.121507+00:00",
+      "receipt": {
+        "accepted_at": "2026-09-30T08:07:39.999779Z",
+        "action_id": "loop-action-670e514906484b7d959234e2cb0a5e43",
+        "receipt_id": "receipt-execution-fc7a637db97549198c053ae94e4a2ace",
+        "schema_version": "0.1.0"
+      },
+      "result": {
+        "action_id": "loop-action-670e514906484b7d959234e2cb0a5e43",
+        "error": null,
+        "observations": [
+          {
+            "assay_id": "mep2-confirmatory",
+            "candidate_id": "candidate-a1e11fccb60854953cbd",
+            "comparison": null,
+            "condition_id": "not_reported:2272",
+            "evidence_ids": [
+              "evidence-800b278f85cb981f4b445f7330248fab"
+            ],
+            "observation_id": "observation-800b278f85cb981f4b445f7330248fab",
+            "raw_verdict": "Inactive",
+            "released_at": "2026-09-30T08:07:40.121507Z",
+            "replicate_id": "not_reported:raw-13f1f9e84e4f5e9e7845",
+            "unit": null,
+            "value": null,
+            "verdict": "inactive"
+          }
+        ],
+        "receipt_id": "receipt-execution-fc7a637db97549198c053ae94e4a2ace",
+        "schema_version": "0.1.0",
+        "status": "completed"
+      },
+      "state_version": 3,
+      "step_no": 2,
+      "unit": "synthetic_credit"
+    },
+    {
+      "action_id": "loop-action-2d7fc888013049518f8bc927a92c0802",
+      "assay_id": "mep2-confirmatory",
+      "candidate_id": "candidate-26b81f9c51813ed8befb",
+      "cost": "1",
+      "evidence": [
+        {
+          "payload": {
+            "aid": 2272,
+            "candidate_id": "candidate-26b81f9c51813ed8befb",
+            "cid": 2992168,
+            "evidence_id": "evidence-18accd99542cbcc10f926e1053b4652e",
+            "measurement_id": "measurement-cf1895150e319197fa48",
+            "protocol_location": "https://pubchem.ncbi.nlm.nih.gov/bioassay/2272",
+            "raw_outcome": "Inactive",
+            "raw_row": {
+              "AID": "2272",
+              "Activity Name": "",
+              "Activity Outcome": "Inactive",
+              "CID": "2992168",
+              "SID": "4248612"
+            },
+            "schema_version": "1.0.0",
+            "sid": 4248612,
+            "source_file_sha256": "216687f278a1af586f8aafbb33306b6475c14375e6ccaf755f57ed96f44a48c1",
+            "source_kind": "pubchem_runtime_measurement",
+            "source_row_id": "raw-8211b932ff1fa58d8dcf",
+            "source_row_number": 723
+          },
+          "reference": {
+            "evidence_id": "evidence-18accd99542cbcc10f926e1053b4652e",
+            "location": "runtime/0cf69add0ef5d70a2f9b20cc/evidence-18accd99542cbcc10f926e1053b4652e.json",
+            "source_id": "raw-8211b932ff1fa58d8dcf",
+            "source_kind": "pubchem_runtime_measurement"
+          },
+          "sha256": "8003be4951212d34f90c066c5daf0fca1a5c3f946e4b28c50f091c383a2ef230"
+        }
+      ],
+      "execution_id": "execution-a10f6787656c405191b92646b723dab5",
+      "observations": [
+        {
+          "assay_id": "mep2-confirmatory",
+          "candidate_id": "candidate-26b81f9c51813ed8befb",
+          "comparison": null,
+          "condition_id": "not_reported:2272",
+          "evidence_ids": [
+            "evidence-18accd99542cbcc10f926e1053b4652e"
+          ],
+          "observation_id": "observation-18accd99542cbcc10f926e1053b4652e",
+          "raw_verdict": "Inactive",
+          "released_at": "2026-09-30T08:07:40.697409Z",
+          "replicate_id": "not_reported:raw-8211b932ff1fa58d8dcf",
+          "unit": null,
+          "value": null,
+          "verdict": "inactive"
+        }
+      ],
+      "published_at": "2026-09-30T08:07:40.697409+00:00",
+      "receipt": {
+        "accepted_at": "2026-09-30T08:07:40.610016Z",
+        "action_id": "loop-action-2d7fc888013049518f8bc927a92c0802",
+        "receipt_id": "receipt-execution-a10f6787656c405191b92646b723dab5",
+        "schema_version": "0.1.0"
+      },
+      "result": {
+        "action_id": "loop-action-2d7fc888013049518f8bc927a92c0802",
+        "error": null,
+        "observations": [
+          {
+            "assay_id": "mep2-confirmatory",
+            "candidate_id": "candidate-26b81f9c51813ed8befb",
+            "comparison": null,
+            "condition_id": "not_reported:2272",
+            "evidence_ids": [
+              "evidence-18accd99542cbcc10f926e1053b4652e"
+            ],
+            "observation_id": "observation-18accd99542cbcc10f926e1053b4652e",
+            "raw_verdict": "Inactive",
+            "released_at": "2026-09-30T08:07:40.697409Z",
+            "replicate_id": "not_reported:raw-8211b932ff1fa58d8dcf",
+            "unit": null,
+            "value": null,
+            "verdict": "inactive"
+          }
+        ],
+        "receipt_id": "receipt-execution-a10f6787656c405191b92646b723dab5",
+        "schema_version": "0.1.0",
+        "status": "completed"
+      },
+      "state_version": 5,
+      "step_no": 3,
+      "unit": "synthetic_credit"
+    },
+    {
+      "action_id": "loop-action-4b0d3d80784945c7ba2d5fe805728bd9",
+      "assay_id": "mep2-confirmatory",
+      "candidate_id": "candidate-a5fe9afb7c6c3d664ff4",
+      "cost": "1",
+      "evidence": [
+        {
+          "payload": {
+            "aid": 2272,
+            "candidate_id": "candidate-a5fe9afb7c6c3d664ff4",
+            "cid": 2224699,
+            "evidence_id": "evidence-44543e5112d57bd76fa9f26401649c28",
+            "measurement_id": "measurement-086693fe893b647e3a8e",
+            "protocol_location": "https://pubchem.ncbi.nlm.nih.gov/bioassay/2272",
+            "raw_outcome": "Inactive",
+            "raw_row": {
+              "AID": "2272",
+              "Activity Name": "",
+              "Activity Outcome": "Inactive",
+              "CID": "2224699",
+              "SID": "4257230"
+            },
+            "schema_version": "1.0.0",
+            "sid": 4257230,
+            "source_file_sha256": "216687f278a1af586f8aafbb33306b6475c14375e6ccaf755f57ed96f44a48c1",
+            "source_kind": "pubchem_runtime_measurement",
+            "source_row_id": "raw-fda3bb682fca7bd5d637",
+            "source_row_number": 956
+          },
+          "reference": {
+            "evidence_id": "evidence-44543e5112d57bd76fa9f26401649c28",
+            "location": "runtime/0cf69add0ef5d70a2f9b20cc/evidence-44543e5112d57bd76fa9f26401649c28.json",
+            "source_id": "raw-fda3bb682fca7bd5d637",
+            "source_kind": "pubchem_runtime_measurement"
+          },
+          "sha256": "5e93dbc3eaa9cb3dba4808a7768dae50f4f11046ed53f4a4a971a33c6711e466"
+        }
+      ],
+      "execution_id": "execution-309dbf64b03740fe9eebe6e75d29ecd5",
+      "observations": [
+        {
+          "assay_id": "mep2-confirmatory",
+          "candidate_id": "candidate-a5fe9afb7c6c3d664ff4",
+          "comparison": null,
+          "condition_id": "not_reported:2272",
+          "evidence_ids": [
+            "evidence-44543e5112d57bd76fa9f26401649c28"
+          ],
+          "observation_id": "observation-44543e5112d57bd76fa9f26401649c28",
+          "raw_verdict": "Inactive",
+          "released_at": "2026-09-30T08:07:41.665838Z",
+          "replicate_id": "not_reported:raw-fda3bb682fca7bd5d637",
+          "unit": null,
+          "value": null,
+          "verdict": "inactive"
+        }
+      ],
+      "published_at": "2026-09-30T08:07:41.665838+00:00",
+      "receipt": {
+        "accepted_at": "2026-09-30T08:07:41.519133Z",
+        "action_id": "loop-action-4b0d3d80784945c7ba2d5fe805728bd9",
+        "receipt_id": "receipt-execution-309dbf64b03740fe9eebe6e75d29ecd5",
+        "schema_version": "0.1.0"
+      },
+      "result": {
+        "action_id": "loop-action-4b0d3d80784945c7ba2d5fe805728bd9",
+        "error": null,
+        "observations": [
+          {
+            "assay_id": "mep2-confirmatory",
+            "candidate_id": "candidate-a5fe9afb7c6c3d664ff4",
+            "comparison": null,
+            "condition_id": "not_reported:2272",
+            "evidence_ids": [
+              "evidence-44543e5112d57bd76fa9f26401649c28"
+            ],
+            "observation_id": "observation-44543e5112d57bd76fa9f26401649c28",
+            "raw_verdict": "Inactive",
+            "released_at": "2026-09-30T08:07:41.665838Z",
+            "replicate_id": "not_reported:raw-fda3bb682fca7bd5d637",
+            "unit": null,
+            "value": null,
+            "verdict": "inactive"
+          }
+        ],
+        "receipt_id": "receipt-execution-309dbf64b03740fe9eebe6e75d29ecd5",
+        "schema_version": "0.1.0",
+        "status": "completed"
+      },
+      "state_version": 8,
+      "step_no": 5,
+      "unit": "synthetic_credit"
+    },
+    {
+      "action_id": "loop-action-9d6262b29bd34a48941d59fa3fb15d91",
+      "assay_id": "mep2-confirmatory",
+      "candidate_id": "candidate-1877163ec84f1afdbbb7",
+      "cost": "1",
+      "evidence": [
+        {
+          "payload": {
+            "aid": 2272,
+            "candidate_id": "candidate-1877163ec84f1afdbbb7",
+            "cid": 5177075,
+            "evidence_id": "evidence-f3498e84419dc40718e2242f98a7a6ea",
+            "measurement_id": "measurement-f5ad83fde1cddd6b1ce4",
+            "protocol_location": "https://pubchem.ncbi.nlm.nih.gov/bioassay/2272",
+            "raw_outcome": "Inactive",
+            "raw_row": {
+              "AID": "2272",
+              "Activity Name": "",
+              "Activity Outcome": "Inactive",
+              "CID": "5177075",
+              "SID": "49679340"
+            },
+            "schema_version": "1.0.0",
+            "sid": 49679340,
+            "source_file_sha256": "216687f278a1af586f8aafbb33306b6475c14375e6ccaf755f57ed96f44a48c1",
+            "source_kind": "pubchem_runtime_measurement",
+            "source_row_id": "raw-8f7e5e88fa6e9a1dbe12",
+            "source_row_number": 1719
+          },
+          "reference": {
+            "evidence_id": "evidence-f3498e84419dc40718e2242f98a7a6ea",
+            "location": "runtime/0cf69add0ef5d70a2f9b20cc/evidence-f3498e84419dc40718e2242f98a7a6ea.json",
+            "source_id": "raw-8f7e5e88fa6e9a1dbe12",
+            "source_kind": "pubchem_runtime_measurement"
+          },
+          "sha256": "7376812068e598285b750d939ab1b49c1158043351e2c489303f57c8c7d4675d"
+        }
+      ],
+      "execution_id": "execution-47c0b76ea9e64eea80e2768ba1bbc8f0",
+      "observations": [
+        {
+          "assay_id": "mep2-confirmatory",
+          "candidate_id": "candidate-1877163ec84f1afdbbb7",
+          "comparison": null,
+          "condition_id": "not_reported:2272",
+          "evidence_ids": [
+            "evidence-f3498e84419dc40718e2242f98a7a6ea"
+          ],
+          "observation_id": "observation-f3498e84419dc40718e2242f98a7a6ea",
+          "raw_verdict": "Inactive",
+          "released_at": "2026-09-30T08:07:42.335034Z",
+          "replicate_id": "not_reported:raw-8f7e5e88fa6e9a1dbe12",
+          "unit": null,
+          "value": null,
+          "verdict": "inactive"
+        }
+      ],
+      "published_at": "2026-09-30T08:07:42.335034+00:00",
+      "receipt": {
+        "accepted_at": "2026-09-30T08:07:42.200170Z",
+        "action_id": "loop-action-9d6262b29bd34a48941d59fa3fb15d91",
+        "receipt_id": "receipt-execution-47c0b76ea9e64eea80e2768ba1bbc8f0",
+        "schema_version": "0.1.0"
+      },
+      "result": {
+        "action_id": "loop-action-9d6262b29bd34a48941d59fa3fb15d91",
+        "error": null,
+        "observations": [
+          {
+            "assay_id": "mep2-confirmatory",
+            "candidate_id": "candidate-1877163ec84f1afdbbb7",
+            "comparison": null,
+            "condition_id": "not_reported:2272",
+            "evidence_ids": [
+              "evidence-f3498e84419dc40718e2242f98a7a6ea"
+            ],
+            "observation_id": "observation-f3498e84419dc40718e2242f98a7a6ea",
+            "raw_verdict": "Inactive",
+            "released_at": "2026-09-30T08:07:42.335034Z",
+            "replicate_id": "not_reported:raw-8f7e5e88fa6e9a1dbe12",
+            "unit": null,
+            "value": null,
+            "verdict": "inactive"
+          }
+        ],
+        "receipt_id": "receipt-execution-47c0b76ea9e64eea80e2768ba1bbc8f0",
+        "schema_version": "0.1.0",
+        "status": "completed"
+      },
+      "state_version": 10,
+      "step_no": 6,
+      "unit": "synthetic_credit"
+    },
+    {
+      "action_id": "loop-action-f63fe6384d8749d1823b89b9e0ffb262",
+      "assay_id": "mep2-confirmatory",
+      "candidate_id": "candidate-a8857ab083cb6edd5405",
+      "cost": "1",
+      "evidence": [
+        {
+          "payload": {
+            "aid": 2272,
+            "candidate_id": "candidate-a8857ab083cb6edd5405",
+            "cid": 660488,
+            "evidence_id": "evidence-77b18fe1aaa11209796552b38b49da38",
+            "measurement_id": "measurement-e63c5214479b2a31dc92",
+            "protocol_location": "https://pubchem.ncbi.nlm.nih.gov/bioassay/2272",
+            "raw_outcome": "Inactive",
+            "raw_row": {
+              "AID": "2272",
+              "Activity Name": "",
+              "Activity Outcome": "Inactive",
+              "CID": "660488",
+              "SID": "859182"
+            },
+            "schema_version": "1.0.0",
+            "sid": 859182,
+            "source_file_sha256": "216687f278a1af586f8aafbb33306b6475c14375e6ccaf755f57ed96f44a48c1",
+            "source_kind": "pubchem_runtime_measurement",
+            "source_row_id": "raw-f6cc62abdbac0172848c",
+            "source_row_number": 49
+          },
+          "reference": {
+            "evidence_id": "evidence-77b18fe1aaa11209796552b38b49da38",
+            "location": "runtime/0cf69add0ef5d70a2f9b20cc/evidence-77b18fe1aaa11209796552b38b49da38.json",
+            "source_id": "raw-f6cc62abdbac0172848c",
+            "source_kind": "pubchem_runtime_measurement"
+          },
+          "sha256": "d996cf1c5ccd7bce1b5ac550eec700a78b4fe0fc8c2352b81b38bc92e7b4215e"
+        }
+      ],
+      "execution_id": "execution-2dec386e174640b3a7c027aab75da7d8",
+      "observations": [
+        {
+          "assay_id": "mep2-confirmatory",
+          "candidate_id": "candidate-a8857ab083cb6edd5405",
+          "comparison": null,
+          "condition_id": "not_reported:2272",
+          "evidence_ids": [
+            "evidence-77b18fe1aaa11209796552b38b49da38"
+          ],
+          "observation_id": "observation-77b18fe1aaa11209796552b38b49da38",
+          "raw_verdict": "Inactive",
+          "released_at": "2026-09-30T08:07:50.129512Z",
+          "replicate_id": "not_reported:raw-f6cc62abdbac0172848c",
+          "unit": null,
+          "value": null,
+          "verdict": "inactive"
+        }
+      ],
+      "published_at": "2026-09-30T08:07:50.129512+00:00",
+      "receipt": {
+        "accepted_at": "2026-09-30T08:07:49.997257Z",
+        "action_id": "loop-action-f63fe6384d8749d1823b89b9e0ffb262",
+        "receipt_id": "receipt-execution-2dec386e174640b3a7c027aab75da7d8",
+        "schema_version": "0.1.0"
+      },
+      "result": {
+        "action_id": "loop-action-f63fe6384d8749d1823b89b9e0ffb262",
+        "error": null,
+        "observations": [
+          {
+            "assay_id": "mep2-confirmatory",
+            "candidate_id": "candidate-a8857ab083cb6edd5405",
+            "comparison": null,
+            "condition_id": "not_reported:2272",
+            "evidence_ids": [
+              "evidence-77b18fe1aaa11209796552b38b49da38"
+            ],
+            "observation_id": "observation-77b18fe1aaa11209796552b38b49da38",
+            "raw_verdict": "Inactive",
+            "released_at": "2026-09-30T08:07:50.129512Z",
+            "replicate_id": "not_reported:raw-f6cc62abdbac0172848c",
+            "unit": null,
+            "value": null,
+            "verdict": "inactive"
+          }
+        ],
+        "receipt_id": "receipt-execution-2dec386e174640b3a7c027aab75da7d8",
+        "schema_version": "0.1.0",
+        "status": "completed"
+      },
+      "state_version": 33,
+      "step_no": 28,
+      "unit": "synthetic_credit"
+    }
+  ],
+  "plan_sha256": "79555f0bba18316b8f7e3620a9fefe46b7bf376d39dde1f6e3f8cd63c46042bf",
+  "run_id": "stage3c-expanded-random-priority-seed-0",
+  "schema_version": "assaypilot.stage3c.published-results.v1",
+  "snapshot_id": "revision-20260918-primary-active-all",
+  "snapshot_revision": "revision-20260918-primary-active-all",
+  "source": "trusted run-bound Publication Reader; released executions only"
+}

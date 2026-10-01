@@ -1,0 +1,721 @@
+{
+  "budget_current": {
+    "available": "1",
+    "reserved": "0",
+    "spent": "4",
+    "total": "5",
+    "unit": "synthetic_credit"
+  },
+  "public_view_schema_version": "assaypilot.selector-view.v1",
+  "run_id": "stage3b-expanded-fixed-order",
+  "schema_version": "assaypilot.stage3b.public-run-trace.v1",
+  "selector": {
+    "algorithm_version": null,
+    "kind": "fixed_order",
+    "seed": null
+  },
+  "snapshot_revision": "revision-20260918-primary-active-all",
+  "steps": [
+    {
+      "action_id": "loop-action-7bb919203aab4fda89dd109577fe3f0b",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-0013fe448f989571e188",
+      "error_code": null,
+      "execution_id": "execution-752dda06f8ab4abba9f39111e8a68230",
+      "public_view": {
+        "digest": "22e6300932909d500414a42e0cf3d6f6a777e80d7db6c22e37725d68ca6f696c",
+        "state_version": 0
+      },
+      "published_observations": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "evidence-21c6fcd9fe48d8418244ca4e4ba59cb8",
+              "sha256": "1df4bf84b91b80b59aa203c87eda936a8db9dc6f0c289856d25b72e51e26816c"
+            }
+          ],
+          "observation_id": "observation-21c6fcd9fe48d8418244ca4e4ba59cb8"
+        }
+      ],
+      "request_id": "loop-request-f33c453a247d477e98b094c34c5544a1",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "released",
+      "step_no": 1
+    },
+    {
+      "action_id": "loop-action-6399632e17ec490da7bac8981eb36001",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-0032e9c084a637f026de",
+      "error_code": null,
+      "execution_id": "execution-e7a6d65493c14bbbb4e06d3383aaae9e",
+      "public_view": {
+        "digest": "365dbf54b866a573798ea5e79954243069366ad94f084329ca3d11f9e3968d11",
+        "state_version": 2
+      },
+      "published_observations": [],
+      "request_id": "loop-request-5c85f207ea994a3eb4a20a1a90d1a66e",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 2
+    },
+    {
+      "action_id": "loop-action-db14a08600f74df49c736605d765cc0b",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-00748f56c546b376caa6",
+      "error_code": null,
+      "execution_id": "execution-19a3a9a0a78947ff9bae1bce53b150ee",
+      "public_view": {
+        "digest": "647b8c227e52215a5a0374b4425ebbb26b805c9beee58c09ee31c7aa2219247f",
+        "state_version": 3
+      },
+      "published_observations": [],
+      "request_id": "loop-request-b7c9eaeeb72b490a8f7e75c5a0c7836f",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 3
+    },
+    {
+      "action_id": "loop-action-3a9584909eb943209ae5f4984c0c3606",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-007fb99acaca74d1eaac",
+      "error_code": null,
+      "execution_id": "execution-d4c86e68871a4e0887718390a1ec2849",
+      "public_view": {
+        "digest": "f86204ab0d1a4433116a3b87e3233523e070753ba904895bac7878b7e280cbf1",
+        "state_version": 4
+      },
+      "published_observations": [],
+      "request_id": "loop-request-ae08ede42d56461d87ef81dfd9591ba1",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 4
+    },
+    {
+      "action_id": "loop-action-938eec3b2b5f45abb4fdf5ed1422358c",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-0084b1c2def80ae4bb71",
+      "error_code": null,
+      "execution_id": "execution-52b0f44bb22e4dfc98bda30d865bd3c1",
+      "public_view": {
+        "digest": "f43b08945cb81f75c87d934062e274202c42e8be380c27af002a3dff59a3b273",
+        "state_version": 5
+      },
+      "published_observations": [],
+      "request_id": "loop-request-d69f40b72db34adb81349c1f2dc9577e",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 5
+    },
+    {
+      "action_id": "loop-action-e406714f2afa40b890f281998c6cee55",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "3",
+        "reserved": "0",
+        "spent": "2",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-0088aecf0827f08f2c77",
+      "error_code": null,
+      "execution_id": "execution-390098e16252479380e9bb392061e2bb",
+      "public_view": {
+        "digest": "cc2857b3fa4c2936f61c0b74728e07e18315edc8fde845ed99215e1be45201df",
+        "state_version": 6
+      },
+      "published_observations": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "evidence-0b6337d131ce0353315c776fa0d137b0",
+              "sha256": "a645a8cb0b9c2c19cc63f5f0b4dcc3047f3663b836be6f565a0dbec3d97d06ec"
+            }
+          ],
+          "observation_id": "observation-0b6337d131ce0353315c776fa0d137b0"
+        }
+      ],
+      "request_id": "loop-request-5ff2932dd247401d86cd6283200b1408",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "released",
+      "step_no": 6
+    },
+    {
+      "action_id": "loop-action-0bfb7343ea3a4b7884b9ca606d01c258",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "3",
+        "reserved": "0",
+        "spent": "2",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-00a4e98acea3c480fd81",
+      "error_code": null,
+      "execution_id": "execution-b47eb81b26904ff1b0f87abf6b2b4d6e",
+      "public_view": {
+        "digest": "969d8a96d3cc985176f297246aa9f82f3c6ad8fc73e363c7116d532f43655f48",
+        "state_version": 8
+      },
+      "published_observations": [],
+      "request_id": "loop-request-16cb52a13c2f4850bf621e5beb45ec34",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 7
+    },
+    {
+      "action_id": "loop-action-cfaff9cda719432dad4f2d5ed4badeab",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "3",
+        "reserved": "0",
+        "spent": "2",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-00b4f983de847345d167",
+      "error_code": null,
+      "execution_id": "execution-5badcf1c8a244796b56c86c66e6b74d1",
+      "public_view": {
+        "digest": "e95daa866c572c5be8f53accfa6a3724f308a7290331e1c30e0ffeee3102c81e",
+        "state_version": 9
+      },
+      "published_observations": [],
+      "request_id": "loop-request-583e88a6cbb64ba3aad124e233ab30b6",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 8
+    },
+    {
+      "action_id": "loop-action-c2763bbf9b2741059af712622dab41b2",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "3",
+        "reserved": "0",
+        "spent": "2",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-00b8a320a832d52c34f4",
+      "error_code": null,
+      "execution_id": "execution-a29e6d3c41a34d79b9863be6c2691e8e",
+      "public_view": {
+        "digest": "40c732ff7f1aed717142c7b88f0aec96fecf3680875970fa40926d282980995f",
+        "state_version": 10
+      },
+      "published_observations": [],
+      "request_id": "loop-request-3520441ff4d8496ea08302c4627d7803",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 9
+    },
+    {
+      "action_id": "loop-action-81cc6e1d8f564007a7ec63de53179075",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "3",
+        "reserved": "0",
+        "spent": "2",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-0105cb3d860be9a063e2",
+      "error_code": null,
+      "execution_id": "execution-6dc482b9b7f24163bc2582d5f841fc02",
+      "public_view": {
+        "digest": "8529a3b0a13332a371c92813026b81b78197f2e77f2359e6ecc6b5aba36c0865",
+        "state_version": 11
+      },
+      "published_observations": [],
+      "request_id": "loop-request-25fe19eab9e54cb0941d9976bb768007",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 10
+    },
+    {
+      "action_id": "loop-action-482b170b281b469aa3d6a96852aec9a5",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "3",
+        "reserved": "0",
+        "spent": "2",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-0118b069f69eef28073a",
+      "error_code": null,
+      "execution_id": "execution-00bb75c42c6c4121945ba4b01ee5b018",
+      "public_view": {
+        "digest": "7b02d9a6f5cd0a734f93aafa5a4c61dbc97d5aaa8aaab9da89dec95bd3ade1b3",
+        "state_version": 12
+      },
+      "published_observations": [],
+      "request_id": "loop-request-bdb743603ce14c0985932f32bfa8caf2",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 11
+    },
+    {
+      "action_id": "loop-action-a101332e7f904aeabc0bed481235ad56",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "3",
+        "reserved": "0",
+        "spent": "2",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-01371c18d8ee34365fa6",
+      "error_code": null,
+      "execution_id": "execution-54095f61521b4bbbbd13caf7d126b2df",
+      "public_view": {
+        "digest": "36c7421985031f0cb6081d6ce070afc67ee062e13585d05c5859f8eb1b2cb6c3",
+        "state_version": 13
+      },
+      "published_observations": [],
+      "request_id": "loop-request-0cfb44fdc26d401f9128f17735ff6d49",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 12
+    },
+    {
+      "action_id": "loop-action-bbe32efdc5b04bfcaafb88a25cde310e",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "3",
+        "reserved": "0",
+        "spent": "2",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-014707eda2282fe52395",
+      "error_code": null,
+      "execution_id": "execution-17900f4aa505406fb14cebaa0c30171a",
+      "public_view": {
+        "digest": "641f52ae8545326679f5ca34edbc6fd7fb867a1ec03c6aa23e793c05d872bd75",
+        "state_version": 14
+      },
+      "published_observations": [],
+      "request_id": "loop-request-4291d10a927b438e966a3d61fa861cf5",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 13
+    },
+    {
+      "action_id": "loop-action-49bc95cbf90a4a86bdc85bdc4f9e3293",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "3",
+        "reserved": "0",
+        "spent": "2",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-016f6ba46028a459c510",
+      "error_code": null,
+      "execution_id": "execution-d643bebfabde4cc58caebb2d4a821cb7",
+      "public_view": {
+        "digest": "b3e1d4570aad28e4e5dc9fd467d954416aba28115924b7e18cf7d75e0ad55385",
+        "state_version": 15
+      },
+      "published_observations": [],
+      "request_id": "loop-request-0f0fca1a76e94583919d8e95a0a8ea00",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 14
+    },
+    {
+      "action_id": "loop-action-8265a7107cb94372a5a99e78a539708a",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "2",
+        "reserved": "0",
+        "spent": "3",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-018cfc951a4261401bdd",
+      "error_code": null,
+      "execution_id": "execution-cd46cdf1c4c54247854f8666f19304c0",
+      "public_view": {
+        "digest": "4649536bced1bc7f6aa768896bafa57084289bfbce09a97904dbd30bc4e3b47d",
+        "state_version": 16
+      },
+      "published_observations": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "evidence-4f0e17bbe4cb63e797f4422a88180a4a",
+              "sha256": "e6ab0aac0915d3b8f9835ff8ceff3318e622c8ca4cea4f1814f49d4d85e1bb10"
+            }
+          ],
+          "observation_id": "observation-4f0e17bbe4cb63e797f4422a88180a4a"
+        }
+      ],
+      "request_id": "loop-request-a0eadcea418f414c93548108378f303f",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "released",
+      "step_no": 15
+    },
+    {
+      "action_id": "loop-action-d7806cb86f414138b3475c79d6246476",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "2",
+        "reserved": "0",
+        "spent": "3",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-021fa4127cc3b876a33f",
+      "error_code": null,
+      "execution_id": "execution-63a6da46c20745a2827e59395e21cc0d",
+      "public_view": {
+        "digest": "8a3c5d4da13886ea91b73cbacdf270ba4591467e030daa306cadd220f89a78e0",
+        "state_version": 18
+      },
+      "published_observations": [],
+      "request_id": "loop-request-7002b418b1dd48f38734b160893cd3a5",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 16
+    },
+    {
+      "action_id": "loop-action-719be4f79f3a4b57ad658a2b4264f22e",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "2",
+        "reserved": "0",
+        "spent": "3",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-02445a1c8d65d2977494",
+      "error_code": null,
+      "execution_id": "execution-8e536c7eeaad4c67ba7c2008e212545e",
+      "public_view": {
+        "digest": "938652c6d1a393d72bb17a6a274f09cc3b9ccaa6da86831575ca2e40d7d77b17",
+        "state_version": 19
+      },
+      "published_observations": [],
+      "request_id": "loop-request-5e2af07b586148c2add99a98788a24f4",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 17
+    },
+    {
+      "action_id": "loop-action-0ccf79f0dd824f6abe01f95bd0c0bd5b",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-02cc5b12788203e166aa",
+      "error_code": null,
+      "execution_id": "execution-16886d6b28494b40a856a591a5debb04",
+      "public_view": {
+        "digest": "de1a102b66c7283289bcec56ca2c2fb4716d68f1b540cbf6269b30abcca1083e",
+        "state_version": 20
+      },
+      "published_observations": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "evidence-057a7b00f8c18e35419b04f559dd9c48",
+              "sha256": "68d543e6d0506a632de56072e1540f983712aaf35833b4c1549c7397349fde7c"
+            }
+          ],
+          "observation_id": "observation-057a7b00f8c18e35419b04f559dd9c48"
+        }
+      ],
+      "request_id": "loop-request-c40b2d890a4148d1adf29abd0d4b9bc4",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "released",
+      "step_no": 18
+    },
+    {
+      "action_id": "loop-action-631216a5020845318db6374f5df27c91",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-0320e6793e67a8a763a3",
+      "error_code": null,
+      "execution_id": "execution-50d84c6de3ba46e69056c5e37290486c",
+      "public_view": {
+        "digest": "33be71a9597b632534e2004b31dc5781dca92ee7db22f9332b712ff2b1aa50be",
+        "state_version": 22
+      },
+      "published_observations": [],
+      "request_id": "loop-request-d98100f01e414f73b783a01f8e4dcf59",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 19
+    },
+    {
+      "action_id": "loop-action-d6f7988615d943238aa1adbe2ec00dd3",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-0389ddeac313042fe687",
+      "error_code": null,
+      "execution_id": "execution-1f296394f4254ab0a7425ecc2d3d1802",
+      "public_view": {
+        "digest": "550dd2ff2bf0870cd1293192105857b8ac3e2c85281e882668fcf283e6abd709",
+        "state_version": 23
+      },
+      "published_observations": [],
+      "request_id": "loop-request-274eea271a3e4f4c9fc6f095f0d55dfa",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 20
+    },
+    {
+      "action_id": "loop-action-407bc7422d9b49bc85491e1963a7ae94",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-03b01a2255061f96c28c",
+      "error_code": null,
+      "execution_id": "execution-0fce053f480447f88cdda50877dfe6ed",
+      "public_view": {
+        "digest": "a3d7d51828439cbb006fdfce05180ff94631a904219676fd574f0d2d54302f38",
+        "state_version": 24
+      },
+      "published_observations": [],
+      "request_id": "loop-request-0d6be39f38494ef1820c501a03c3ac98",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 21
+    },
+    {
+      "action_id": "loop-action-a26ca1f55c524ab8a4aba261b3f6b270",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-03b8233aa9bbffc9930a",
+      "error_code": null,
+      "execution_id": "execution-e9f14f3a207c4ee98f015889ca358012",
+      "public_view": {
+        "digest": "82723121106ccbd6b0b8868385c2bdc5eb288ef1cc9d941ae98c5f7c6d24fba4",
+        "state_version": 25
+      },
+      "published_observations": [],
+      "request_id": "loop-request-ee73bb0f9e944e5980c4e30a25aa41d6",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 22
+    },
+    {
+      "action_id": "loop-action-77b7e333145d4a09979d7c69b2f51bf5",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-03eeda836612183a49f7",
+      "error_code": null,
+      "execution_id": "execution-18c1813bdbbd41f2812db3db25646553",
+      "public_view": {
+        "digest": "3b0a0d329fda3a2c6e50dcfb76ac718a097d5ac77da3fb9d112a57b5413519ed",
+        "state_version": 26
+      },
+      "published_observations": [],
+      "request_id": "loop-request-ae6ed36b1b8e4bffa1b40bbca1a27087",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 23
+    },
+    {
+      "action_id": "loop-action-301693a54d9e47589252d4e4cc1d9760",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-044b836eb594b5676cf9",
+      "error_code": null,
+      "execution_id": "execution-54441dfdcf7948dd93ddfc8a1b6a2b0c",
+      "public_view": {
+        "digest": "49196cc771f4ad173993c804cf1401026d894fa1da66bfea7ecbb98964a859ff",
+        "state_version": 27
+      },
+      "published_observations": [],
+      "request_id": "loop-request-2d5e102f4a8f42c3a05913fc866f94a8",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 24
+    },
+    {
+      "action_id": "loop-action-8dec706330134b7883bbda249c42ca3d",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-049658206a9a0c9caefa",
+      "error_code": null,
+      "execution_id": "execution-0e144a4d8225470ea09d654c92ce5c46",
+      "public_view": {
+        "digest": "4d1cba6c983fefb0592003b0682adfcd3a3b7354cb084324769171a31ecc08e6",
+        "state_version": 28
+      },
+      "published_observations": [],
+      "request_id": "loop-request-b5d3400c730d407d96bd3c38a5f38801",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 25
+    },
+    {
+      "action_id": "loop-action-642487f4b6004011a3c1b2ea8677f1de",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-04c1823e8f2dd5023dcd",
+      "error_code": null,
+      "execution_id": "execution-c20240f48e4942a396e1fb680cc09c3a",
+      "public_view": {
+        "digest": "76eaad53e79819d2b2e2a804d9894d9851e6f2eceb876674abcd3ff4773b8a22",
+        "state_version": 29
+      },
+      "published_observations": [],
+      "request_id": "loop-request-13277e07e09f47fe9396ecb9261556f5",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 26
+    },
+    {
+      "action_id": "loop-action-0a6ffebf4f414143bcb7e9d512ee6fa2",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-04db43b844091aef8efd",
+      "error_code": null,
+      "execution_id": "execution-e2be746d7e16471e9a9a989abba63e71",
+      "public_view": {
+        "digest": "f546f66c7c550c8a61574af51aa5fa30be174f58f05653f8c6cfcb086c96dd61",
+        "state_version": 30
+      },
+      "published_observations": [],
+      "request_id": "loop-request-5fade873d07240f98483003146873ed8",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 27
+    },
+    {
+      "action_id": "loop-action-cfb60ab66b194110871eae29862ca568",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-051fadefce0524854a5f",
+      "error_code": null,
+      "execution_id": "execution-7298d601fe384e088cdb76e5ff9a953d",
+      "public_view": {
+        "digest": "57b46b2502ba14ca8af809be34e203747265e82529ba454f0053b6a649c0d816",
+        "state_version": 31
+      },
+      "published_observations": [],
+      "request_id": "loop-request-236dab8658514017af15ac19fefdcf98",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 28
+    },
+    {
+      "action_id": "loop-action-a5a72b2cc17c455d8146140d7dc23387",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-052287b7482c6f89c2f2",
+      "error_code": null,
+      "execution_id": "execution-33b2114e36cd4b84ac79e90a11ed15f2",
+      "public_view": {
+        "digest": "429ce54f71fea052f346bc3d07fad42b545c7c0b55117c1672deac3400ae0df6",
+        "state_version": 32
+      },
+      "published_observations": [],
+      "request_id": "loop-request-120e75e4d5f94bdeada521eaafca2067",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 29
+    },
+    {
+      "action_id": "loop-action-0e20be5298924bbd97b9ae59db8c9289",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "1",
+        "reserved": "0",
+        "spent": "4",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-0551e5f415ee4b997483",
+      "error_code": null,
+      "execution_id": "execution-0413847bdcbf47fe9332ae86075623a4",
+      "public_view": {
+        "digest": "2a2b7c4be93beb060397171568bb278cd747554d3246e22320946f555be28879",
+        "state_version": 33
+      },
+      "published_observations": [],
+      "request_id": "loop-request-bfdf3aec42d94b9483174b42400f2379",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 30
+    }
+  ],
+  "stop_reason": "max_steps"
+}

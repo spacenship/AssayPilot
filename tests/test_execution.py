@@ -873,13 +873,41 @@ def test_schema_v1_database_migrates_without_losing_pending_execution(execution_
 
     reopened = _service(tmp_path, public, oracle)
     with sqlite3.connect(service.database_path) as db:
-        assert db.execute("PRAGMA user_version").fetchone()[0] == 2
+        assert db.execute("PRAGMA user_version").fetchone()[0] == 3
         assert db.execute("SELECT COUNT(*) FROM approvals").fetchone()[0] == 1
         assert db.execute("SELECT COUNT(*) FROM private_results").fetchone()[0] == 1
         assert db.execute("SELECT COUNT(*) FROM budget_ledger WHERE event = 'reserve'").fetchone()[0] == 1
     assert reopened.get_current_budget("run-1").reserved == Decimal("0.1")
     assert reopened.read_private_result("run-1", receipt.execution_id) == private_before
     assert reopened.release_result("run-1", receipt.execution_id).result.observations
+
+
+def test_schema_v2_database_adds_loop_tables_without_losing_publication(execution_snapshot, tmp_path):
+    _, public, oracle = execution_snapshot
+    service = _service(tmp_path, public, oracle)
+    _start(service)
+    action = _action(public)
+    _approve(service, public, action)
+    ready = service.execute("run-1", "req-before-v3-migration", action)
+    published = service.release_result("run-1", ready.execution_id)
+
+    # Model the preserved Stage 2C v2 shape: retain its execution, publication,
+    # evidence and settlement tables while removing only Stage 3-A tables.
+    with sqlite3.connect(service.database_path) as db:
+        db.execute("DROP TABLE loop_steps")
+        db.execute("DROP TABLE loop_runs")
+        db.execute("PRAGMA user_version = 2")
+
+    reopened = _service(tmp_path, public, oracle)
+    with sqlite3.connect(service.database_path) as db:
+        assert db.execute("PRAGMA user_version").fetchone()[0] == 3
+        tables = {row[0] for row in db.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table'",
+        )}
+        assert {"loop_runs", "loop_steps", "published_executions", "release_settlements"} <= tables
+        assert db.execute("SELECT COUNT(*) FROM release_settlements WHERE run_id = 'run-1'").fetchone()[0] == 1
+    assert reopened.get_public_execution("run-1", ready.execution_id) == published
+    assert reopened.get_current_budget("run-1").spent == Decimal("0.1")
 
 
 def test_future_runtime_database_version_is_rejected(execution_snapshot, tmp_path):
@@ -1152,6 +1180,49 @@ def test_distinct_concurrent_releases_merge_latest_public_state(execution_snapsh
     assert view.state_version == max(item.state_version for item in released)
     assert first.get_current_budget("run-1").spent == Decimal("0.2")
     assert first.get_current_budget("run-1").reserved == 0
+
+
+def test_approval_and_execution_reject_clock_regression_from_current_public_state(execution_snapshot, tmp_path):
+    _, public, base_oracle = execution_snapshot
+    oracle = SpyOracle(base_oracle)
+    start_time = datetime(2025, 1, 2, tzinfo=timezone.utc)
+    clock = FixedClock(start_time)
+    service = _service(tmp_path, public, oracle, clock=clock)
+    _start(service)
+    actions = [
+        _action(public, candidate.candidate_id, action_id=f"clock-action-{index}")
+        for index, candidate in enumerate(public.candidates[:2])
+    ]
+    assert len(actions) == 2
+    for action in actions:
+        _approve(service, public, action)
+
+    first = service.execute("run-1", "clock-request-0", actions[0])
+    assert first.status == "ready_for_release"
+    clock.value = start_time.replace(second=1)
+    service.release_result("run-1", first.execution_id)
+
+    clock.value = start_time
+    with pytest.raises(ExecutionControlError) as approval_error:
+        _approve(service, public, actions[1])
+    assert approval_error.value.code == "time_order"
+    with pytest.raises(ExecutionControlError) as execution_error:
+        service.execute("run-1", "clock-request-1", actions[1])
+    assert execution_error.value.code == "time_order"
+    assert oracle.call_count == 1
+    assert service.get_current_budget("run-1").spent == Decimal("0.1")
+    assert service.get_current_budget("run-1").reserved == 0
+
+
+def test_run_clock_must_be_timezone_aware(execution_snapshot, tmp_path):
+    _, public, oracle = execution_snapshot
+    service = _service(
+        tmp_path, public, oracle,
+        clock=FixedClock(datetime(2025, 1, 2)),
+    )
+    with pytest.raises(ExecutionControlError) as error:
+        _start(service)
+    assert error.value.code == "invalid_clock"
 
 
 def test_zero_cost_publication_still_records_state_and_settlement(execution_snapshot, tmp_path):

@@ -1,0 +1,78 @@
+{
+  "evaluation_id": "20260930-stage3c-eval-r2-archive-only",
+  "runs": [
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-49b7e78f5e670ee32961 / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-fixed-order",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-49b7e78f5e670ee32961 / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-random-priority-seed-0",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-49b7e78f5e670ee32961 / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-random-priority-seed-1",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-49b7e78f5e670ee32961 / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-random-priority-seed-2",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-49b7e78f5e670ee32961 / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-random-priority-seed-3",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-49b7e78f5e670ee32961 / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-random-priority-seed-4",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-0013fe448f989571e188 / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-fixed-order",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    },
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-a1e11fccb60854953cbd / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-random-priority-seed-0",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    },
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-b5c79464bc9cdb9df3f7 / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-random-priority-seed-1",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    },
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-bd73ca37de33e33bf192 / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-random-priority-seed-2",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    },
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-95453bbec38742e1b73e / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-random-priority-seed-3",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    },
+    {
+      "error": "released categorical label conflicts with snapshot truth for candidate-301b53911e674a0aef31 / mep2-confirmatory",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-random-priority-seed-4",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    }
+  ],
+  "schema_version": "assaypilot.stage3c.run-metrics.v1"
+}

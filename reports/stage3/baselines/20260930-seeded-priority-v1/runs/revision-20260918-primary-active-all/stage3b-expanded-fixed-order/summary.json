@@ -1,0 +1,70 @@
+{
+  "baseline_id": "20260930-seeded-priority-v1",
+  "durable_consistency": {
+    "execution_requests": 30,
+    "private_runtime_database_preserved": false,
+    "published_observations_in_trace": 4,
+    "replay_lookups": 30,
+    "settlements": 4,
+    "trace_steps": 30
+  },
+  "ended_at": "2026-09-30T06:15:08.917413+00:00",
+  "implementation_fingerprint_sha256": "40faec819dd68ef82927d8df3ada675d124a4e1c21f58e9479e6e38411ad8b37",
+  "interrupted_after_steps": null,
+  "interruption_summary": null,
+  "isolated_worker": "unshare user/mount/network namespace + read-only chroot",
+  "plan_sha256": "8f67b350f7660c10b1226f74163236af3c402cdf7b7f2b5ab30288d715f6a4a1",
+  "private_canary_denied": true,
+  "public_tree_sha256": "1959da52104acf52c750fa26d0e56bff05d0e7a95935b52a7fb184495e51af34",
+  "resumed_same_run": false,
+  "run_config": {
+    "approval_policy": "bounded_replay",
+    "approver_id": "local-stage3b-bounded-replay-policy",
+    "cost_policy_version": "preserved-public-assay-cost-v1",
+    "initial_budget": {
+      "amount": "5",
+      "assumed": true,
+      "unit": "synthetic_credit"
+    },
+    "max_action_retries": 1,
+    "max_duration_seconds": 300,
+    "max_release_retries": 2,
+    "max_steps": 30,
+    "run_id": "stage3b-expanded-fixed-order",
+    "runtime_database": "/tmp/assaypilot-stage3b-private-5tz9ku2r/runtime/execution.sqlite",
+    "selector_kind": "fixed_order",
+    "selector_timeout_seconds": 5.0,
+    "snapshot_id": "revision-20260918-primary-active-all"
+  },
+  "run_config_sha256": "010209f42d6360fae13792bb262b0cda9964158ebe065769e481c2d2f2236b20",
+  "run_id": "stage3b-expanded-fixed-order",
+  "schema_version": "assaypilot.stage3b.run-summary.v1",
+  "selector": {
+    "algorithm_version": null,
+    "kind": "fixed_order",
+    "seed": null
+  },
+  "snapshot_id": "revision-20260918-primary-active-all",
+  "snapshot_revision": "revision-20260918-primary-active-all",
+  "started_at": "2026-09-30T06:14:57.526495+00:00",
+  "summary": {
+    "available": "1",
+    "failed_executions": 0,
+    "no_record_executions": 26,
+    "observations_added": 4,
+    "pending_releases": 0,
+    "rejected_steps": 0,
+    "released_executions": 4,
+    "reserved": "0",
+    "resumable": false,
+    "retries": 0,
+    "run_id": "stage3b-expanded-fixed-order",
+    "selection_steps": 30,
+    "selector_calls": 30,
+    "spent": "4",
+    "status": "stopped",
+    "stop_reason": "max_steps",
+    "unique_executions": 30,
+    "unit": "synthetic_credit"
+  }
+}

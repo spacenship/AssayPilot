@@ -69,7 +69,7 @@ Observation/Evidence ID는 run, 최초 execution, measurement ID를 입력으로
 
 ## SQLite 마이그레이션
 
-private runtime SQLite의 `PRAGMA user_version`은 Stage 2C에서 `2`다. 기존 v1 실행 테이블을 지우지 않고 `BEGIN IMMEDIATE` migration 안에서 execution의 release/version 열을 추가하고 `run_public_state`, `published_evidence`, `published_executions`, `release_settlements`를 생성한다. 기존 run마다 초기 state row를 만든다. v1 approval, reservation, execution, private result와 ledger는 유지된다. v0 신규 DB도 최신 schema로 생성된다. 현재보다 큰 미지원 schema version은 `unsupported_database_version`으로 거절한다. fixture는 v1 DB 모양으로 만든 DB를 reopen한 뒤 기존 이력이 유지되고 공개가 가능한지 검사한다.
+Stage 2C 당시 private runtime SQLite의 `PRAGMA user_version`은 `2`였다. 그 migration은 기존 v1 실행 테이블을 지우지 않고 `BEGIN IMMEDIATE` 안에서 execution의 release/version 열을 추가하고 `run_public_state`, `published_evidence`, `published_executions`, `release_settlements`를 생성했다. 기존 run마다 초기 state row를 만들고 v1 approval, reservation, execution, private result와 ledger를 보존했다. v0 신규 DB도 이 stage의 schema로 생성했다. Stage 3-A는 여기에 `loop_runs`와 `loop_steps`를 추가해 현재 schema를 v3으로 올린다. v1/v2 데이터 보존과 미지원 미래 버전 거절은 [Stage 3-A 실행 루프 문서](stage3_run_loop.md#진행-기록-migration-및-재시작)와 회귀 테스트에서 다룬다. 이 문서의 아래 migration 동작은 Stage 2C 시점의 기록이다.
 
 DB와 `-wal`/`-shm`은 private runtime 디렉터리에 둔다. DB 파일 mode `0600`만으로 동일 OS 권한 주체를 격리했다고 보지 않는다.
 

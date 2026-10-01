@@ -1,0 +1,104 @@
+{
+  "baseline_id": "20260930-stage3c-publication-archive-r2",
+  "executions": [
+    {
+      "action_id": "loop-action-37dacd204b6142a28725c7b5aa512104",
+      "assay_id": "mep2-confirmatory",
+      "candidate_id": "candidate-49b7e78f5e670ee32961",
+      "cost": "1",
+      "evidence": [
+        {
+          "payload": {
+            "aid": 2272,
+            "candidate_id": "candidate-49b7e78f5e670ee32961",
+            "cid": 1150217,
+            "evidence_id": "evidence-058ec3fc582cc7cef28d0aad54496e3a",
+            "measurement_id": "measurement-35290dcde0924e82bed6",
+            "protocol_location": "https://pubchem.ncbi.nlm.nih.gov/bioassay/2272",
+            "raw_outcome": "Inactive",
+            "raw_row": {
+              "AID": "2272",
+              "Activity Name": "",
+              "Activity Outcome": "Inactive",
+              "CID": "1150217",
+              "SID": "49645074"
+            },
+            "schema_version": "1.0.0",
+            "sid": 49645074,
+            "source_file_sha256": "216687f278a1af586f8aafbb33306b6475c14375e6ccaf755f57ed96f44a48c1",
+            "source_kind": "pubchem_runtime_measurement",
+            "source_row_id": "raw-b8b858a1b40c7fc76461",
+            "source_row_number": 1595
+          },
+          "reference": {
+            "evidence_id": "evidence-058ec3fc582cc7cef28d0aad54496e3a",
+            "location": "runtime/c38286abf387c70b9fa65d47/evidence-058ec3fc582cc7cef28d0aad54496e3a.json",
+            "source_id": "raw-b8b858a1b40c7fc76461",
+            "source_kind": "pubchem_runtime_measurement"
+          },
+          "sha256": "45453a9ee580db9807b3a30a4edfa3cabf621fe7bd5993dff89bba2d707ed476"
+        }
+      ],
+      "execution_id": "execution-e46f0ed1d1654cc3ada9b627a73627d1",
+      "observations": [
+        {
+          "assay_id": "mep2-confirmatory",
+          "candidate_id": "candidate-49b7e78f5e670ee32961",
+          "comparison": null,
+          "condition_id": "not_reported:2272",
+          "evidence_ids": [
+            "evidence-058ec3fc582cc7cef28d0aad54496e3a"
+          ],
+          "observation_id": "observation-058ec3fc582cc7cef28d0aad54496e3a",
+          "raw_verdict": "Inactive",
+          "released_at": "2026-09-30T08:07:19.290229Z",
+          "replicate_id": "not_reported:raw-b8b858a1b40c7fc76461",
+          "unit": null,
+          "value": null,
+          "verdict": "inactive"
+        }
+      ],
+      "published_at": "2026-09-30T08:07:19.290229+00:00",
+      "receipt": {
+        "accepted_at": "2026-09-30T08:07:19.281449Z",
+        "action_id": "loop-action-37dacd204b6142a28725c7b5aa512104",
+        "receipt_id": "receipt-execution-e46f0ed1d1654cc3ada9b627a73627d1",
+        "schema_version": "0.1.0"
+      },
+      "result": {
+        "action_id": "loop-action-37dacd204b6142a28725c7b5aa512104",
+        "error": null,
+        "observations": [
+          {
+            "assay_id": "mep2-confirmatory",
+            "candidate_id": "candidate-49b7e78f5e670ee32961",
+            "comparison": null,
+            "condition_id": "not_reported:2272",
+            "evidence_ids": [
+              "evidence-058ec3fc582cc7cef28d0aad54496e3a"
+            ],
+            "observation_id": "observation-058ec3fc582cc7cef28d0aad54496e3a",
+            "raw_verdict": "Inactive",
+            "released_at": "2026-09-30T08:07:19.290229Z",
+            "replicate_id": "not_reported:raw-b8b858a1b40c7fc76461",
+            "unit": null,
+            "value": null,
+            "verdict": "inactive"
+          }
+        ],
+        "receipt_id": "receipt-execution-e46f0ed1d1654cc3ada9b627a73627d1",
+        "schema_version": "0.1.0",
+        "status": "completed"
+      },
+      "state_version": 4,
+      "step_no": 3,
+      "unit": "synthetic_credit"
+    }
+  ],
+  "plan_sha256": "79555f0bba18316b8f7e3620a9fefe46b7bf376d39dde1f6e3f8cd63c46042bf",
+  "run_id": "stage3c-r2-fixed-order",
+  "schema_version": "assaypilot.stage3c.published-results.v1",
+  "snapshot_id": "revision-20260917-r2",
+  "snapshot_revision": "revision-20260917-r2",
+  "source": "trusted run-bound Publication Reader; released executions only"
+}

@@ -1,0 +1,141 @@
+{
+  "budget_current": {
+    "available": "4",
+    "reserved": "0",
+    "spent": "1",
+    "total": "5",
+    "unit": "synthetic_credit"
+  },
+  "public_view_schema_version": "assaypilot.selector-view.v1",
+  "run_id": "stage3c-r2-fixed-order",
+  "schema_version": "assaypilot.stage3b.public-run-trace.v1",
+  "selector": {
+    "algorithm_version": null,
+    "kind": "fixed_order",
+    "seed": null
+  },
+  "snapshot_revision": "revision-20260917-r2",
+  "steps": [
+    {
+      "action_id": "loop-action-1fcd3e55aae24574a8fadb86a60f2433",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "5",
+        "reserved": "0",
+        "spent": "0",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-1a57bb2924b5be73bdfa",
+      "error_code": null,
+      "execution_id": "execution-b014a8a235584b95bf728f3b0624655d",
+      "public_view": {
+        "digest": "1aa8294668facd9e7fe9a98c9b6b78c8bc435a2e6865667448a9e654ff816243",
+        "state_version": 0
+      },
+      "published_observations": [],
+      "request_id": "loop-request-d059c945af7c41b381a260175c43a15a",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 1
+    },
+    {
+      "action_id": "loop-action-2e4728a3475a4f28ac4166c44042c219",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "5",
+        "reserved": "0",
+        "spent": "0",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-2c73f8343bf257a5b5f9",
+      "error_code": null,
+      "execution_id": "execution-2b9aa3256a074dc78f887b7a9f9d98c9",
+      "public_view": {
+        "digest": "aecbb87986f794ee8f5ee55782d02e56cd77983b7bb96d96d852d2911cfa8078",
+        "state_version": 1
+      },
+      "published_observations": [],
+      "request_id": "loop-request-41a9c766ad2b48098991e6e44adb5780",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 2
+    },
+    {
+      "action_id": "loop-action-37dacd204b6142a28725c7b5aa512104",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-49b7e78f5e670ee32961",
+      "error_code": null,
+      "execution_id": "execution-e46f0ed1d1654cc3ada9b627a73627d1",
+      "public_view": {
+        "digest": "d8816fc1c2a530801aaf7992edf4e5467a4a984fc1cc52f2d1dac60602b34cc9",
+        "state_version": 2
+      },
+      "published_observations": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "evidence-058ec3fc582cc7cef28d0aad54496e3a",
+              "sha256": "45453a9ee580db9807b3a30a4edfa3cabf621fe7bd5993dff89bba2d707ed476"
+            }
+          ],
+          "observation_id": "observation-058ec3fc582cc7cef28d0aad54496e3a"
+        }
+      ],
+      "request_id": "loop-request-31768862d34c4506ae2678703d9a2bbb",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "released",
+      "step_no": 3
+    },
+    {
+      "action_id": "loop-action-108461b75d9f42b88d7aec12aa87ca6b",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-54837185aa746c46406e",
+      "error_code": null,
+      "execution_id": "execution-5348df0a8efd485195f7a6737db57318",
+      "public_view": {
+        "digest": "a296a4fc0d1f81838a9cf5e510f76055b4237b578790deaab816c264c33a81eb",
+        "state_version": 4
+      },
+      "published_observations": [],
+      "request_id": "loop-request-106f910874934c57bf9ec0f37df36d9e",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 4
+    },
+    {
+      "action_id": "loop-action-de96a084faac4eefb2b114a5e804139c",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-e47244fd029571b8e1dd",
+      "error_code": null,
+      "execution_id": "execution-4cf7cc330dcc40aeb31b12dc16c3595d",
+      "public_view": {
+        "digest": "776070895fc5dc6268682f209c70b3f5fa71fdfe5f8747ff2e5374180383f030",
+        "state_version": 5
+      },
+      "published_observations": [],
+      "request_id": "loop-request-08434c598c2f47969b2e3498b19df06e",
+      "selection_reason": "first executable action in stable (candidate_id, assay_id) order",
+      "status": "no_record",
+      "step_no": 5
+    }
+  ],
+  "stop_reason": "max_steps"
+}

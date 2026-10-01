@@ -1,0 +1,375 @@
+{
+  "baseline": {
+    "baseline_id": "20260930-stage3c-publication-archive-r2",
+    "baseline_run_count": 12,
+    "excluded_recovery_control": "stage3c-r2-random-priority-seed-0-uninterrupted-control",
+    "execution_summary_path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/execution_summary.json",
+    "execution_summary_sha256": "672db3989ff20540ae7976389332d8cf2b9dea511cc4f36fd4e12de3cf3a3c5c",
+    "plan_path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/plan.json",
+    "plan_sha256": "79555f0bba18316b8f7e3620a9fefe46b7bf376d39dde1f6e3f8cd63c46042bf",
+    "root": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2"
+  },
+  "common_axes": {
+    "revision-20260917-r2": {
+      "cost_endpoint_rule": "last observed point at or below the actual common spend; no interpolation",
+      "spent_endpoint": "1",
+      "step_endpoint": 5
+    },
+    "revision-20260918-primary-active-all": {
+      "cost_endpoint_rule": "last observed point at or below the actual common spend; no interpolation",
+      "spent_endpoint": "4",
+      "step_endpoint": 14
+    }
+  },
+  "evaluation_contract": {
+    "cid_policy": "CID is preserved as evidence but never used to join or deduplicate evaluation units",
+    "conflict_rule": "multiple distinct normalized verdicts for one candidate/SID and assay are ambiguous; no favorable-row selection",
+    "evaluation_assay_id": "mep2-confirmatory",
+    "generalization_limit": "recall covers known source positives in this snapshot only; no missing-at-random assumption",
+    "known_positive_denominator": "snapshot-known binary Active units in U, excluding any identical candidate/assay result already public at run start",
+    "missing_rule": "no_record is missing, never inactive; failed/cancelled/unreleased actions are not labels",
+    "negative_verdict": "inactive",
+    "new_discovery_rule": "only unique Active labels in released Publication Reader results; initial primary results are not follow-up hits",
+    "positive_verdict": "active",
+    "source_scope": "source-normalized Activity Outcome for the configured follow-up assay; no potency or biological claim is inferred",
+    "unit": "(candidate_id, evaluation_assay_id), candidate resolved only by validated source SID",
+    "universe_rule": "all public candidates satisfying the target assay's public prerequisites at initial snapshot; unsupported non-primary prerequisite paths fail explicitly",
+    "unknown_verdicts": [
+      "inconclusive",
+      "unspecified",
+      "other unrecognized categorical outcome"
+    ]
+  },
+  "evaluation_id": "20260930-stage3c-eval-r2-r4",
+  "evaluator_version": "stage3c-offline-evaluator-v1",
+  "excluded_runs": [
+    {
+      "role": "recovery_control_not_scored",
+      "run_id": "stage3c-r2-random-priority-seed-0-uninterrupted-control"
+    }
+  ],
+  "hash_semantics": "SHA-256 values detect changes; they are not external signatures or source authentication",
+  "implementation_sha256": {
+    "scripts/verify_stage3_baselines.py": "992ee397acc974cc7ec4979d84f871d71ab9f7fdf25314cc38969a7b6611b05c",
+    "src/assaypilot/evaluation.py": "50733424500f2b0d92e24b9d4a3cbbd8cc726b055fa3242637b57f7e48f69a1b"
+  },
+  "inputs": [
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-fixed-order/published_results.json",
+          "sha256": "dd1eae0cd13a4e52f329c7a469f450f0da4fad1ae9b2b1a47a9da412da665181"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-fixed-order/summary.json",
+          "sha256": "88f7d6247af5aec6146c4a1f8b104d87566213436d5aed8d207eecef119f393d"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-fixed-order/trace.json",
+          "sha256": "8d447ceb1aefb094b2836cfaa39c7e86a0e3481b6939f8d59d516025cf0f1ee0"
+        }
+      },
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-fixed-order",
+      "seed": null,
+      "selector": "fixed_order"
+    },
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-0/published_results.json",
+          "sha256": "cc62560596dcfead3b92e56306ebe834a6f1bff879fca944caf469ff83677a79"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-0/summary.json",
+          "sha256": "f293f961603060b1b97e10dbcddcddf5f95f5ea5fc5825915d9404a06d4b2490"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-0/trace.json",
+          "sha256": "b5d2a2222aca80df779bd0c70f0a89ce0e2fffef98f5827b9a246b91a4c2bfc8"
+        }
+      },
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-random-priority-seed-0",
+      "seed": 0,
+      "selector": "seeded_random_priority"
+    },
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-1/published_results.json",
+          "sha256": "edc76a7b213c8ba7846b81a0b30c856cd2fb60b1941eb71b514b50ac74ad81df"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-1/summary.json",
+          "sha256": "f26134fb30c1747014230294480ea0d509af35e5ce0d111a5180fe7456fdb3fe"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-1/trace.json",
+          "sha256": "aa35d50e2e4754b0c464f33b69ae7be4c761051142cf634ee69a2002cbca4b21"
+        }
+      },
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-random-priority-seed-1",
+      "seed": 1,
+      "selector": "seeded_random_priority"
+    },
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-2/published_results.json",
+          "sha256": "6f6b04ae42cb2fabcf08351d31c000f999073832431fe9aded1f3d93a75dfbae"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-2/summary.json",
+          "sha256": "38d98b665765e51b6e6f142dc2bc3f7f24daf5775b7f4e5e54a5021d76ecc591"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-2/trace.json",
+          "sha256": "659a76026757523251ffb70918e01c30f5a499411a6e248741072a2f53110545"
+        }
+      },
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-random-priority-seed-2",
+      "seed": 2,
+      "selector": "seeded_random_priority"
+    },
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-3/published_results.json",
+          "sha256": "80b626c0060b064bd89b1bb84560810904a43f280b8d9980d7377ff4dcf47036"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-3/summary.json",
+          "sha256": "ce3cea96216cf4d466e948229189f7db064551baa9a19cbbc088dc05696f5f8d"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-3/trace.json",
+          "sha256": "0e6bd426f971923ff1c63bb4729105f8595f828694411a8a68f0548fc1139261"
+        }
+      },
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-random-priority-seed-3",
+      "seed": 3,
+      "selector": "seeded_random_priority"
+    },
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-4/published_results.json",
+          "sha256": "e443dca74be981b7b176988cdaa52e989661160fc4ac039f63a3c5e8defd9dae"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-4/summary.json",
+          "sha256": "f6e695b1401325d59eca532c1582b8d50d38ab3c27dfd8df31833b3b1a5c3cff"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260917-r2/stage3c-r2-random-priority-seed-4/trace.json",
+          "sha256": "159e0c49777d39f86c1325c5ad5e258ad1ea1a89763291facac170566e041d49"
+        }
+      },
+      "revision": "revision-20260917-r2",
+      "run_id": "stage3c-r2-random-priority-seed-4",
+      "seed": 4,
+      "selector": "seeded_random_priority"
+    },
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-fixed-order/published_results.json",
+          "sha256": "e27f2c2a882708d443174b291f9d480a52f267adc0cc6e54db26b6b3230a65bd"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-fixed-order/summary.json",
+          "sha256": "252b2dce3e56279a129c246b046471dbd39e9a93138ae51438c5355e4a55ce62"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-fixed-order/trace.json",
+          "sha256": "1cf275ba27bb614fd9712f976d4d284dc9334ea899928f7240d985e70ac4f37b"
+        }
+      },
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-fixed-order",
+      "seed": null,
+      "selector": "fixed_order"
+    },
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-0/published_results.json",
+          "sha256": "d3f848e042b3e07a63284470e85b8b86e9df03f49765778e77f09d76a4f5a770"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-0/summary.json",
+          "sha256": "4f3f867c4625ae0021683b6909e958d5f38a166499e257536cc035427657de0a"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-0/trace.json",
+          "sha256": "459280a22cc4d9cb4b9bd6d4df7ab434505cc227ccf6b5964cff016331c243ad"
+        }
+      },
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-random-priority-seed-0",
+      "seed": 0,
+      "selector": "seeded_random_priority"
+    },
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-1/published_results.json",
+          "sha256": "00fe3a3d31aa6e75e162ac7d593c2d22e6693be569377064ef99f7fad8ee258c"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-1/summary.json",
+          "sha256": "3b54ffb992df153d679660c695574c55d8f6ccd6decb090dc141fb6b5323f979"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-1/trace.json",
+          "sha256": "2620e7a1bee2c226bc926262fc5668884b3a5ca5e2581a06519b4d760138e188"
+        }
+      },
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-random-priority-seed-1",
+      "seed": 1,
+      "selector": "seeded_random_priority"
+    },
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-2/published_results.json",
+          "sha256": "572d63287bb8cf11bab8223c5d544762f1b9b780ac38035d5e6efbfe6e3d3d0f"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-2/summary.json",
+          "sha256": "9c2ad55591bc487ca1651983dd86434945866184bb6e06822d6a27b5bacd5d9a"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-2/trace.json",
+          "sha256": "a669b5ccb2245b2299a69ca051f6e48c2008bdcdba51d0a4571f63a8e7acd2d5"
+        }
+      },
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-random-priority-seed-2",
+      "seed": 2,
+      "selector": "seeded_random_priority"
+    },
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-3/published_results.json",
+          "sha256": "129f9f0ee36b419dca9263d7fa7306a4ca712e50c356ba22d1a27dac120b9652"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-3/summary.json",
+          "sha256": "c38a5a0aaf689fbc253f2d48b007f7874135a3950c534fa77f6fe3bdfb88ae96"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-3/trace.json",
+          "sha256": "b630d94bc688471aa27693b5f356217ba909b6a95ae48498ad7610ebf9a7fa85"
+        }
+      },
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-random-priority-seed-3",
+      "seed": 3,
+      "selector": "seeded_random_priority"
+    },
+    {
+      "artifact_hashes": {
+        "published_results_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-4/published_results.json",
+          "sha256": "ae87b7463b7abbdc93252f78c17618ed18286a7546185d8d40678fcb8cb49da3"
+        },
+        "summary_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-4/summary.json",
+          "sha256": "507c9abddc2335d90bc42c390f86bae4d4fcc06222b2a6b835e3be46d3dc04f3"
+        },
+        "trace_path": {
+          "path": "reports/stage3/baselines/20260930-stage3c-publication-archive-r2/runs/revision-20260918-primary-active-all/stage3c-expanded-random-priority-seed-4/trace.json",
+          "sha256": "4af8bef48e4ea6e90de0a9f3f0bb968e956bf515cdedd2fecdf5f02ecd49166e"
+        }
+      },
+      "revision": "revision-20260918-primary-active-all",
+      "run_id": "stage3c-expanded-random-priority-seed-4",
+      "seed": 4,
+      "selector": "seeded_random_priority"
+    }
+  ],
+  "registered_at": "2026-09-30T08:12:05.375692+00:00",
+  "registration_statement": "evaluation rules frozen before metrics; this is not a pre-run scientific hypothesis registration",
+  "schema_version": "assaypilot.stage3c.evaluation-spec.v1",
+  "snapshots": {
+    "revision-20260917-r2": {
+      "candidate_count": 5,
+      "evaluation_assay": {
+        "assay_id": "mep2-confirmatory",
+        "cost": {
+          "amount": "1",
+          "assumed": true,
+          "unit": "synthetic_credit"
+        },
+        "endpoint": "PubChem Activity Outcome",
+        "name": "Multiplex HTS Screen of TOR pathway GFP-fusion proteins in Saccharomyces cerevisiae, specifically MEP2 Cherry Pick Compounds",
+        "prerequisites": [
+          {
+            "assay_id": "mep2-primary",
+            "kind": "verdict",
+            "verdict": "active"
+          }
+        ],
+        "role": "confirmatory",
+        "unit": "categorical",
+        "verdict_meaning": {
+          "active": "Activity Outcome=Active recorded by PubChem for this confirmatory assay; mapped internally without recomputation",
+          "inactive": "Activity Outcome=Inactive recorded by PubChem for this confirmatory assay; mapped internally without recomputation",
+          "inconclusive": "Activity Outcome=Inconclusive recorded by PubChem for this confirmatory assay; mapped internally without recomputation",
+          "unspecified": "recorded without a configured outcome"
+        }
+      },
+      "hidden_manifest_sha256": "ff350abec0d739a295e275d7c12fc5eb0567ec77ccc2be905a5aa9977271ae01",
+      "hidden_source_path": "bundle/curator/hidden_followup_measurements.json",
+      "hidden_source_sha256": "ff350abec0d739a295e275d7c12fc5eb0567ec77ccc2be905a5aa9977271ae01",
+      "public_manifest_sha256": "cddca99e5cda3e7bf10862014f34391918cd389221826b0054e301948cbee48f",
+      "public_tree_sha256": "9c958efa8983bc334ad513cb3ea84292ddb06739c7873de8a17904641f60dd26",
+      "snapshot_id": "revision-20260917-r2",
+      "snapshot_manifest_sha256": "cdd674fe61813a7e27dd2d9618db58155a3e51fe22a7bb80eba9eb0166e2f908",
+      "snapshot_root": "data_snapshots/pubchem-tor-mep2-20260915/revision-20260917-r2"
+    },
+    "revision-20260918-primary-active-all": {
+      "candidate_count": 1682,
+      "evaluation_assay": {
+        "assay_id": "mep2-confirmatory",
+        "cost": {
+          "amount": "1",
+          "assumed": true,
+          "unit": "synthetic_credit"
+        },
+        "endpoint": "PubChem Activity Outcome",
+        "name": "Multiplex HTS Screen of TOR pathway GFP-fusion proteins in Saccharomyces cerevisiae, specifically MEP2 Cherry Pick Compounds",
+        "prerequisites": [
+          {
+            "assay_id": "mep2-primary",
+            "kind": "verdict",
+            "verdict": "active"
+          }
+        ],
+        "role": "confirmatory",
+        "unit": "categorical",
+        "verdict_meaning": {
+          "active": "Activity Outcome=Active recorded by PubChem for this confirmatory assay; mapped internally without recomputation",
+          "inactive": "Activity Outcome=Inactive recorded by PubChem for this confirmatory assay; mapped internally without recomputation",
+          "inconclusive": "Activity Outcome=Inconclusive recorded by PubChem for this confirmatory assay; mapped internally without recomputation",
+          "unspecified": "recorded without a configured outcome"
+        }
+      },
+      "hidden_manifest_sha256": "ddad3fefb5e2e57207857e96cac15268755cc39916af835befd70f96ac8538a5",
+      "hidden_source_path": "bundle/curator/hidden_followup_measurements.json",
+      "hidden_source_sha256": "ddad3fefb5e2e57207857e96cac15268755cc39916af835befd70f96ac8538a5",
+      "public_manifest_sha256": "fcf4a5416a3fc3b6a26f2f574e6a127b953d50ef1b89214f3c8d8dc097cb562b",
+      "public_tree_sha256": "1959da52104acf52c750fa26d0e56bff05d0e7a95935b52a7fb184495e51af34",
+      "snapshot_id": "revision-20260918-primary-active-all",
+      "snapshot_manifest_sha256": "630e31693587076deffe7a3477ef03551d6053befdc168287b8ae35120959eae",
+      "snapshot_root": "data_snapshots/pubchem-tor-mep2-20260915/revision-20260918-primary-active-all"
+    }
+  }
+}

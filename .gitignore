@@ -46,3 +46,5 @@ htmlcov/
 /reports/**/pytest.xml
 /outputs/
 /data_snapshots/
+/runtime/stage4/
+/runtime/stage5a/

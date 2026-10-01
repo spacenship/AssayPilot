@@ -1,0 +1,78 @@
+{
+  "evaluation_id": "20260930-stage3c-eval-r2-r2",
+  "runs": [
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-fixed-order",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-random-priority-seed-0",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-random-priority-seed-1",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-random-priority-seed-2",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-random-priority-seed-3",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-r2-random-priority-seed-4",
+      "snapshot_revision": "revision-20260917-r2"
+    },
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-fixed-order",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    },
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-random-priority-seed-0",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    },
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-random-priority-seed-1",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    },
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-random-priority-seed-2",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    },
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-random-priority-seed-3",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    },
+    {
+      "error": "public receipt execution ID differs from archive",
+      "evaluation_status": "failed",
+      "run_id": "stage3c-expanded-random-priority-seed-4",
+      "snapshot_revision": "revision-20260918-primary-active-all"
+    }
+  ],
+  "schema_version": "assaypilot.stage3c.run-metrics.v1"
+}

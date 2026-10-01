@@ -150,7 +150,7 @@ initial_budget >= 0, spent >= 0, reserved >= 0, available >= 0
 
 실행 receipt는 `execution_id`, `request_id`, `action_id`, 상태, 그 실행 직후의 run 예약·가용액, 단위 및 timezone-aware 시각만 포함한다. 원본 측정, verdict, 전체 coverage와 curator 경로는 포함하지 않는다. `read_private_result`는 해당 run/snapshot/candidate/assay가 맞고 상태가 `ready_for_release`인 결과만 `ReplayLookupResult`로 다시 검증해 방어적 복사본을 돌려준다. `no_record`와 `failed` 결과는 이 handoff reader로 읽을 수 없다.
 
-알려진 lookup 오류는 `failed`로 기록하지만, DB 쓰기 오류와 예상 밖 예외는 성공적인 부재로 바꾸지 않고 전체 transaction을 취소한다. 일반 receipt에는 내부 원문 오류 문자열을 넣지 않는다. SQLite schema는 `user_version=2`이며 v1의 approval/reservation/execution/private result를 보존하면서 공개 상태·근거·settlement 테이블을 transaction migration으로 추가한다. 미지원 미래 버전은 거절한다. DB 및 sidecar 파일은 private runtime 디렉터리에 보관하고 mode `0600`으로 제한한다. 이 mode만으로 동일 권한 프로세스를 격리한다고 보지 않는다. 공개 Adapter는 runtime DB를 입력으로 사용하지 않는다.
+알려진 lookup 오류는 `failed`로 기록하지만, DB 쓰기 오류와 예상 밖 예외는 성공적인 부재로 바꾸지 않고 전체 transaction을 취소한다. 일반 receipt에는 내부 원문 오류 문자열을 넣지 않는다. Stage 2C 시점의 SQLite `user_version=2`는 v1의 approval/reservation/execution/private result를 보존하면서 공개 상태·근거·settlement 테이블을 transaction migration으로 추가했다. Stage 3-A는 이 schema를 v3으로 확장해 loop run/step 기록을 추가한다. 현재 migration과 지원 버전은 [Stage 3-A 실행 루프 문서](stage3_run_loop.md#진행-기록-migration-및-재시작)에 적었다. 미지원 미래 버전은 거절한다. DB 및 sidecar 파일은 private runtime 디렉터리에 보관하고 mode `0600`으로 제한한다. 이 mode만으로 동일 권한 프로세스를 격리한다고 보지 않는다. 공개 Adapter는 runtime DB를 입력으로 사용하지 않는다.
 
 ## 중복·재시작 정책
 

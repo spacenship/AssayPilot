@@ -1,0 +1,141 @@
+{
+  "budget_current": {
+    "available": "4",
+    "reserved": "0",
+    "spent": "1",
+    "total": "5",
+    "unit": "synthetic_credit"
+  },
+  "public_view_schema_version": "assaypilot.selector-view.v1",
+  "run_id": "stage3b-r2-random-priority-seed-3",
+  "schema_version": "assaypilot.stage3b.public-run-trace.v1",
+  "selector": {
+    "algorithm_version": "random-priority-v1",
+    "kind": "seeded_random_priority",
+    "seed": 3
+  },
+  "snapshot_revision": "revision-20260917-r2",
+  "steps": [
+    {
+      "action_id": "loop-action-59d5d7cfda974aa3bf27108c346a1d79",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "5",
+        "reserved": "0",
+        "spent": "0",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-1a57bb2924b5be73bdfa",
+      "error_code": null,
+      "execution_id": "execution-d7658ee6958c4a33a8b6d343c53270f3",
+      "public_view": {
+        "digest": "a6e5481bd3eb646de45a8d51149039b62246380f1b67086fa9511ae0b87c8c66",
+        "state_version": 0
+      },
+      "published_observations": [],
+      "request_id": "loop-request-88b18877bad94becb375feca7c975ddf",
+      "selection_reason": "first eligible action by the fixed seeded SHA-256 priority",
+      "status": "no_record",
+      "step_no": 1
+    },
+    {
+      "action_id": "loop-action-21137eea21724b3a9a83967e6a58ecda",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-49b7e78f5e670ee32961",
+      "error_code": null,
+      "execution_id": "execution-8bbe506517e54e188738223105ea2585",
+      "public_view": {
+        "digest": "fd3eeb53511ec5c2d42400d17302880953595f85a061909a98d60813c067f7c3",
+        "state_version": 1
+      },
+      "published_observations": [
+        {
+          "evidence": [
+            {
+              "evidence_id": "evidence-cdf57dbde20d539944e7d5155a5bd6a0",
+              "sha256": "8056dde6d8feef1bb9272e10b60fc014f408c6aee6d59688fa607990310fed03"
+            }
+          ],
+          "observation_id": "observation-cdf57dbde20d539944e7d5155a5bd6a0"
+        }
+      ],
+      "request_id": "loop-request-93de5d5e1b6f47d0995ba0efd070da6a",
+      "selection_reason": "first eligible action by the fixed seeded SHA-256 priority",
+      "status": "released",
+      "step_no": 2
+    },
+    {
+      "action_id": "loop-action-26f3353b3d3e467a9c2fee4987ec48b9",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-e47244fd029571b8e1dd",
+      "error_code": null,
+      "execution_id": "execution-6d1248794bba4b9da33c6ef3fb0e98bb",
+      "public_view": {
+        "digest": "ebc893e307ef814f8e434e9298f734143b4934388d7dcce4a9607d00e8008e23",
+        "state_version": 3
+      },
+      "published_observations": [],
+      "request_id": "loop-request-5ee76532b5ab4b479400fa21c84db81f",
+      "selection_reason": "first eligible action by the fixed seeded SHA-256 priority",
+      "status": "no_record",
+      "step_no": 3
+    },
+    {
+      "action_id": "loop-action-eca50cc8210d434d9858ce1051a1b130",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-2c73f8343bf257a5b5f9",
+      "error_code": null,
+      "execution_id": "execution-69ce365b33a141f7896de6360e717120",
+      "public_view": {
+        "digest": "badfdfd6d77409c43dd4625b3ef363ceec74cb08c65142e7979c2f6beb1618fc",
+        "state_version": 4
+      },
+      "published_observations": [],
+      "request_id": "loop-request-8b60307e131e492b8374c2d238462db8",
+      "selection_reason": "first eligible action by the fixed seeded SHA-256 priority",
+      "status": "no_record",
+      "step_no": 4
+    },
+    {
+      "action_id": "loop-action-e4d3677d510a40e296fca670d3df17b6",
+      "assay_id": "mep2-confirmatory",
+      "budget_after_step": {
+        "available": "4",
+        "reserved": "0",
+        "spent": "1",
+        "unit": "synthetic_credit"
+      },
+      "candidate_id": "candidate-54837185aa746c46406e",
+      "error_code": null,
+      "execution_id": "execution-9728eab7aafe443382454955bbf97c3b",
+      "public_view": {
+        "digest": "2d3eed06fa12ee88e742d71331d1af6fc6ad9858056f805debdb5a9f5cf1e098",
+        "state_version": 5
+      },
+      "published_observations": [],
+      "request_id": "loop-request-fffc7aab16c8478e87e0b07c61c3afcf",
+      "selection_reason": "first eligible action by the fixed seeded SHA-256 priority",
+      "status": "no_record",
+      "step_no": 5
+    }
+  ],
+  "stop_reason": "max_steps"
+}

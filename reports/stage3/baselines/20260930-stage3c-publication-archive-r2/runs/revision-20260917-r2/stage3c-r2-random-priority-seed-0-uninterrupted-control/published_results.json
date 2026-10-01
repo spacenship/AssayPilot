@@ -1,0 +1,104 @@
+{
+  "baseline_id": "20260930-stage3c-publication-archive-r2",
+  "executions": [
+    {
+      "action_id": "loop-action-6624f83fb53d4856b1ba9107794fa825",
+      "assay_id": "mep2-confirmatory",
+      "candidate_id": "candidate-49b7e78f5e670ee32961",
+      "cost": "1",
+      "evidence": [
+        {
+          "payload": {
+            "aid": 2272,
+            "candidate_id": "candidate-49b7e78f5e670ee32961",
+            "cid": 1150217,
+            "evidence_id": "evidence-48f712e40a7d5ade199f6723bbb1e4a0",
+            "measurement_id": "measurement-35290dcde0924e82bed6",
+            "protocol_location": "https://pubchem.ncbi.nlm.nih.gov/bioassay/2272",
+            "raw_outcome": "Inactive",
+            "raw_row": {
+              "AID": "2272",
+              "Activity Name": "",
+              "Activity Outcome": "Inactive",
+              "CID": "1150217",
+              "SID": "49645074"
+            },
+            "schema_version": "1.0.0",
+            "sid": 49645074,
+            "source_file_sha256": "216687f278a1af586f8aafbb33306b6475c14375e6ccaf755f57ed96f44a48c1",
+            "source_kind": "pubchem_runtime_measurement",
+            "source_row_id": "raw-b8b858a1b40c7fc76461",
+            "source_row_number": 1595
+          },
+          "reference": {
+            "evidence_id": "evidence-48f712e40a7d5ade199f6723bbb1e4a0",
+            "location": "runtime/1cae03ad35f017f3420b57f7/evidence-48f712e40a7d5ade199f6723bbb1e4a0.json",
+            "source_id": "raw-b8b858a1b40c7fc76461",
+            "source_kind": "pubchem_runtime_measurement"
+          },
+          "sha256": "ca3e58c2901cf4627db0c8ce3ad237e16d5695832fca6312f4bc2611a53f08ec"
+        }
+      ],
+      "execution_id": "execution-d6e444418fb04d82af1e451d0f8aceb0",
+      "observations": [
+        {
+          "assay_id": "mep2-confirmatory",
+          "candidate_id": "candidate-49b7e78f5e670ee32961",
+          "comparison": null,
+          "condition_id": "not_reported:2272",
+          "evidence_ids": [
+            "evidence-48f712e40a7d5ade199f6723bbb1e4a0"
+          ],
+          "observation_id": "observation-48f712e40a7d5ade199f6723bbb1e4a0",
+          "raw_verdict": "Inactive",
+          "released_at": "2026-09-30T08:08:33.329338Z",
+          "replicate_id": "not_reported:raw-b8b858a1b40c7fc76461",
+          "unit": null,
+          "value": null,
+          "verdict": "inactive"
+        }
+      ],
+      "published_at": "2026-09-30T08:08:33.329338+00:00",
+      "receipt": {
+        "accepted_at": "2026-09-30T08:08:33.318379Z",
+        "action_id": "loop-action-6624f83fb53d4856b1ba9107794fa825",
+        "receipt_id": "receipt-execution-d6e444418fb04d82af1e451d0f8aceb0",
+        "schema_version": "0.1.0"
+      },
+      "result": {
+        "action_id": "loop-action-6624f83fb53d4856b1ba9107794fa825",
+        "error": null,
+        "observations": [
+          {
+            "assay_id": "mep2-confirmatory",
+            "candidate_id": "candidate-49b7e78f5e670ee32961",
+            "comparison": null,
+            "condition_id": "not_reported:2272",
+            "evidence_ids": [
+              "evidence-48f712e40a7d5ade199f6723bbb1e4a0"
+            ],
+            "observation_id": "observation-48f712e40a7d5ade199f6723bbb1e4a0",
+            "raw_verdict": "Inactive",
+            "released_at": "2026-09-30T08:08:33.329338Z",
+            "replicate_id": "not_reported:raw-b8b858a1b40c7fc76461",
+            "unit": null,
+            "value": null,
+            "verdict": "inactive"
+          }
+        ],
+        "receipt_id": "receipt-execution-d6e444418fb04d82af1e451d0f8aceb0",
+        "schema_version": "0.1.0",
+        "status": "completed"
+      },
+      "state_version": 2,
+      "step_no": 1,
+      "unit": "synthetic_credit"
+    }
+  ],
+  "plan_sha256": "79555f0bba18316b8f7e3620a9fefe46b7bf376d39dde1f6e3f8cd63c46042bf",
+  "run_id": "stage3c-r2-random-priority-seed-0-uninterrupted-control",
+  "schema_version": "assaypilot.stage3c.published-results.v1",
+  "snapshot_id": "revision-20260917-r2",
+  "snapshot_revision": "revision-20260917-r2",
+  "source": "trusted run-bound Publication Reader; released executions only"
+}

@@ -42,7 +42,7 @@ from assaypilot.domain import (
 from assaypilot.replay import ReplayError, ReplayLookupResult, ReplayOracle
 
 
-_SCHEMA_VERSION = 2
+_SCHEMA_VERSION = 3
 _ACTION_KIND = "followup_replay_lookup"
 _MONEY_ZERO = Decimal("0")
 _MAX_PUBLIC_EVIDENCE_BYTES = 32 * 1024
@@ -166,6 +166,16 @@ class PublicRunView:
     public: PublicCampaign
     state: RunState
     released_executions: tuple[PublishedExecution, ...]
+
+
+@dataclass(frozen=True, slots=True)
+class ActionExecutionStatus:
+    """Trusted loop metadata for an action already processed in this run."""
+
+    candidate_id: str
+    assay_id: str
+    execution_id: str
+    status: Literal["ready_for_release", "released", "cancelled", "no_record", "failed"]
 
 
 class ExecutionCoordinator:
@@ -292,8 +302,7 @@ class ExecutionCoordinator:
         with self._transaction() as db:
             run = self._load_run(db, run_id)
             self._assert_run_binding(run)
-            if reviewed_at < _parse_dt(run["created_at"]) or reviewed_at < self.public.as_of:
-                raise ExecutionControlError("time_before_run", "approval time predates run or public snapshot")
+            self._validate_run_event_time(db, run_id, reviewed_at, "approval")
             digest = self._action_digest(run_id, action, amount, unit)
             old = db.execute(
                 "SELECT * FROM approvals WHERE run_id = ? AND action_key = ?", (run_id, key)
@@ -349,8 +358,7 @@ class ExecutionCoordinator:
         with self._transaction() as db:
             run = self._load_run(db, run_id)
             self._assert_run_binding(run)
-            if reviewed_at < _parse_dt(run["created_at"]) or reviewed_at < self.public.as_of:
-                raise ExecutionControlError("time_before_run", "decision time predates run or public snapshot")
+            self._validate_run_event_time(db, run_id, reviewed_at, "decision")
             digest = self._action_digest(run_id, action, amount, unit)
             old = db.execute(
                 "SELECT * FROM approvals WHERE run_id = ? AND action_key = ?", (run_id, key)
@@ -413,8 +421,7 @@ class ExecutionCoordinator:
                 raise ApprovalError("approval_not_found", "no approval decision exists for this action")
             if row["status"] != "approved":
                 raise ApprovalError("approval_not_active", "only an active approval can be canceled")
-            if canceled_at < _parse_dt(run["created_at"]) or canceled_at < self.public.as_of:
-                raise ExecutionControlError("time_before_run", "cancellation time predates run or snapshot")
+            self._validate_run_event_time(db, run_id, canceled_at, "cancellation")
             db.execute(
                 "UPDATE approvals SET status = 'canceled', canceled_at = ? WHERE run_id = ? AND action_key = ?",
                 (_dt_text(canceled_at), run_id, key),
@@ -802,42 +809,87 @@ class ExecutionCoordinator:
         """Return a consistent, defensive view of the committed run state."""
         with self._connection() as db:
             db.execute("BEGIN")
-            run = self._load_run(db, run_id)
-            self._assert_run_binding(run)
-            state_row = db.execute(
-                "SELECT state_version, as_of, observations_json FROM run_public_state WHERE run_id = ?",
-                (run_id,),
-            ).fetchone()
-            if state_row is None:
-                raise ExecutionControlError("runtime_state_missing", "run public state is unavailable")
-            runtime_observations = _load_observations(state_row["observations_json"])
-            runtime_refs = self._published_refs(db, run_id)
+            return self._public_state_from_connection(db, run_id)
+
+    def get_loop_snapshot(
+        self, run_id: str,
+    ) -> tuple[PublicRunView, tuple[ActionExecutionStatus, ...]]:
+        """Read public state and trusted execution statuses at one SQLite boundary.
+
+        The action statuses are for the trusted controller only. They are never
+        returned by PublicReader or used to query Oracle for availability.
+        """
+        with self._connection() as db:
+            db.execute("BEGIN")
+            view = self._public_state_from_connection(db, run_id)
             rows = db.execute(
-                "SELECT execution_id FROM published_executions WHERE run_id = ? ORDER BY state_version",
+                """SELECT candidate_id, assay_id, execution_id, status, release_status
+                   FROM executions WHERE run_id = ? ORDER BY execution_id""",
                 (run_id,),
             ).fetchall()
-            published = tuple(self._published_execution(db, run_id, row["execution_id"]) for row in rows)
-            as_of = _parse_dt(state_row["as_of"])
-            public = self._current_public(
-                as_of, runtime_observations, [*self.public.evidence, *runtime_refs],
+            statuses = tuple(
+                ActionExecutionStatus(
+                    candidate_id=row["candidate_id"], assay_id=row["assay_id"],
+                    execution_id=row["execution_id"],
+                    status=("released" if row["release_status"] == "released" else
+                            "cancelled" if row["release_status"] == "cancelled" else row["status"]),
+                )
+                for row in rows
             )
-            budget = self._run_budget(run).budget
-            state = RunState(
-                campaign_id=self.campaign_id,
-                as_of=as_of,
-                observations=[*self.public.observations, *runtime_observations],
-                budget=budget,
-                status="running",
-            )
-            audit = validate_run_state(state, public, expected_budget_total=budget.total)
-            if not audit.ok:
-                raise ExecutionControlError("runtime_state_invalid", "committed public state failed validation")
-            return PublicRunView(
-                run_id=run_id, state_version=int(state_row["state_version"]), as_of=as_of,
-                public=PublicCampaign.model_validate_json(public.model_dump_json()),
-                state=RunState.model_validate_json(state.model_dump_json()),
-                released_executions=published,
-            )
+            return view, statuses
+
+    def _public_state_from_connection(self, db: sqlite3.Connection, run_id: str) -> PublicRunView:
+        run = self._load_run(db, run_id)
+        self._assert_run_binding(run)
+        state_row = db.execute(
+            "SELECT state_version, as_of, observations_json FROM run_public_state WHERE run_id = ?",
+            (run_id,),
+        ).fetchone()
+        if state_row is None:
+            raise ExecutionControlError("runtime_state_missing", "run public state is unavailable")
+        runtime_observations = _load_observations(state_row["observations_json"])
+        runtime_refs = self._published_refs(db, run_id)
+        rows = db.execute(
+            "SELECT execution_id FROM published_executions WHERE run_id = ? ORDER BY state_version",
+            (run_id,),
+        ).fetchall()
+        published = tuple(self._published_execution(db, run_id, row["execution_id"]) for row in rows)
+        as_of = _parse_dt(state_row["as_of"])
+        public = self._current_public(
+            as_of, runtime_observations, [*self.public.evidence, *runtime_refs],
+        )
+        budget = self._run_budget(run).budget
+        state = RunState(
+            campaign_id=self.campaign_id,
+            as_of=as_of,
+            observations=[*self.public.observations, *runtime_observations],
+            budget=budget,
+            status="running",
+        )
+        audit = validate_run_state(state, public, expected_budget_total=budget.total)
+        if not audit.ok:
+            raise ExecutionControlError("runtime_state_invalid", "committed public state failed validation")
+        return PublicRunView(
+            run_id=run_id, state_version=int(state_row["state_version"]), as_of=as_of,
+            public=PublicCampaign.model_validate_json(public.model_dump_json()),
+            state=RunState.model_validate_json(state.model_dump_json()),
+            released_executions=published,
+        )
+
+    def _validate_run_event_time(
+        self, db: sqlite3.Connection, run_id: str, event_at: datetime, event_name: str,
+    ) -> None:
+        if event_at.tzinfo is None or event_at.utcoffset() is None:
+            raise ExecutionControlError("invalid_event_time", f"{event_name} time must be timezone-aware")
+        run = self._load_run(db, run_id)
+        state = db.execute(
+            "SELECT as_of FROM run_public_state WHERE run_id = ?", (run_id,),
+        ).fetchone()
+        if state is None:
+            raise ExecutionControlError("runtime_state_missing", "run public state is unavailable")
+        cutoff = max(self.public.as_of, _parse_dt(run["created_at"]), _parse_dt(state["as_of"]))
+        if event_at < cutoff:
+            raise ExecutionControlError("time_order", f"{event_name} time predates current run/public state")
 
     def get_public_execution(self, run_id: str, execution_id: str) -> PublishedExecution:
         """Read a released result only when it belongs to the bound run."""
@@ -1138,20 +1190,33 @@ class ExecutionCoordinator:
         action: ActionRequest,
         runtime_observations: list[Observation],
     ) -> None:
-        assay = self._assays[action.assay_id]
         observations = [*self.public.observations, *runtime_observations]
+        if not self.prerequisites_satisfied(action.candidate_id, action.assay_id, observations):
+            raise ActionRejectedError(
+                "prerequisite_unmet",
+                "required public prerequisite is absent from committed observations in this run",
+            )
+
+    def prerequisites_satisfied(
+        self, candidate_id: str, assay_id: str, observations: list[Observation],
+    ) -> bool:
+        """Evaluate configured public prerequisites without consulting Oracle."""
+        assay = self._assays.get(assay_id)
+        if assay is None:
+            return False
         for prerequisite in assay.prerequisites:
             matching = [
                 observation for observation in observations
-                if observation.candidate_id == action.candidate_id
+                if observation.candidate_id == candidate_id
                 and observation.assay_id == prerequisite.assay_id
             ]
             if prerequisite.kind == "observed" and not matching:
-                raise ActionRejectedError("prerequisite_unmet", "required assay has no committed public observation in this run")
+                return False
             if prerequisite.kind == "verdict" and not any(
                 observation.verdict == prerequisite.verdict for observation in matching
             ):
-                raise ActionRejectedError("prerequisite_unmet", "required verdict is absent from committed public observations in this run")
+                return False
+        return True
 
     def _action_digest(self, run_id: str, action: ActionRequest, amount: Decimal, unit: str) -> str:
         # action_id is a label, not a second billable action. The unique action
@@ -1346,7 +1411,7 @@ class ExecutionCoordinator:
         db = self._connection()
         try:
             version = db.execute("PRAGMA user_version").fetchone()[0]
-            if version not in (0, 1, _SCHEMA_VERSION):
+            if version not in (0, 1, 2, _SCHEMA_VERSION):
                 raise ExecutionControlError("unsupported_database_version", "runtime database schema version is unsupported")
             db.execute("PRAGMA journal_mode = WAL")
             db.execute("BEGIN IMMEDIATE")
@@ -1497,6 +1562,74 @@ class ExecutionCoordinator:
                     FOREIGN KEY(execution_id) REFERENCES executions(execution_id)
                 )"""
             )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS loop_runs (
+                    run_id TEXT PRIMARY KEY,
+                    config_json TEXT NOT NULL,
+                    config_sha256 TEXT NOT NULL,
+                    started_at TEXT NOT NULL,
+                    deadline_at TEXT NOT NULL,
+                    status TEXT NOT NULL CHECK(status IN ('running','stopped')),
+                    stop_reason TEXT,
+                    resumable INTEGER NOT NULL CHECK(resumable IN (0,1)),
+                    selector_calls INTEGER NOT NULL DEFAULT 0 CHECK(selector_calls >= 0),
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    FOREIGN KEY(run_id) REFERENCES runs(run_id)
+                )"""
+            )
+            db.execute(
+                """CREATE TABLE IF NOT EXISTS loop_steps (
+                    run_id TEXT NOT NULL,
+                    step_no INTEGER NOT NULL CHECK(step_no > 0),
+                    action_id TEXT NOT NULL,
+                    request_id TEXT NOT NULL,
+                    candidate_id TEXT NOT NULL,
+                    assay_id TEXT NOT NULL,
+                    action_json TEXT NOT NULL,
+                    view_state_version INTEGER NOT NULL,
+                    view_digest TEXT NOT NULL,
+                    selected_reason TEXT NOT NULL,
+                    status TEXT NOT NULL CHECK(status IN (
+                        'proposed','approved','pending_release','released','no_record',
+                        'failed','rejected','cancelled'
+                    )),
+                    approval_status TEXT CHECK(approval_status IN ('approved','rejected','cancelled')),
+                    execution_status TEXT CHECK(execution_status IN (
+                        'ready_for_release','released','cancelled','no_record','failed'
+                    )),
+                    release_status TEXT CHECK(release_status IN (
+                        'pending','released','cancelled','not_applicable','failed'
+                    )),
+                    execution_id TEXT,
+                    action_retries INTEGER NOT NULL DEFAULT 0 CHECK(action_retries >= 0),
+                    release_retries INTEGER NOT NULL DEFAULT 0 CHECK(release_retries >= 0),
+                    observations_added INTEGER NOT NULL DEFAULT 0 CHECK(observations_added >= 0),
+                    budget_spent TEXT NOT NULL DEFAULT '0',
+                    budget_reserved TEXT NOT NULL DEFAULT '0',
+                    budget_available TEXT NOT NULL DEFAULT '0',
+                    error_code TEXT,
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL,
+                    PRIMARY KEY(run_id, step_no),
+                    UNIQUE(run_id, action_id),
+                    UNIQUE(run_id, request_id),
+                    FOREIGN KEY(run_id) REFERENCES loop_runs(run_id)
+                )"""
+            )
+            loop_step_columns = {
+                row["name"] for row in db.execute("PRAGMA table_info(loop_steps)").fetchall()
+            }
+            for column, definition in (
+                ("approval_status", "TEXT"),
+                ("execution_status", "TEXT"),
+                ("release_status", "TEXT"),
+                ("budget_spent", "TEXT NOT NULL DEFAULT '0'"),
+                ("budget_reserved", "TEXT NOT NULL DEFAULT '0'"),
+                ("budget_available", "TEXT NOT NULL DEFAULT '0'"),
+            ):
+                if column not in loop_step_columns:
+                    db.execute(f"ALTER TABLE loop_steps ADD COLUMN {column} {definition}")
             db.execute(
                 """INSERT OR IGNORE INTO run_public_state (run_id, state_version, as_of, observations_json)
                    SELECT run_id, 0, created_at, '[]' FROM runs"""

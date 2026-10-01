@@ -1,0 +1,17 @@
+{
+  "common_axes": {
+    "revision-20260917-r2": {
+      "cost_endpoint_rule": "last observed point at or below the actual common spend; no interpolation",
+      "spent_endpoint": "1",
+      "step_endpoint": 5
+    },
+    "revision-20260918-primary-active-all": {
+      "cost_endpoint_rule": "last observed point at or below the actual common spend; no interpolation",
+      "spent_endpoint": "4",
+      "step_endpoint": 14
+    }
+  },
+  "evaluation_id": "20260930-stage3c-eval-r2-r2",
+  "runs": [],
+  "schema_version": "assaypilot.stage3c.curves.v1"
+}

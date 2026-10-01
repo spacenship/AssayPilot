@@ -1,0 +1,2422 @@
+{
+  "common_axes": {
+    "revision-20260917-r2": {
+      "cost_endpoint_rule": "last observed point at or below the actual common spend; no interpolation",
+      "spent_endpoint": "1",
+      "step_endpoint": 5
+    },
+    "revision-20260918-primary-active-all": {
+      "cost_endpoint_rule": "last observed point at or below the actual common spend; no interpolation",
+      "spent_endpoint": "4",
+      "step_endpoint": 14
+    }
+  },
+  "evaluation_id": "20260930-stage3c-eval-r2-r3",
+  "runs": [
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ],
+      "run_id": "stage3c-r2-fixed-order",
+      "selector": {
+        "algorithm_version": null,
+        "kind": "fixed_order",
+        "seed": null
+      },
+      "snapshot_revision": "revision-20260917-r2",
+      "step_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ]
+    },
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ],
+      "run_id": "stage3c-r2-random-priority-seed-0",
+      "selector": {
+        "algorithm_version": "random-priority-v1",
+        "kind": "seeded_random_priority",
+        "seed": 0
+      },
+      "snapshot_revision": "revision-20260917-r2",
+      "step_points": [
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ]
+    },
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 2
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ],
+      "run_id": "stage3c-r2-random-priority-seed-1",
+      "selector": {
+        "algorithm_version": "random-priority-v1",
+        "kind": "seeded_random_priority",
+        "seed": 1
+      },
+      "snapshot_revision": "revision-20260917-r2",
+      "step_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 2
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ]
+    },
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ],
+      "run_id": "stage3c-r2-random-priority-seed-2",
+      "selector": {
+        "algorithm_version": "random-priority-v1",
+        "kind": "seeded_random_priority",
+        "seed": 2
+      },
+      "snapshot_revision": "revision-20260917-r2",
+      "step_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ]
+    },
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ],
+      "run_id": "stage3c-r2-random-priority-seed-3",
+      "selector": {
+        "algorithm_version": "random-priority-v1",
+        "kind": "seeded_random_priority",
+        "seed": 3
+      },
+      "snapshot_revision": "revision-20260917-r2",
+      "step_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ]
+    },
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ],
+      "run_id": "stage3c-r2-random-priority-seed-4",
+      "selector": {
+        "algorithm_version": "random-priority-v1",
+        "kind": "seeded_random_priority",
+        "seed": 4
+      },
+      "snapshot_revision": "revision-20260917-r2",
+      "step_points": [
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 5
+        }
+      ]
+    },
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 5
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "spent": "2",
+          "step": 6
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "spent": "2",
+          "step": 7
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "spent": "2",
+          "step": 8
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "spent": "2",
+          "step": 9
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "spent": "2",
+          "step": 10
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "spent": "2",
+          "step": 11
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "spent": "2",
+          "step": 12
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "spent": "2",
+          "step": 13
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "spent": "2",
+          "step": 14
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "spent": "3",
+          "step": 15
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "spent": "3",
+          "step": 16
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "spent": "3",
+          "step": 17
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 18
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 19
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 20
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 21
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 22
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 23
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 24
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 25
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 26
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 27
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 28
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 29
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 30
+        }
+      ],
+      "run_id": "stage3c-expanded-fixed-order",
+      "selector": {
+        "algorithm_version": null,
+        "kind": "fixed_order",
+        "seed": null
+      },
+      "snapshot_revision": "revision-20260918-primary-active-all",
+      "step_points": [
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 5
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 6
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 7
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 8
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 9
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 10
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 11
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 12
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 13
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 14
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 15
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 16
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 17
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 18
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 19
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 20
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 21
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 22
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 23
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 24
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 25
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 26
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 27
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 28
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 29
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 30
+        }
+      ]
+    },
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "spent": "2",
+          "step": 3
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "spent": "2",
+          "step": 4
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "spent": "3",
+          "step": 5
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 6
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 7
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 8
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 9
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 10
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 11
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 12
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 13
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 14
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 15
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 16
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 17
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 18
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 19
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 20
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 21
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 22
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 23
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 24
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 25
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 26
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 27
+        },
+        {
+          "new_binary_count": 5,
+          "new_positive_count": 0,
+          "spent": "5",
+          "step": 28
+        }
+      ],
+      "run_id": "stage3c-expanded-random-priority-seed-0",
+      "selector": {
+        "algorithm_version": "random-priority-v1",
+        "kind": "seeded_random_priority",
+        "seed": 0
+      },
+      "snapshot_revision": "revision-20260918-primary-active-all",
+      "step_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 3
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 4
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 5
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 6
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 7
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 8
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 9
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 10
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 11
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 12
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 13
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 14
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 15
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 16
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 17
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 18
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 19
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 20
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 21
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 22
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 23
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 24
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 25
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 26
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 27
+        },
+        {
+          "new_binary_count": 5,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "5",
+          "step": 28
+        }
+      ]
+    },
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 5
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 6
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 7
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 8
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 9
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 10
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 11
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 12
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 13
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 14
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "spent": "2",
+          "step": 15
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "spent": "2",
+          "step": 16
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "spent": "3",
+          "step": 17
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 18
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 19
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 20
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 21
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 22
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 23
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 24
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 25
+        },
+        {
+          "new_binary_count": 5,
+          "new_positive_count": 0,
+          "spent": "5",
+          "step": 26
+        }
+      ],
+      "run_id": "stage3c-expanded-random-priority-seed-1",
+      "selector": {
+        "algorithm_version": "random-priority-v1",
+        "kind": "seeded_random_priority",
+        "seed": 1
+      },
+      "snapshot_revision": "revision-20260918-primary-active-all",
+      "step_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 5
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 6
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 7
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 8
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 9
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 10
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 11
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 12
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 13
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 14
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 15
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 16
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 17
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 18
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 19
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 20
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 21
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 22
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 23
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 24
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 25
+        },
+        {
+          "new_binary_count": 5,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "5",
+          "step": 26
+        }
+      ]
+    },
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 5
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 6
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 7
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 8
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 9
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "spent": "2",
+          "step": 10
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "spent": "3",
+          "step": 11
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "spent": "3",
+          "step": 12
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "spent": "3",
+          "step": 13
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "spent": "3",
+          "step": 14
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "spent": "3",
+          "step": 15
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "spent": "3",
+          "step": 16
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "spent": "3",
+          "step": 17
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 18
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 19
+        },
+        {
+          "new_binary_count": 5,
+          "new_positive_count": 0,
+          "spent": "5",
+          "step": 20
+        }
+      ],
+      "run_id": "stage3c-expanded-random-priority-seed-2",
+      "selector": {
+        "algorithm_version": "random-priority-v1",
+        "kind": "seeded_random_priority",
+        "seed": 2
+      },
+      "snapshot_revision": "revision-20260918-primary-active-all",
+      "step_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 5
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 6
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 7
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 8
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 9
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 10
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 11
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 12
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 13
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 14
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 15
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 16
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 17
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 18
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 19
+        },
+        {
+          "new_binary_count": 5,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "5",
+          "step": 20
+        }
+      ]
+    },
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "spent": "0",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 1,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 1,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 1,
+          "spent": "1",
+          "step": 5
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 1,
+          "spent": "1",
+          "step": 6
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 1,
+          "spent": "1",
+          "step": 7
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "spent": "2",
+          "step": 8
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "spent": "2",
+          "step": 9
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "spent": "3",
+          "step": 10
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "spent": "3",
+          "step": 11
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "spent": "3",
+          "step": 12
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "spent": "4",
+          "step": 13
+        },
+        {
+          "new_binary_count": 5,
+          "new_positive_count": 1,
+          "spent": "5",
+          "step": 14
+        }
+      ],
+      "run_id": "stage3c-expanded-random-priority-seed-3",
+      "selector": {
+        "algorithm_version": "random-priority-v1",
+        "kind": "seeded_random_priority",
+        "seed": 3
+      },
+      "snapshot_revision": "revision-20260918-primary-active-all",
+      "step_points": [
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 1
+        },
+        {
+          "new_binary_count": 0,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "0",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 5
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 6
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 7
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 8
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 9
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 10
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 11
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 12
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 13
+        },
+        {
+          "new_binary_count": 5,
+          "new_positive_count": 1,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "5",
+          "step": 14
+        }
+      ]
+    },
+    {
+      "cost_curve_interpretation": "observed step states only; repeated cost coordinates are retained; no future-state extension or interpolation",
+      "cost_points": [
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "spent": "2",
+          "step": 5
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "spent": "2",
+          "step": 6
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "spent": "2",
+          "step": 7
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "spent": "2",
+          "step": 8
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "spent": "3",
+          "step": 9
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "spent": "3",
+          "step": 10
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 11
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 12
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 13
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 14
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 15
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 16
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 17
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 18
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 19
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 20
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 21
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 22
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "spent": "4",
+          "step": 23
+        },
+        {
+          "new_binary_count": 5,
+          "new_positive_count": 0,
+          "spent": "5",
+          "step": 24
+        }
+      ],
+      "run_id": "stage3c-expanded-random-priority-seed-4",
+      "selector": {
+        "algorithm_version": "random-priority-v1",
+        "kind": "seeded_random_priority",
+        "seed": 4
+      },
+      "snapshot_revision": "revision-20260918-primary-active-all",
+      "step_points": [
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 1
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 2
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 3
+        },
+        {
+          "new_binary_count": 1,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "1",
+          "step": 4
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 5
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 6
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 7
+        },
+        {
+          "new_binary_count": 2,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "2",
+          "step": 8
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 9
+        },
+        {
+          "new_binary_count": 3,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "3",
+          "step": 10
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 11
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 12
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 13
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 14
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 15
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 16
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 17
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 18
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 19
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 20
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 21
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 22
+        },
+        {
+          "new_binary_count": 4,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "4",
+          "step": 23
+        },
+        {
+          "new_binary_count": 5,
+          "new_positive_count": 0,
+          "released_unknown_or_ambiguous_count": 0,
+          "spent": "5",
+          "step": 24
+        }
+      ]
+    }
+  ],
+  "schema_version": "assaypilot.stage3c.curves.v1"
+}

@@ -1,0 +1,203 @@
+{
+  "baseline_id": "20260930-seeded-priority-v1",
+  "execution_command": "conda run -n drug python scripts/verify_stage3_baselines.py --execute-plan reports/stage3/baselines/20260930-seeded-priority-v1/plan.json",
+  "fixed_conditions": {
+    "approval_policy": "bounded_replay",
+    "approver_id": "local-stage3b-bounded-replay-policy",
+    "budget_assumed": true,
+    "budget_unit": "synthetic_credit",
+    "cost_policy_version": "preserved-public-assay-cost-v1",
+    "initial_budget": "5",
+    "isolated_selector": "unshare user/mount/network namespace + read-only chroot Python stdlib worker",
+    "max_action_retries": 1,
+    "max_duration_seconds": 300,
+    "max_release_retries": 2,
+    "private_canary": "a private marker file outside the chroot is checked for denial on each worker start",
+    "runtime_db": "fresh temporary private SQLite database per run, outside each snapshot; deleted after safe summary/trace extraction",
+    "selector_timeout_seconds": 5.0
+  },
+  "implementation": {
+    "file_sha256": {
+      "scripts/verify_stage3_baselines.py": "bcc07812e85e58f3bb5fe05aef9922d650de8b78e7c3c255e5eb53a9fd3b0f42",
+      "src/assaypilot/execution.py": "b8a7641a63ce816dabc2e41dddeebdcc965e3eedefc155c32a37c1582951bd3c",
+      "src/assaypilot/replay.py": "70f3ea9aa2f803fab2f7637c895f382015d57c599ace7d020294844303995a0d",
+      "src/assaypilot/run_loop.py": "b7cb3a2e49ffcf9042fd3b44b78dcd366dbeb51e32bbd1f6f01a6b6cd309133e",
+      "src/assaypilot/run_loop_cli.py": "779e06761cff313daf15320e3d91bc4f0d028bca202723b5eb73c145cdf20b5c",
+      "src/assaypilot/selector_worker.py": "aeb8895fe25813673195d25fe4ae321a1e763f86a4a2310e3b9e4e4bf1996373",
+      "tests/test_run_loop.py": "485648129a5ccbd7f6b9e4b56d19a4cda02c7e9d79366f30d0669b50c9c6147d",
+      "tests/test_run_loop_cli.py": "02823bbb785ade0d9e015d464193f978804e671d4fcd583c01dea4a34b6e38aa"
+    },
+    "fingerprint_sha256": "40faec819dd68ef82927d8df3ada675d124a4e1c21f58e9479e6e38411ad8b37",
+    "git_head": "2d8d953d26f7067fb5c8dd1727ac2afa638a8fe9"
+  },
+  "recovery_control": {
+    "algorithm_version": "random-priority-v1",
+    "control_run_id": "stage3b-r2-random-priority-seed-0-uninterrupted-control",
+    "max_steps": 5,
+    "purpose": "compare the interrupted/resumed seed-0 action order with an uninterrupted run under the same public inputs",
+    "seed": 0,
+    "snapshot_revision": "revision-20260917-r2"
+  },
+  "registered_at": "2026-09-30T06:14:39.568319+00:00",
+  "registration_state": "pre-registered-before-any-baseline-run",
+  "schema_version": "assaypilot.stage3b.baseline-plan.v1",
+  "selector_algorithm": {
+    "canonical_json": "UTF-8, ensure_ascii=false, separators=(',', ':'), array [version, seed, candidate_id, assay_id]",
+    "kind": "seeded_random_priority",
+    "priority_tuple": "(sha256_digest_bytes, candidate_id, assay_id)",
+    "version": "random-priority-v1"
+  },
+  "snapshots": [
+    {
+      "campaign_id": "pubchem-tor-mep2-20260915",
+      "candidate_count": 5,
+      "max_steps": 5,
+      "public_file_count": 4,
+      "public_manifest_sha256": "cddca99e5cda3e7bf10862014f34391918cd389221826b0054e301948cbee48f",
+      "public_tree_sha256": "9c958efa8983bc334ad513cb3ea84292ddb06739c7873de8a17904641f60dd26",
+      "revision": "revision-20260917-r2",
+      "runs": [
+        {
+          "algorithm_version": null,
+          "interrupt_after_steps": null,
+          "max_steps": 5,
+          "role": "baseline",
+          "run_id": "stage3b-r2-fixed-order",
+          "seed": null,
+          "selector_kind": "fixed_order"
+        },
+        {
+          "algorithm_version": "random-priority-v1",
+          "interrupt_after_steps": 2,
+          "max_steps": 5,
+          "role": "baseline",
+          "run_id": "stage3b-r2-random-priority-seed-0",
+          "seed": 0,
+          "selector_kind": "seeded_random_priority"
+        },
+        {
+          "algorithm_version": "random-priority-v1",
+          "interrupt_after_steps": null,
+          "max_steps": 5,
+          "role": "baseline",
+          "run_id": "stage3b-r2-random-priority-seed-1",
+          "seed": 1,
+          "selector_kind": "seeded_random_priority"
+        },
+        {
+          "algorithm_version": "random-priority-v1",
+          "interrupt_after_steps": null,
+          "max_steps": 5,
+          "role": "baseline",
+          "run_id": "stage3b-r2-random-priority-seed-2",
+          "seed": 2,
+          "selector_kind": "seeded_random_priority"
+        },
+        {
+          "algorithm_version": "random-priority-v1",
+          "interrupt_after_steps": null,
+          "max_steps": 5,
+          "role": "baseline",
+          "run_id": "stage3b-r2-random-priority-seed-3",
+          "seed": 3,
+          "selector_kind": "seeded_random_priority"
+        },
+        {
+          "algorithm_version": "random-priority-v1",
+          "interrupt_after_steps": null,
+          "max_steps": 5,
+          "role": "baseline",
+          "run_id": "stage3b-r2-random-priority-seed-4",
+          "seed": 4,
+          "selector_kind": "seeded_random_priority"
+        }
+      ],
+      "snapshot_id": "revision-20260917-r2",
+      "snapshot_root": "data_snapshots/pubchem-tor-mep2-20260915/revision-20260917-r2"
+    },
+    {
+      "campaign_id": "pubchem-tor-mep2-20260915-primary-active-all",
+      "candidate_count": 1682,
+      "max_steps": 30,
+      "public_file_count": 4,
+      "public_manifest_sha256": "fcf4a5416a3fc3b6a26f2f574e6a127b953d50ef1b89214f3c8d8dc097cb562b",
+      "public_tree_sha256": "1959da52104acf52c750fa26d0e56bff05d0e7a95935b52a7fb184495e51af34",
+      "revision": "revision-20260918-primary-active-all",
+      "runs": [
+        {
+          "algorithm_version": null,
+          "interrupt_after_steps": null,
+          "max_steps": 30,
+          "role": "baseline",
+          "run_id": "stage3b-expanded-fixed-order",
+          "seed": null,
+          "selector_kind": "fixed_order"
+        },
+        {
+          "algorithm_version": "random-priority-v1",
+          "interrupt_after_steps": null,
+          "max_steps": 30,
+          "role": "baseline",
+          "run_id": "stage3b-expanded-random-priority-seed-0",
+          "seed": 0,
+          "selector_kind": "seeded_random_priority"
+        },
+        {
+          "algorithm_version": "random-priority-v1",
+          "interrupt_after_steps": null,
+          "max_steps": 30,
+          "role": "baseline",
+          "run_id": "stage3b-expanded-random-priority-seed-1",
+          "seed": 1,
+          "selector_kind": "seeded_random_priority"
+        },
+        {
+          "algorithm_version": "random-priority-v1",
+          "interrupt_after_steps": null,
+          "max_steps": 30,
+          "role": "baseline",
+          "run_id": "stage3b-expanded-random-priority-seed-2",
+          "seed": 2,
+          "selector_kind": "seeded_random_priority"
+        },
+        {
+          "algorithm_version": "random-priority-v1",
+          "interrupt_after_steps": null,
+          "max_steps": 30,
+          "role": "baseline",
+          "run_id": "stage3b-expanded-random-priority-seed-3",
+          "seed": 3,
+          "selector_kind": "seeded_random_priority"
+        },
+        {
+          "algorithm_version": "random-priority-v1",
+          "interrupt_after_steps": null,
+          "max_steps": 30,
+          "role": "baseline",
+          "run_id": "stage3b-expanded-random-priority-seed-4",
+          "seed": 4,
+          "selector_kind": "seeded_random_priority"
+        }
+      ],
+      "snapshot_id": "revision-20260918-primary-active-all",
+      "snapshot_root": "data_snapshots/pubchem-tor-mep2-20260915/revision-20260918-primary-active-all"
+    }
+  ],
+  "trace_allowlist": [
+    "step/action/request/execution IDs",
+    "candidate_id and assay_id",
+    "public view state version/digest",
+    "selector reason",
+    "execution status",
+    "durable current budget checkpoint",
+    "public observation/evidence IDs",
+    "final stop reason"
+  ],
+  "trace_excludes": [
+    "raw hidden or curator arrays",
+    "measurement values from private results",
+    "unattempted-candidate record availability",
+    "private runtime database"
+  ],
+  "trace_schema_version": "assaypilot.stage3b.public-run-trace.v1"
+}

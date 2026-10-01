@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="820" height="460" viewBox="0 0 820 460">
+<rect width="100%" height="100%" fill="white"/>
+<text x="72" y="28" font-family="sans-serif" font-size="18">revision-20260917-r2: released follow-up Active by step</text>
+<path d="M72,54 V384 H772" stroke="#333" fill="none"/>
+<text x="422.0" y="442" text-anchor="middle" font-family="sans-serif" font-size="13">step</text>
+<text transform="translate(18 219.0) rotate(-90)" text-anchor="middle" font-family="sans-serif" font-size="13">cumulative newly released Active</text>
+<path d="M68,384.0 H772" stroke="#e5e7eb"/>
+<text x="62" y="388.0" text-anchor="end" font-family="sans-serif" font-size="11">0.0</text>
+<path d="M68,274.0 H772" stroke="#e5e7eb"/>
+<text x="62" y="278.0" text-anchor="end" font-family="sans-serif" font-size="11">0.3</text>
+<path d="M68,164.0 H772" stroke="#e5e7eb"/>
+<text x="62" y="168.0" text-anchor="end" font-family="sans-serif" font-size="11">0.7</text>
+<path d="M68,54.0 H772" stroke="#e5e7eb"/>
+<text x="62" y="58.0" text-anchor="end" font-family="sans-serif" font-size="11">1.0</text>
+<path d="M72,384 L212.0,384.0 H352.0 V384.0 H492.0 V384.0 H632.0 V384.0 H772.0 V384.0" fill="none" stroke="#2563eb" stroke-width="2"/>
+<path d="M596,66 h18" stroke="#2563eb" stroke-width="2"/>
+<text x="619" y="70" font-family="sans-serif" font-size="10">r2-fixed-order</text>
+<path d="M72,384 L212.0,384.0 H352.0 V384.0 H492.0 V384.0 H632.0 V384.0 H772.0 V384.0" fill="none" stroke="#16a34a" stroke-width="2"/>
+<path d="M596,83 h18" stroke="#16a34a" stroke-width="2"/>
+<text x="619" y="87" font-family="sans-serif" font-size="10">r2-random-priority-seed-0</text>
+<path d="M72,384 L212.0,384.0 H352.0 V384.0 H492.0 V384.0 H632.0 V384.0 H772.0 V384.0" fill="none" stroke="#dc2626" stroke-width="2"/>
+<path d="M596,100 h18" stroke="#dc2626" stroke-width="2"/>
+<text x="619" y="104" font-family="sans-serif" font-size="10">r2-random-priority-seed-1</text>
+<path d="M72,384 L212.0,384.0 H352.0 V384.0 H492.0 V384.0 H632.0 V384.0 H772.0 V384.0" fill="none" stroke="#9333ea" stroke-width="2"/>
+<path d="M596,117 h18" stroke="#9333ea" stroke-width="2"/>
+<text x="619" y="121" font-family="sans-serif" font-size="10">r2-random-priority-seed-2</text>
+<path d="M72,384 L212.0,384.0 H352.0 V384.0 H492.0 V384.0 H632.0 V384.0 H772.0 V384.0" fill="none" stroke="#ea580c" stroke-width="2"/>
+<path d="M596,134 h18" stroke="#ea580c" stroke-width="2"/>
+<text x="619" y="138" font-family="sans-serif" font-size="10">r2-random-priority-seed-3</text>
+<path d="M72,384 L212.0,384.0 H352.0 V384.0 H492.0 V384.0 H632.0 V384.0 H772.0 V384.0" fill="none" stroke="#0891b2" stroke-width="2"/>
+<path d="M596,151 h18" stroke="#0891b2" stroke-width="2"/>
+<text x="619" y="155" font-family="sans-serif" font-size="10">r2-random-priority-seed-4</text>
+</svg>

@@ -1,0 +1,281 @@
+{
+  "complete": false,
+  "evaluation_id": "20260930-stage3c-eval-r2-archive-only",
+  "schema_version": "assaypilot.stage3c.aggregate-metrics.v1",
+  "snapshots": {
+    "revision-20260917-r2": {
+      "common_axis_comparison": {
+        "by_run_at_common_step_endpoint": {},
+        "by_run_at_or_before_common_spent_endpoint": {},
+        "common_spent_range_end": "0",
+        "common_spent_range_start": "0",
+        "common_step_range_end": null,
+        "common_step_range_start": null,
+        "cost_endpoint_rule": "last observed state at or below the common actual spend; no interpolation"
+      },
+      "complete": false,
+      "fixed_order": null,
+      "seeded_random_priority": {
+        "durable_steps": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "failed_executions": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "first_positive_step": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "known_positive_recall": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "n_runs": 0,
+        "new_followup_positive_count": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "newly_labeled_count": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "no_record_executions": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "no_record_fraction": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "observations_added": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "observed_positive_fraction": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "positives_per_credit": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "record_yield": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "released_executions": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "unique_executions": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "unknown_or_ambiguous_released_count": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        }
+      },
+      "seeded_random_runs": []
+    },
+    "revision-20260918-primary-active-all": {
+      "common_axis_comparison": {
+        "by_run_at_common_step_endpoint": {},
+        "by_run_at_or_before_common_spent_endpoint": {},
+        "common_spent_range_end": "0",
+        "common_spent_range_start": "0",
+        "common_step_range_end": null,
+        "common_step_range_start": null,
+        "cost_endpoint_rule": "last observed state at or below the common actual spend; no interpolation"
+      },
+      "complete": false,
+      "fixed_order": null,
+      "seeded_random_priority": {
+        "durable_steps": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "failed_executions": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "first_positive_step": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "known_positive_recall": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "n_runs": 0,
+        "new_followup_positive_count": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "newly_labeled_count": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "no_record_executions": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "no_record_fraction": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "observations_added": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "observed_positive_fraction": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "positives_per_credit": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "record_yield": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "released_executions": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "unique_executions": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        },
+        "unknown_or_ambiguous_released_count": {
+          "max": null,
+          "mean": null,
+          "min": null,
+          "n": 0,
+          "null_reason": "no_defined_values",
+          "sample_sd": null
+        }
+      },
+      "seeded_random_runs": []
+    }
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "baseline_id": "20260930-seeded-priority-v1",
+  "durable_consistency": {
+    "execution_requests": 5,
+    "private_runtime_database_preserved": false,
+    "published_observations_in_trace": 1,
+    "replay_lookups": 5,
+    "settlements": 1,
+    "trace_steps": 5
+  },
+  "ended_at": "2026-09-30T06:14:52.693613+00:00",
+  "implementation_fingerprint_sha256": "40faec819dd68ef82927d8df3ada675d124a4e1c21f58e9479e6e38411ad8b37",
+  "interrupted_after_steps": null,
+  "interruption_summary": null,
+  "isolated_worker": "unshare user/mount/network namespace + read-only chroot",
+  "plan_sha256": "8f67b350f7660c10b1226f74163236af3c402cdf7b7f2b5ab30288d715f6a4a1",
+  "private_canary_denied": true,
+  "public_tree_sha256": "9c958efa8983bc334ad513cb3ea84292ddb06739c7873de8a17904641f60dd26",
+  "resumed_same_run": false,
+  "run_config": {
+    "approval_policy": "bounded_replay",
+    "approver_id": "local-stage3b-bounded-replay-policy",
+    "cost_policy_version": "preserved-public-assay-cost-v1",
+    "initial_budget": {
+      "amount": "5",
+      "assumed": true,
+      "unit": "synthetic_credit"
+    },
+    "max_action_retries": 1,
+    "max_duration_seconds": 300,
+    "max_release_retries": 2,
+    "max_steps": 5,
+    "run_id": "stage3b-r2-random-priority-seed-2",
+    "runtime_database": "/tmp/assaypilot-stage3b-private-3ivb81q0/runtime/execution.sqlite",
+    "selector_algorithm_version": "random-priority-v1",
+    "selector_kind": "seeded_random_priority",
+    "selector_seed": 2,
+    "selector_timeout_seconds": 5.0,
+    "snapshot_id": "revision-20260917-r2"
+  },
+  "run_config_sha256": "48829ab58f5fc8d6054462e1dbcd9ba1d71e99e01d476e5bc2e91e6b2e877f3d",
+  "run_id": "stage3b-r2-random-priority-seed-2",
+  "schema_version": "assaypilot.stage3b.run-summary.v1",
+  "selector": {
+    "algorithm_version": "random-priority-v1",
+    "kind": "seeded_random_priority",
+    "seed": 2
+  },
+  "snapshot_id": "revision-20260917-r2",
+  "snapshot_revision": "revision-20260917-r2",
+  "started_at": "2026-09-30T06:14:52.491064+00:00",
+  "summary": {
+    "available": "4",
+    "failed_executions": 0,
+    "no_record_executions": 4,
+    "observations_added": 1,
+    "pending_releases": 0,
+    "rejected_steps": 0,
+    "released_executions": 1,
+    "reserved": "0",
+    "resumable": false,
+    "retries": 0,
+    "run_id": "stage3b-r2-random-priority-seed-2",
+    "selection_steps": 5,
+    "selector_calls": 5,
+    "spent": "1",
+    "status": "stopped",
+    "stop_reason": "max_steps",
+    "unique_executions": 5,
+    "unit": "synthetic_credit"
+  }
+}
