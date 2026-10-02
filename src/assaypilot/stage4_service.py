@@ -44,6 +44,11 @@ APPROVER_ID = "local-stage4-bounded-replay-policy"
 BUDGET_UNIT = "synthetic_credit"
 MAX_BUDGET = Decimal("50")
 MAX_STEPS = 50
+SCIENTIFIC_MAX_STEPS = 10
+SCIENTIFIC_MAX_DURATION_SECONDS = 300
+SCIENTIFIC_MAX_LLM_CALLS = 24
+SCIENTIFIC_MAX_SHORTLIST_SIZE = 24
+SCIENTIFIC_DEFAULT_SEED = 3
 MAX_DURATION_SECONDS = 300
 MAX_ACTION_RETRIES = 1
 MAX_RELEASE_RETRIES = 2
@@ -123,6 +128,17 @@ def _file_lock(path: Path):
 
 def _safe_config(config: dict[str, Any]) -> dict[str, Any]:
     """Select client-visible settings; never include server paths or DB names."""
+    if config["selector"] == "scientific_reasoner":
+        return {
+            "campaign": config["campaign"], "selector": "scientific_reasoner",
+            "budget": config["budget"], "budget_unit": BUDGET_UNIT,
+            "max_steps": config["max_steps"],
+            "max_duration_seconds": config["max_duration_seconds"],
+            "max_llm_calls": config["max_llm_calls"],
+            "shortlist_size": config["shortlist_size"],
+            "shortlist_seed": config["shortlist_seed"],
+            "research_scope": "AID 2016 primary Active → AID 2272 categorical confirmatory outcome",
+        }
     return {
         "campaign": config["campaign"],
         "selector": config["selector"],
@@ -139,6 +155,45 @@ def _safe_config(config: dict[str, Any]) -> dict[str, Any]:
 def validate_run_request(value: object) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise Stage4ServiceError("invalid_request", "요청 본문은 JSON 객체여야 합니다.")
+    mode = value.get("mode", "baseline")
+    if mode == "scientific_reasoner":
+        allowed = {
+            "mode", "campaign", "budget", "max_steps", "max_duration_seconds",
+            "max_llm_calls", "shortlist_size", "shortlist_seed",
+        }
+        if set(value) - allowed:
+            raise Stage4ServiceError("invalid_request", "허용된 과학적 실행 조건만 보내야 합니다.")
+        campaign = value.get("campaign", "revision-20260918-primary-active-all")
+        if not isinstance(campaign, str) or campaign not in CAMPAIGNS:
+            raise Stage4ServiceError("invalid_campaign", "허용되지 않은 campaign입니다.")
+        raw_budget = value.get("budget", "5")
+        if not isinstance(raw_budget, str) or not _BUDGET_RE.fullmatch(raw_budget):
+            raise Stage4ServiceError("invalid_budget", "예산은 소수점 여섯 자리 이하의 문자열이어야 합니다.")
+        try:
+            budget = Decimal(raw_budget)
+        except InvalidOperation as exc:
+            raise Stage4ServiceError("invalid_budget", "예산 형식이 올바르지 않습니다.") from exc
+        if not budget.is_finite() or budget <= 0 or budget > MAX_BUDGET:
+            raise Stage4ServiceError("invalid_budget", "예산은 0보다 크고 50 synthetic_credit 이하여야 합니다.")
+
+        def bounded_int(name: str, default: int, minimum: int, maximum: int) -> int:
+            current = value.get(name, default)
+            if isinstance(current, bool) or not isinstance(current, int) or not minimum <= current <= maximum:
+                raise Stage4ServiceError(f"invalid_{name}", f"{name}은 {minimum}에서 {maximum} 사이의 정수여야 합니다.")
+            return current
+
+        return {
+            "campaign": campaign, "selector": "scientific_reasoner", "seed": None,
+            "selector_algorithm_version": None,
+            "budget": format(budget.normalize(), "f"),
+            "max_steps": bounded_int("max_steps", SCIENTIFIC_MAX_STEPS, 1, SCIENTIFIC_MAX_STEPS),
+            "max_duration_seconds": bounded_int("max_duration_seconds", SCIENTIFIC_MAX_DURATION_SECONDS, 1, SCIENTIFIC_MAX_DURATION_SECONDS),
+            "max_llm_calls": bounded_int("max_llm_calls", SCIENTIFIC_MAX_LLM_CALLS, 1, SCIENTIFIC_MAX_LLM_CALLS),
+            "shortlist_size": bounded_int("shortlist_size", SCIENTIFIC_MAX_SHORTLIST_SIZE, 1, SCIENTIFIC_MAX_SHORTLIST_SIZE),
+            "shortlist_seed": bounded_int("shortlist_seed", SCIENTIFIC_DEFAULT_SEED, 0, 2**31 - 1),
+        }
+    if mode not in {"baseline", None}:
+        raise Stage4ServiceError("invalid_mode", "지원하지 않는 실행 모드입니다.")
     allowed = {"campaign", "selector", "seed", "budget", "max_steps"}
     if set(value) - allowed or not {"campaign", "selector", "budget", "max_steps"} <= set(value):
         raise Stage4ServiceError("invalid_request", "허용된 실행 조건만 보내야 합니다.")
@@ -450,6 +505,23 @@ class Stage4RunService:
             },
             "budget_limit": str(MAX_BUDGET), "max_steps_limit": MAX_STEPS,
         }
+        try:
+            from assaypilot.llm_provider import LLMProviderError, LLMSettings
+
+            LLMSettings.from_environment(env_file=ROOT / ".env.stage5a.local")
+            provider_configured, provider_error = True, None
+        except LLMProviderError as exc:
+            provider_configured, provider_error = False, exc.code
+        except Exception:
+            provider_configured, provider_error = False, "provider_settings_unavailable"
+        response["scientific_reasoner"] = {
+            "available": bool(any(row["available"] for row in catalog) and provider_configured),
+            "snapshot_available": bool(any(row["available"] for row in catalog)),
+            "worker_available": True,
+            "provider_settings_configured": provider_configured,
+            "provider_configuration_error": provider_error,
+            "connection": "not_checked",
+        }
         self._readiness_cache = (now, response)
         return response
 
@@ -458,6 +530,14 @@ class Stage4RunService:
         campaign = next((row for row in status["campaigns"] if row["campaign"] == config["campaign"]), None)
         if campaign is None or not campaign["available"]:
             raise Stage4ServiceError("campaign_unavailable", "선택한 snapshot의 공개 campaign을 읽을 수 없습니다.", 503)
+        if config.get("selector") == "scientific_reasoner":
+            science = status.get("scientific_reasoner", {})
+            if not science.get("provider_settings_configured"):
+                raise Stage4ServiceError(
+                    science.get("provider_configuration_error") or "provider_settings_missing",
+                    "과학적 판단 provider 설정을 확인할 수 없습니다. 서버의 비밀 설정 파일을 점검하세요.", 503,
+                )
+            return
         if not status["selector_sandbox"]["available"]:
             code = status["selector_sandbox"]["code"] or "selector_sandbox_unavailable"
             raise Stage4ServiceError(code, "격리 selector 실행 환경을 사용할 수 없습니다.", 503)
@@ -590,7 +670,10 @@ class Stage4RunService:
             if state.get("service_status") != "interrupted" or not self._resume_available(run_id, run_dir):
                 raise Stage4ServiceError("run_not_resumable", "이 run은 현재 재개할 수 없습니다.", 409)
             config = state["configuration"]
-            self._check_request_ready({"campaign": config["campaign"]})
+            self._check_request_ready({
+                "campaign": config["campaign"],
+                "selector": config.get("selector"),
+            })
             self._update_state(
                 run_dir, service_status="queued", error=None, ended_at=None,
                 resume_count=int(state.get("resume_count", 0)) + 1,
@@ -631,6 +714,29 @@ class Stage4RunService:
     def get_run(self, run_id: str) -> dict[str, Any]:
         run_dir = self._run_dir(run_id)
         state = self._reconcile_liveness(run_dir, self._read_state(run_dir))
+        if state.get("configuration", {}).get("selector") == "scientific_reasoner":
+            from assaypilot.scientific_public import empty_projection
+
+            revision = state.get("public_revision")
+            run_dir = self._run_dir(run_id)
+            projection = None
+            if isinstance(revision, int) and revision > 0:
+                projection_path = run_dir / "public" / f"rev-{revision:06d}" / "projection.json"
+                try:
+                    projection = _load_json(projection_path)
+                except (OSError, ValueError, json.JSONDecodeError):
+                    projection = None
+            if projection is None:
+                projection = empty_projection(
+                    run_id=run_id, service_status=state["service_status"],
+                    configuration=state["configuration"], created_at=state.get("created_at"),
+                    started_at=state.get("started_at"), ended_at=state.get("ended_at"),
+                    stop_reason=state.get("stop_reason"), error=state.get("error"),
+                )
+            projection["download_url"] = f"/api/runs/{run_id}/download" if isinstance(revision, int) and revision > 0 else None
+            projection["resume_available"] = state["service_status"] == "interrupted" and self._resume_available(run_id, run_dir)
+            projection["error"] = state.get("error")
+            return projection
         artifacts = self._artifact_docs(state)
         summary = artifacts["summary"] if artifacts else None
         trace = artifacts["trace"] if artifacts else None
@@ -666,6 +772,11 @@ class Stage4RunService:
     def download(self, run_id: str) -> bytes:
         run_dir = self._run_dir(run_id)
         state = self._reconcile_liveness(run_dir, self._read_state(run_dir))
+        if state.get("configuration", {}).get("selector") == "scientific_reasoner":
+            response = self.get_run(run_id)
+            if not response.get("decisions"):
+                raise Stage4ServiceError("public_result_not_ready", "공개 결과 파일이 아직 준비되지 않았습니다.", 409)
+            return _canonical_json(response) + b"\n"
         artifacts = self._artifact_docs(state)
         if not artifacts:
             raise Stage4ServiceError("public_result_not_ready", "공개 결과 파일이 아직 준비되지 않았습니다.", 409)
@@ -682,13 +793,28 @@ class Stage4RunService:
                     "run_id": state["run_id"], "service_status": state["service_status"],
                     "campaign": state["configuration"]["campaign"],
                     "selector": state["configuration"]["selector"],
+                    "mode": state["configuration"]["selector"],
+                    "origin": "live_web_run",
                     "created_at": state["created_at"], "stop_reason": state.get("stop_reason"),
                 })
                 if len(rows) >= max(1, min(limit, 50)):
                     break
             except (OSError, ValueError, KeyError, json.JSONDecodeError):
                 continue
-        return rows
+        from assaypilot.scientific_public import list_stored_runs
+
+        stored = list_stored_runs(ROOT / "runtime" / "stage5b")
+        return (stored + rows)[:max(1, min(limit, 50))]
+
+    def get_stored_scientific_run(self, run_id: str) -> dict[str, Any]:
+        from assaypilot.scientific_public import project_stored_archive
+
+        try:
+            return project_stored_archive(run_id, ROOT / "runtime" / "stage5b")
+        except FileNotFoundError as exc:
+            raise Stage4ServiceError("run_not_found", "저장된 과학적 실행 기록을 찾을 수 없습니다.", 404) from exc
+        except (OSError, ValueError, KeyError, TypeError, json.JSONDecodeError) as exc:
+            raise Stage4ServiceError("stored_projection_invalid", "저장된 공개 실행 기록을 검증하지 못했습니다.", 409) from exc
 
 
 class _PublicArtifactExporter:
@@ -699,8 +825,18 @@ class _PublicArtifactExporter:
         self.run_id = run_id
         self.run_dir = service._run_dir(run_id)
         self.state = service._read_state(self.run_dir)
-        self.revision = 0
+        existing = [
+            int(path.name.removeprefix("rev-")) for path in (self.run_dir / "public").glob("rev-[0-9]*")
+            if path.is_dir() and not path.is_symlink()
+        ] if (self.run_dir / "public").is_dir() else []
+        self.revision = max(existing, default=0)
         self.signature: str | None = None
+        if self.revision:
+            current = self.run_dir / "public" / f"rev-{self.revision:06d}" / "projection.json"
+            try:
+                self.signature = _sha256(_canonical_json(_load_json(current)))
+            except (OSError, ValueError, json.JSONDecodeError):
+                pass
         self.coordinator: ExecutionCoordinator | None = None
         self.reader = None
 
@@ -916,6 +1052,122 @@ def _cli_command(state: dict[str, Any], runtime_root: Path, *, resume: bool) -> 
     return common
 
 
+def _scientific_cli_command(state: dict[str, Any], runtime_root: Path, *, resume: bool) -> list[str]:
+    config = state["configuration"]
+    run_id = state["run_id"]
+    snapshot = (ROOT / CAMPAIGNS[config["campaign"]]["snapshot"]).resolve()
+    database = (runtime_root / "runs" / run_id / "private" / "execution.sqlite").resolve()
+    common = [
+        sys.executable, "-m", "assaypilot.scientific_run_loop_cli",
+        "resume" if resume else "start", "--snapshot", str(snapshot),
+        "--runtime-db", str(database), "--run-id", run_id,
+        "--env-file", str(ROOT / ".env.stage5a.local"),
+    ]
+    if not resume:
+        common.extend([
+            "--budget", config["budget"], "--budget-unit", BUDGET_UNIT,
+            "--max-steps", str(config["max_steps"]),
+            "--max-duration-seconds", str(config["max_duration_seconds"]),
+            "--max-llm-calls", str(config["max_llm_calls"]),
+            "--shortlist-size", str(config["shortlist_size"]),
+            "--shortlist-seed", str(config["shortlist_seed"]),
+        ])
+    return common
+
+
+def _classify_scientific_cli_outcome(returncode: int, stdout: str, stderr: str) -> dict[str, Any]:
+    parsed: dict[str, Any] | None = None
+    try:
+        value = json.loads(stdout)
+        parsed = value if isinstance(value, dict) and isinstance(value.get("summary"), dict) else None
+    except (json.JSONDecodeError, TypeError):
+        pass
+    if returncode != 0:
+        code = "scientific_run_failed"
+        try:
+            value = json.loads(stderr.strip().splitlines()[-1])
+            candidate = value.get("error") if isinstance(value, dict) else None
+            if isinstance(candidate, str) and re.fullmatch(r"[a-z][a-z0-9_]{1,80}", candidate):
+                code = candidate
+        except (IndexError, json.JSONDecodeError, TypeError):
+            pass
+        return {
+            "service_status": "failed", "stop_reason": None, "summary": None,
+            "error": {"code": code, "message": "과학적 실행이 오류로 종료했습니다."},
+        }
+    if parsed is None:
+        return {
+            "service_status": "failed", "stop_reason": None, "summary": None,
+            "error": {"code": "invalid_scientific_summary", "message": "과학적 실행 요약을 확인할 수 없습니다."},
+        }
+    summary = parsed["summary"]
+    reason = summary.get("stop_reason")
+    if reason in _NORMAL_STOP_REASONS | {"scientific_finalization_complete", "llm_call_limit", "interpretation_complete"}:
+        status, error = "completed", None
+    elif reason in {"user_interrupt", "retry_exhausted"}:
+        status, error = "interrupted", None
+    else:
+        safe_reason = reason if isinstance(reason, str) and re.fullmatch(r"[a-z][a-z0-9_]{1,80}", reason) else "missing_stop_reason"
+        status, error = "failed", {
+            "code": safe_reason, "message": "과학적 실행이 정상 종료 조건을 충족하지 못했습니다.",
+        }
+    return {"service_status": status, "stop_reason": reason, "summary": summary, "error": error}
+
+
+class _ScientificProjectionPublisher:
+    """Publish immutable allowlisted views from one consistent private DB read."""
+
+    def __init__(self, service: Stage4RunService, run_id: str):
+        self.service = service
+        self.run_id = run_id
+        self.run_dir = service._run_dir(run_id)
+        public_root = self.run_dir / "public"
+        existing = []
+        if public_root.is_dir() and not public_root.is_symlink():
+            for path in public_root.glob("rev-[0-9]*"):
+                if path.is_dir() and not path.is_symlink():
+                    try:
+                        existing.append(int(path.name.removeprefix("rev-")))
+                    except ValueError:
+                        continue
+        self.revision = max(existing, default=0)
+        self.signature: str | None = None
+        if self.revision:
+            current = public_root / f"rev-{self.revision:06d}" / "projection.json"
+            try:
+                self.signature = _sha256(_canonical_json(_load_json(current)))
+            except (OSError, ValueError, json.JSONDecodeError):
+                pass
+
+    def refresh(self, *, force: bool = False, service_status: str | None = None) -> bool:
+        from assaypilot.scientific_public import project_live_database
+
+        state = self.service._read_state(self.run_dir)
+        database = self.run_dir / "private" / "execution.sqlite"
+        projection = project_live_database(
+            database, run_id=self.run_id, origin="live_web_run",
+            service_status=service_status or state.get("service_status", "running"),
+            configuration=state["configuration"], created_at=state.get("created_at"),
+            started_at=state.get("started_at"), ended_at=state.get("ended_at"),
+            stop_reason=state.get("stop_reason"),
+        )
+        if projection is None:
+            return False
+        projection["download_url"] = f"/api/runs/{self.run_id}/download"
+        signature = _sha256(_canonical_json(projection))
+        if not force and signature == self.signature:
+            return False
+        self.revision += 1
+        public_root = self.run_dir / "public"
+        public_root.mkdir(mode=0o700, exist_ok=True)
+        revision_dir = public_root / f"rev-{self.revision:06d}"
+        revision_dir.mkdir(mode=0o700)
+        _atomic_json(revision_dir / "projection.json", projection)
+        self.service._update_state(self.run_dir, public_revision=self.revision)
+        self.signature = signature
+        return True
+
+
 def run_worker(runtime_root: str | Path, run_id: str, *, resume: bool = False) -> int:
     service = Stage4RunService(runtime_root, readiness_probe=lambda: {"available": True, "code": None})
     run_dir = service._run_dir(run_id)
@@ -929,14 +1181,16 @@ def run_worker(runtime_root: str | Path, run_id: str, *, resume: bool = False) -
     database.parent.mkdir(mode=0o700, parents=True, exist_ok=True)
     os.chmod(database.parent, 0o700)
     stdout_path, stderr_path = run_dir / "cli.stdout", run_dir / "cli.stderr"
-    exporter = _PublicArtifactExporter(service, run_id)
+    scientific = state.get("configuration", {}).get("selector") == "scientific_reasoner"
+    exporter = _ScientificProjectionPublisher(service, run_id) if scientific else _PublicArtifactExporter(service, run_id)
+    command = _scientific_cli_command if scientific else _cli_command
     process: subprocess.Popen[bytes] | None = None
     try:
         with stdout_path.open("wb") as stdout_file, stderr_path.open("wb") as stderr_file:
             os.chmod(stdout_path, 0o600)
             os.chmod(stderr_path, 0o600)
             process = subprocess.Popen(
-                _cli_command(state, service.runtime_root, resume=resume), cwd=ROOT,
+                command(state, service.runtime_root, resume=resume), cwd=ROOT,
                 stdin=subprocess.DEVNULL, stdout=stdout_file, stderr=stderr_file,
                 close_fds=True,
             )
@@ -955,11 +1209,17 @@ def run_worker(runtime_root: str | Path, run_id: str, *, resume: bool = False) -
         os.chmod(database, 0o600) if database.exists() else None
         stdout = stdout_path.read_text(encoding="utf-8", errors="replace")
         stderr = stderr_path.read_text(encoding="utf-8", errors="replace")
-        outcome = classify_cli_outcome(return_code, stdout, stderr)
+        outcome = (_classify_scientific_cli_outcome(return_code, stdout, stderr) if scientific
+                   else classify_cli_outcome(return_code, stdout, stderr))
         cli_summary = outcome.get("summary")
         try:
-            exporter.refresh(force=True, cli_summary=cli_summary)
-            if exporter.reader is None or exporter.revision < 1:
+            if scientific:
+                exporter.refresh(force=True, service_status=outcome["service_status"])
+                has_public_projection = exporter.revision > 0
+            else:
+                exporter.refresh(force=True, cli_summary=cli_summary)
+                has_public_projection = exporter.reader is not None and exporter.revision > 0
+            if not has_public_projection:
                 if outcome["service_status"] == "failed" and (return_code != 0 or cli_summary is None):
                     service._update_state(
                         run_dir, service_status="failed", domain_status=None,

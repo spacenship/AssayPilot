@@ -87,6 +87,21 @@ class Stage4Handler(BaseHTTPRequestHandler):
                 return self._json(200, {"runs": self.server.service.recent_runs()})
             except Exception:
                 return self._json(500, {"error": {"code": "history_failed", "message": "실행 이력을 읽지 못했습니다."}})
+        saved_match = re.fullmatch(r"/api/scientific-runs/(stage5b-[0-9a-f]{32})(/download)?", path)
+        if saved_match:
+            run_id = saved_match.group(1)
+            try:
+                projection = self.server.service.get_stored_scientific_run(run_id)
+                payload = json.dumps(projection, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8") + b"\n"
+                if saved_match.group(2):
+                    return self._send(200, payload, "application/json; charset=utf-8", headers={
+                        "Content-Disposition": f'attachment; filename="{run_id}-public-results.json"',
+                    })
+                return self._send(200, payload.rstrip(b"\n"), "application/json; charset=utf-8")
+            except Stage4ServiceError as exc:
+                return self._error(exc)
+            except Exception:
+                return self._json(500, {"error": {"code": "stored_run_read_failed", "message": "저장된 과학적 실행 기록을 읽지 못했습니다."}})
         match = re.fullmatch(r"/api/runs/(stage4-[0-9a-f]{32})(/download)?", path)
         if match:
             run_id = match.group(1)

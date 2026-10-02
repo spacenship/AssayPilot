@@ -6,6 +6,7 @@ from uuid import uuid4
 import pytest
 
 from assaypilot.stage4_service import (
+    _ScientificProjectionPublisher,
     Stage4RunService,
     Stage4ServiceError,
     _atomic_json,
@@ -32,6 +33,20 @@ def test_run_request_is_strict_and_decimal_budget_is_canonical() -> None:
     ):
         with pytest.raises(Stage4ServiceError):
             validate_run_request(invalid)
+
+
+def test_scientific_run_request_preserves_bounded_defaults_and_seed_range() -> None:
+    valid = validate_run_request({"mode": "scientific_reasoner"})
+    assert valid["campaign"] == "revision-20260918-primary-active-all"
+    assert valid["budget"] == "5"
+    assert valid["max_steps"] == 10
+    assert valid["max_duration_seconds"] == 300
+    assert valid["max_llm_calls"] == 24
+    assert valid["shortlist_size"] == 24
+    assert valid["shortlist_seed"] == 3
+    with pytest.raises(Stage4ServiceError) as negative_seed:
+        validate_run_request({"mode": "scientific_reasoner", "shortlist_seed": -1})
+    assert negative_seed.value.code == "invalid_shortlist_seed"
 
 
 def test_cli_stop_reason_is_separate_from_service_state() -> None:
@@ -135,3 +150,77 @@ def test_worker_failure_does_not_fabricate_public_artifact(tmp_path, monkeypatch
     assert response["error"]["code"] == "worker_failed"
     assert response["published_results"] == []
     assert response["download_url"] is None
+
+
+def test_scientific_resume_does_not_require_selector_worker_sandbox(tmp_path, monkeypatch) -> None:
+    runtime = tmp_path / "runtime"
+    launch_calls = []
+    service = Stage4RunService(
+        runtime, worker_launcher=lambda run_id, resume: launch_calls.append((run_id, resume)) or 42,
+    )
+    run_id = "stage4-" + "b" * 32
+    run_dir = service.runs_root / run_id
+    run_dir.mkdir(mode=0o700)
+    _atomic_json(run_dir / "run.json", {
+        "schema_version": "assaypilot.stage4.run-state.v1", "run_id": run_id,
+        "service_status": "interrupted", "domain_status": None, "stop_reason": "user_interrupt",
+        "configuration": {
+            "campaign": "revision-20260918-primary-active-all", "selector": "scientific_reasoner",
+            "budget": "5", "budget_unit": "synthetic_credit", "max_steps": 10,
+            "max_duration_seconds": 300, "max_llm_calls": 24, "shortlist_size": 24,
+            "shortlist_seed": 3,
+        },
+        "created_at": "2026-10-01T00:00:00+00:00", "created_epoch": 0,
+        "started_at": "2026-10-01T00:00:01+00:00", "ended_at": "2026-10-01T00:01:00+00:00",
+        "worker_pid": None, "resume_count": 0, "artifact_revision": None, "error": None,
+    })
+    service.readiness = lambda **_kwargs: {
+        "ready": False,
+        "campaigns": [{"campaign": "revision-20260918-primary-active-all", "available": True}],
+        "selector_sandbox": {"available": False, "code": "selector_sandbox_unavailable"},
+        "scientific_reasoner": {"provider_settings_configured": True},
+    }
+    monkeypatch.setattr(service, "_resume_available", lambda _run_id, _run_dir: True)
+    monkeypatch.setattr(service, "_pid_alive", lambda _pid, _run_id: True)
+
+    result = service.resume_run(run_id)
+
+    assert result["service_status"] == "queued"
+    assert launch_calls == [(run_id, True)]
+
+
+def test_scientific_projection_publisher_appends_after_existing_revision(tmp_path, monkeypatch) -> None:
+    import assaypilot.scientific_public as public_module
+
+    service = Stage4RunService(tmp_path / "runtime")
+    run_id = "stage4-" + "c" * 32
+    run_dir = service.runs_root / run_id
+    run_dir.mkdir(mode=0o700)
+    configuration = {
+        "campaign": "revision-20260918-primary-active-all",
+        "selector": "scientific_reasoner", "budget": "5",
+        "budget_unit": "synthetic_credit", "max_steps": 10,
+        "max_duration_seconds": 300, "max_llm_calls": 24,
+        "shortlist_size": 24, "shortlist_seed": 3,
+    }
+    _atomic_json(run_dir / "run.json", {
+        "run_id": run_id, "service_status": "completed",
+        "configuration": configuration, "created_at": "2026-10-02T00:00:00+00:00",
+    })
+    old_revision = run_dir / "public" / "rev-000001"
+    _atomic_json(old_revision / "projection.json", {"run_id": run_id, "revision": 1})
+    monkeypatch.setattr(public_module, "project_live_database", lambda *_args, **_kwargs: {
+        "run_id": run_id, "service_status": "completed", "decisions": [],
+    })
+
+    publisher = _ScientificProjectionPublisher(service, run_id)
+    assert publisher.revision == 1
+    assert publisher.refresh(force=True, service_status="completed") is True
+
+    assert (old_revision / "projection.json").read_text(encoding="utf-8") == json.dumps(
+        {"run_id": run_id, "revision": 1}, ensure_ascii=False, sort_keys=True, indent=2,
+    ) + "\n"
+    assert json.loads((run_dir / "public" / "rev-000002" / "projection.json").read_text())[
+        "decisions"
+    ] == []
+    assert service._read_state(run_dir)["public_revision"] == 2

@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>AssayPilot · Stage 4 MVP</title>
+  <title>AssayPilot · Replay and Scientific Runs</title>
   <link rel="stylesheet" href="/assets/app.css">
   <script src="/assets/app.js" defer></script>
 </head>
 <body>
   <header class="topbar">
     <div>
-      <p class="eyebrow">ASSAYPILOT · REPLAY SERVICE</p>
-      <h1>공개 데이터 replay</h1>
-      <p class="subhead">기존 격리 selector와 trusted replay 실행기의 실제 공개 상태를 확인합니다.</p>
+      <p class="eyebrow">ASSAYPILOT · PUBLIC REPLAY SERVICE</p>
+      <h1>공개 데이터 replay와 과학적 판단</h1>
+      <p class="subhead">고정된 PubChem assay 범위에서 실행 상태, 공개 결과와 판단 근거를 확인합니다.</p>
     </div>
     <div id="readiness" class="readiness" role="status">실행 환경 확인 중</div>
   </header>
@@ -21,36 +21,62 @@
     <section class="panel config-panel" aria-labelledby="config-title">
       <div class="section-heading">
         <div><p class="eyebrow">A · RUN CONFIGURATION</p><h2 id="config-title">실행 설정</h2></div>
-        <span class="tag">synthetic_credit · 가정 예산</span>
+        <span class="tag">synthetic_credit · 가정 replay 예산</span>
       </div>
-      <div class="examples" aria-label="예시 설정">
-        <button type="button" class="example" data-example="a"><strong>예시 A</strong><span>r2 · fixed · 5 step</span></button>
-        <button type="button" class="example" data-example="b"><strong>예시 B</strong><span>확장 · fixed · 10 step</span></button>
-        <button type="button" class="example" data-example="c"><strong>예시 C</strong><span>확장 · seed 3 · 30 step</span></button>
+      <div id="baseline-examples" class="examples" aria-label="기존 baseline 예시">
+        <button type="button" class="example" data-example="a"><strong>Baseline A</strong><span>r2 · fixed · 5 step</span></button>
+        <button type="button" class="example" data-example="b"><strong>Baseline B</strong><span>확장 · fixed · 10 step</span></button>
+        <button type="button" class="example" data-example="c"><strong>Baseline C</strong><span>확장 · seed 3 · 30 step</span></button>
       </div>
       <form id="run-form">
-        <label>Campaign
-          <select id="campaign" name="campaign" required></select>
-        </label>
-        <label>선택 방식
-          <select id="selector" name="selector">
-            <option value="fixed_order">fixed_order · 후보 ID 사전순</option>
-            <option value="seeded_random_priority">seeded_random_priority · seed 해시 우선순위</option>
+        <label>실행 모드
+          <select id="mode" name="mode">
+            <option value="scientific_reasoner">과학적 판단 agent</option>
+            <option value="baseline">기존 baseline replay</option>
           </select>
         </label>
-        <label id="seed-field" class="hidden">Seed
-          <input id="seed" name="seed" type="number" step="1" value="3">
+        <label>지원 campaign
+          <select id="campaign" name="campaign" required></select>
         </label>
-        <label>초기 예산
+        <div id="research-scope" class="scope-note">
+          <strong>고정 연구 범위</strong>
+          <span>AID 2016 primary Active 후보를 AID 2272 yeast TOR-pathway GFP confirmatory assay의 공개 범주형 결과로 평가합니다. 직접 결합이나 치료 효능을 주장하지 않습니다.</span>
+        </div>
+        <div id="baseline-fields" class="field-row hidden">
+          <label>선택 방식
+            <select id="selector" name="selector">
+              <option value="fixed_order">fixed_order · 후보 ID 사전순</option>
+              <option value="seeded_random_priority">seeded_random_priority · seed 해시 우선순위</option>
+            </select>
+          </label>
+          <label id="seed-field" class="hidden">Seed
+            <input id="seed" name="seed" type="number" step="1" value="3">
+          </label>
+        </div>
+        <label>Replay 예산
           <input id="budget" name="budget" type="number" min="0.000001" max="50" step="0.000001" value="5" required>
-          <small>서버 상한 50 synthetic_credit</small>
+          <small>최대 50 synthetic_credit</small>
         </label>
-        <label>최대 step
-          <input id="max-steps" name="max_steps" type="number" min="1" max="50" step="1" value="5" required>
+        <label>최대 행동 실행 횟수
+          <input id="max-steps" name="max_steps" type="number" min="1" max="10" step="1" value="10" required>
         </label>
+        <div id="scientific-advanced" class="field-row advanced-fields">
+          <label>최대 LLM 호출
+            <input id="max-llm-calls" type="number" min="1" max="24" value="24">
+          </label>
+          <label>최대 실행 시간 (초)
+            <input id="max-duration-seconds" type="number" min="1" max="300" value="300">
+          </label>
+          <label>Shortlist 크기
+            <input id="shortlist-size" type="number" min="1" max="24" value="24">
+          </label>
+          <label>Shortlist seed
+            <input id="shortlist-seed" type="number" min="0" max="2147483647" value="3">
+          </label>
+        </div>
         <div class="form-actions">
           <button id="start" class="primary" type="submit" disabled>실행 시작</button>
-          <p class="note">예산·시간·실행 가능 action에 따라 최대 step보다 먼저 종료할 수 있습니다. 실험 수행이나 활성 예측이 아닙니다.</p>
+          <p id="mode-note" class="note">기본값: 예산 5, 최대 10 actions, 300초, LLM 최대 24회, shortlist 24 / seed 3. Replay 실행은 실제 실험이나 활성 예측이 아닙니다.</p>
         </div>
       </form>
       <p id="form-error" class="error" role="alert"></p>
@@ -58,32 +84,36 @@
 
     <section class="panel run-panel" aria-labelledby="run-title">
       <div class="section-heading">
-        <div><p class="eyebrow">B · LIVE RUN</p><h2 id="run-title">진행 상황</h2></div>
+        <div><p class="eyebrow">B · RUN STATUS</p><h2 id="run-title">진행 상황</h2></div>
         <select id="run-history" aria-label="저장된 run 선택"><option value="">최근 실행 불러오기</option></select>
       </div>
-      <div id="empty-run" class="empty">예시 설정을 선택하고 실행을 시작하세요.</div>
+      <div id="empty-run" class="empty">저장된 실행 기록을 선택하거나 새 실행을 시작하세요.</div>
       <div id="run-view" class="hidden">
-        <div class="run-ident"><span>Run ID</span><code id="run-id"></code><span id="run-status" class="status"></span></div>
+        <div class="run-ident"><span>Run ID</span><code id="run-id"></code><span id="run-origin" class="tag hidden"></span><span id="run-status" class="status"></span></div>
         <div id="run-error" class="error"></div>
-        <div class="metrics" id="metrics"></div>
-        <div class="run-actions"><p id="stop-reason" class="note"></p><button id="download" type="button" class="secondary" disabled>공개 결과 JSON 다운로드</button></div>
+        <div id="metrics" class="metrics"></div>
+        <div class="run-actions"><p id="stop-reason" class="note"></p><div class="run-buttons"><button id="resume-run" type="button" class="secondary hidden">중단된 run 재개</button><button id="download" type="button" class="secondary" disabled>공개 결과 JSON 다운로드</button></div></div>
       </div>
     </section>
 
-    <section class="panel" aria-labelledby="steps-title">
-      <div class="section-heading"><div><p class="eyebrow">C · PUBLIC TRACE</p><h2 id="steps-title">실행 이력</h2></div></div>
-      <div class="table-wrap">
-        <table><thead><tr><th>Step</th><th>Candidate</th><th>Assay</th><th>Selector reason</th><th>상태</th><th>예산 후 잔액</th></tr></thead>
-        <tbody id="steps"><tr><td colspan="6" class="empty-cell">공개 실행 기록이 없습니다.</td></tr></tbody></table>
-      </div>
+    <section id="science-view" class="panel hidden" aria-labelledby="science-title">
+      <div class="section-heading"><div><p class="eyebrow">C · SCIENTIFIC TRACE</p><h2 id="science-title">판단 · 실행 · 관측 · 가설 갱신</h2></div></div>
+      <p id="science-summary-note" class="note"></p>
+      <div id="scientific-summary" class="science-summary"></div>
+      <div id="science-timeline" class="timeline"><p class="empty">공개 판단 기록이 없습니다.</p></div>
     </section>
 
-    <section class="panel" aria-labelledby="results-title">
-      <div class="section-heading"><div><p class="eyebrow">D · RELEASED PUBLIC RESULTS</p><h2 id="results-title">공개 결과와 근거</h2></div></div>
-      <p class="note">released 관측만 표시합니다. no_record는 이 snapshot에서 연결된 후속 기록이 없다는 뜻이며 Inactive가 아닙니다.</p>
+    <section id="baseline-trace" class="panel hidden" aria-labelledby="steps-title">
+      <div class="section-heading"><div><p class="eyebrow">C · PUBLIC TRACE</p><h2 id="steps-title">Baseline 실행 이력</h2></div></div>
+      <div class="table-wrap"><table><thead><tr><th>Step</th><th>Candidate</th><th>Assay</th><th>선택 이유</th><th>상태</th><th>예산 후 잔액</th></tr></thead><tbody id="steps"><tr><td colspan="6" class="empty-cell">공개 실행 기록이 없습니다.</td></tr></tbody></table></div>
+    </section>
+
+    <section id="baseline-results" class="panel hidden" aria-labelledby="results-title">
+      <div class="section-heading"><div><p class="eyebrow">D · RELEASED PUBLIC RESULTS</p><h2 id="results-title">Baseline 공개 결과와 근거</h2></div></div>
+      <p class="note">no_record는 이 snapshot에서 연결된 후속 기록이 없다는 뜻이며 Inactive가 아닙니다.</p>
       <div id="results" class="results-list"><p class="empty">공개된 후속 Observation이 없습니다.</p></div>
     </section>
   </main>
-  <footer>selector는 공개 campaign 상태만 받습니다. hidden 결과·미시도 후보의 결과 유무는 화면으로 전달하지 않습니다.</footer>
+  <footer>공개된 campaign 자료만 사용합니다. 숨겨진 결과는 판단과 화면에 전달되지 않습니다. Provider 연결 상태는 페이지에서 검사하지 않습니다.</footer>
 </body>
 </html>
